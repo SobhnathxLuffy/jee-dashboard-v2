@@ -61,8 +61,6 @@ export function DataView() {
   const tests = useLive("tests");
   const responses = useLive("responses");
   const syllabus = useLive("syllabus");
-  const formula = useLive("formula");
-  const daily = useLive("daily_log");
   const papers = useLive("papers");
   const tasks = useLive("tasks");
   const fileRef = useRef<HTMLInputElement>(null);
@@ -228,8 +226,6 @@ export function DataView() {
               <span>tests: <strong>{tests.length}</strong></span>
               <span>responses: <strong>{responses.length}</strong></span>
               <span>syllabus: <strong>{syllabus.length}</strong></span>
-              <span>formula: <strong>{formula.length}</strong></span>
-              <span>daily logs: <strong>{daily.length}</strong></span>
               <span>papers: <strong>{papers.length}</strong></span>
               <span>tasks: <strong>{tasks.length}</strong></span>
             </div>

@@ -35,7 +35,6 @@ import { fileToDataUrl } from "@/lib/image";
 import { SUBJECTS, uid, type Question, type Subject } from "@/lib/types";
 import { IMPORT_EXAMPLE, parseQuestionsJson } from "@/lib/question-json";
 import { FileDrop } from "./FileDrop";
-import { PdfExtractPanel } from "./ai/PdfExtractPanel";
 
 const OPTION_LETTERS = ["A", "B", "C", "D"];
 
@@ -66,7 +65,6 @@ export function QuestionBankView() {
   const imageInputRef = useRef<HTMLInputElement>(null);
   const [figOver, setFigOver] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
-  const [extractOpen, setExtractOpen] = useState(false);
 
   const chaptersForSubject = useMemo(
     () =>
@@ -244,9 +242,6 @@ export function QuestionBankView() {
         subtitle="Manual entry lives here. Bank questions feed the CBT player; chapter names come from the syllabus seed."
         right={
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => setExtractOpen((v) => !v)}>
-              ✦ PDF → Bank
-            </Button>
             <Button variant="outline" size="sm" onClick={() => setImportOpen((v) => !v)}>
               Import JSON
             </Button>
@@ -258,7 +253,6 @@ export function QuestionBankView() {
       />
 
       {importOpen ? <JsonImportPanel onClose={() => setImportOpen(false)} /> : null}
-      {extractOpen ? <PdfExtractPanel onClose={() => setExtractOpen(false)} /> : null}
 
       <div className="grid lg:grid-cols-5 gap-6">
         {/* entry / edit form */}
@@ -592,7 +586,6 @@ export function QuestionBankView() {
                         >
                           Edit
                         </Button>
-                        {/* C1: delete needs a confirm; warn when used by saved tests */}
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button
@@ -647,7 +640,7 @@ export function QuestionBankView() {
 
 // ─── JSON bulk import ────────────────────────────────────────────────────────
 // Parsing/validation lives in lib/question-json.ts — one canonical validator
-// shared with the AI PDF-extraction panel.
+// shared with the Question Bank.
 
 function JsonImportPanel({ onClose }: { onClose: () => void }) {
   const [raw, setRaw] = useState("");
@@ -777,11 +770,6 @@ function JsonImportPanel({ onClose }: { onClose: () => void }) {
             <li>
               <code className="font-mono text-foreground">tolerance</code> — numerical only, optional (default 0 = exact
               match)
-            </li>
-            <li>
-              <code className="font-mono text-foreground">source</code>,{" "}
-              <code className="font-mono text-foreground">source_url</code>,{" "}
-              <code className="font-mono text-foreground">image</code> (dataURL) — optional
             </li>
           </ul>
         </div>

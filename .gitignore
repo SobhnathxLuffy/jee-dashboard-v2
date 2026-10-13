@@ -36,7 +36,6 @@ yarn-error.log*
 # vercel
 .vercel
 
-
 # typescript
 *.tsbuildinfo
 next-env.d.ts
@@ -52,15 +51,10 @@ prompt
 server.log
 # Skills directory
 /skills/
+.agents/
 # internal tool output
 tool-results
 
 # sandbox artifacts — never publish
 db/
 download/*.tar.gz
-
-# mobile/APK build
-/.next-mobile/
-/out/
-/.mobile-api-backup/
-download/*.apk

@@ -24,7 +24,6 @@ import { cn } from "@/lib/utils";
 import type { NavController } from "./App";
 import { AnswerBits, EmptyNote, PageTitle, SectionCard, StatCard } from "./shared";
 import { CountUp, ScoreRing, Stagger, StaggerItem } from "./motion";
-import { ExplainDialog, explainTargetOf, type ExplainTarget } from "./ai/ExplainDialog";
 import { useLive, put, get, getAll } from "@/lib/idb";
 import { marksFor } from "@/lib/scoring";
 import { fileToDataUrl } from "@/lib/image";
@@ -78,7 +77,7 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
 
   const test = useMemo(() => tests.find((t) => t.id === testId), [tests, testId]);
 
-  // ── late answer-key upload: paste / key-PDF / grid → full re-score ──
+  // ─── late answer-key upload: paste / key-PDF / grid → full re-score ───
   const [lkOpen, setLkOpen] = useState(false);
   const [lkText, setLkText] = useState("");
   const [lkGrid, setLkGrid] = useState<Record<number, string>>({});
@@ -209,9 +208,6 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
     null
   );
 
-  // AI: per-question doubt buster
-  const [explainTarget, setExplainTarget] = useState<ExplainTarget | null>(null);
-
   const rows = useMemo(() => {
     const own = responses.filter((r) => r.test_id === testId);
     // review reads in paper/test order — q_no is the stored number, position is the fallback
@@ -293,11 +289,10 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
   }
 
   // D3: cycle through wrong+untagged rows, scroll + highlight each in turn
-  const untaggedIds = useMemo(
-    () =>
-      rows
-        .filter((r) => r.attempted && r.correct === false && !r.error_tag)
-        .map((r) => r.id),
+  const untaggedIds = useMemo(() =>
+    rows
+      .filter((r) => r.attempted && r.correct === false && !r.error_tag)
+      .map((r) => r.id),
     [rows]
   );
 
@@ -323,30 +318,7 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
   }
 
   async function tagResponse(r: ResponseRecord, tag: ErrorTag) {
-    const updated = await patchResponse(r.id, { error_tag: tag });
-    if (!updated) return;
-    if (tag === "F") {
-      const existing = await get("formula", `${updated.test_id}:${updated.question_id}`);
-      if (!existing) {
-        await put("formula", {
-          id: `${updated.test_id}:${updated.question_id}`,
-          test_id: updated.test_id,
-          question_id: updated.question_id,
-          subject: updated.subject,
-          chapter: updated.chapter,
-          snippet: updated.question_snippet,
-          created_at: Date.now(),
-        });
-        toast.success("Added to formula sheet (F-tag)");
-      }
-    } else {
-      // if retagged away from F, remove from formula sheet
-      const existing = await get("formula", `${updated.test_id}:${updated.question_id}`);
-      if (existing) {
-        const { del } = await import("@/lib/idb");
-        await del("formula", existing.id);
-      }
-    }
+    await patchResponse(r.id, { error_tag: tag });
   }
 
   // D7: one-line note, saved on blur (Enter blurs). Toast on the first save of each note only.
@@ -561,7 +533,7 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
             disabled={retryIds.length === 0}
             className="bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:text-emerald-950 min-h-[44px] px-5 font-semibold"
           >
-            ↻ Retry wrong ({retryIds.length})
+            ↺ Retry wrong ({retryIds.length})
           </Button>
           <p className="text-xs text-muted-foreground min-w-0 flex-1">
             Wrong + skipped-but-keyed questions, test order, 1 min each. The fastest way to prove
@@ -571,7 +543,7 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
       ) : test.pdf_meta ? (
         <div className="bg-card border border-border card-shadow rounded-lg px-4 py-3 flex items-center gap-3 flex-wrap">
           <Button disabled className="min-h-[44px] px-5">
-            ↻ Retry wrong
+            ↺ Retry wrong
           </Button>
           <p className="text-xs text-muted-foreground/70">
             PDF test — re-upload the PDF to retry this set.
@@ -626,8 +598,7 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
         <div className="bg-amber-50 border border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/25 rounded-lg px-4 py-3 text-sm text-amber-800 dark:text-amber-300 flex items-center justify-between gap-3 flex-wrap">
           <span>
             <strong>{stats.untagged} wrong answers</strong> still untagged. Tag them now — the
-            dashboard&apos;s error-tag chart and formula sheet only work if every mistake is
-            classified.
+            dashboard&apos;s error-tag chart only works if every mistake is classified.
           </span>
           <div className="flex gap-2">
             <Button
@@ -768,16 +739,6 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
                         />
                       </div>
 
-                      {/* AI: step-by-step doubt buster (streams once, cached after) */}
-                      <button
-                        type="button"
-                        onClick={() => setExplainTarget(explainTargetOf(r, qNo))}
-                        className="press mt-1.5 inline-flex items-center gap-1 text-[11px] font-medium text-muted-foreground hover:text-primary transition-colors"
-                        aria-label={`Explain Q${qNo} with AI`}
-                      >
-                        ✦ Explain with AI
-                      </button>
-
                       {/* D7: one-line note (optional, blur-save) */}
                       <Input
                         defaultValue={r.note ?? ""}
@@ -893,7 +854,6 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
                         {r.error_tag ? (
                           <span className="text-[10px] text-muted-foreground/70">
                             {ERROR_TAGS.find((t) => t.code === r.error_tag)?.label}
-                            {r.error_tag === "F" ? " → formula sheet ✓" : ""}
                           </span>
                         ) : null}
                       </div>
@@ -905,9 +865,6 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
           </ul>
         )}
       </SectionCard>
-
-      {/* AI explanation dialog — works for bank + PDF questions alike */}
-      <ExplainDialog target={explainTarget} onOpenChange={(o) => !o && setExplainTarget(null)} />
 
       {/* D8: full-size solution photo viewer */}
       <Dialog open={viewPhoto !== null} onOpenChange={(open) => !open && setViewPhoto(null)}>

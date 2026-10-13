@@ -26,7 +26,6 @@ import type { NavController } from "./App";
 import { ChartNote, ChartTip, CH, EmptyNote, GRID, PageTitle, SectionCard, StatCard, TICK, TICK_MONO } from "./shared";
 import { CountUp, Stagger, StaggerItem } from "./motion";
 import { TodoCard } from "./TodoCard";
-import { CoachCard } from "./ai/CoachCard";
 import { del, kvGet, kvSet, put, useLive } from "@/lib/idb";
 import {
   amberQueue,
@@ -268,9 +267,6 @@ export function DashboardView({ nav }: { nav: NavController }) {
         </StaggerItem>
       </Stagger>
 
-      {/* AI Coach — diagnosis + 7-day plan from real data (todos, calendar, syllabus, tests) */}
-      <CoachCard tests={tests} responses={responses} syllabus={syllabus} />
-
       <div className="grid lg:grid-cols-3 gap-6">
         {/* C3: backup nudge — slim amber banner above the Today card */}
         {backupNudge && !backupDismissed ? (
@@ -300,7 +296,7 @@ export function DashboardView({ nav }: { nav: NavController }) {
           </div>
         ) : null}
 
-        {/* To-do card (replaces the old Today blocks card) */}
+        {/* To-do card */}
         <div className="lg:col-span-1">
           <TodoCard />
         </div>
@@ -333,7 +329,6 @@ export function DashboardView({ nav }: { nav: NavController }) {
                       <Badge className="bg-amber-400 hover:bg-amber-400 text-amber-950 border-0">
                         {h.accuracy}%
                       </Badge>
-                      {/* D5: one click to a pre-filled test for this chapter */}
                       <Button
                         size="sm"
                         variant="outline"
@@ -371,7 +366,6 @@ export function DashboardView({ nav }: { nav: NavController }) {
                       <Badge variant="outline" className="border-red-300 text-red-700 dark:border-red-500/40 dark:text-red-300">
                         failed {r.tests_failed} tests · {r.wrongs} wrong
                       </Badge>
-                      {/* D5: one click to a pre-filled test for this chapter */}
                       <Button
                         size="sm"
                         variant="outline"
@@ -662,4 +656,3 @@ export function DashboardView({ nav }: { nav: NavController }) {
     </div>
   );
 }
-

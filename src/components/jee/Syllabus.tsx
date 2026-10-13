@@ -361,16 +361,15 @@ function DueBadge({ next, today }: { next: string | null; today: string }) {
   );
 }
 
-// ─── E4c: revision controls — badge + reschedule date input + mark revised ──
+// ─── E4c: revision controls — badge + reschedule date input ──────────────────
 function RevisionControls({
   row,
   today,
-  onMarkRevised,
   onReschedule,
 }: {
   row: SyllabusRow;
   today: string;
-  onMarkRevised: (r: SyllabusRow) => void | Promise<void>;
+  onMarkRevised?: (r: SyllabusRow) => void | Promise<void>;
   onReschedule: (r: SyllabusRow, date: string) => void | Promise<void>;
 }) {
   return (
@@ -390,14 +389,6 @@ function RevisionControls({
           className="h-7 w-[8.5rem] px-2 text-[11px]"
           aria-label={`Reschedule revision for ${row.chapter}`}
         />
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-7 text-[11px]"
-          onClick={() => void onMarkRevised(row)}
-        >
-          Mark revised
-        </Button>
       </div>
     </div>
   );
@@ -471,7 +462,7 @@ function NotesEditor({
   );
 }
 
-// ─── E4a: mobile chapter card (below md) ─────────────────────────────────────
+// ─── E4a: mobile chapter card (below md) ────────────────────────────────────
 function ChapterCard({
   row,
   health,
@@ -490,7 +481,7 @@ function ChapterCard({
   onOpenNotes: () => void;
   onCloseNotes: () => void;
   onUpdate: (row: SyllabusRow, patch: Partial<SyllabusRow>) => void | Promise<void>;
-  onMarkRevised: (r: SyllabusRow) => void | Promise<void>;
+  onMarkRevised?: (r: SyllabusRow) => void | Promise<void>;
   onReschedule: (r: SyllabusRow, date: string) => void | Promise<void>;
 }) {
   return (
