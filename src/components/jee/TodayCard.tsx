@@ -39,7 +39,8 @@ import {
   type AnkiMinutesBucket,
   type TimeTargets,
 } from "@/lib/types";
-import { FocusTimerModal, ManualTimeLogModal } from "./FocusTimer";
+import { ManualTimeLogModal } from "./FocusTimer";
+import { openFocusTimerModal } from "./useFocusTimer";
 import { SettingsDialog } from "./SettingsDialog";
 
 export function TodayCard() {
@@ -52,8 +53,6 @@ export function TodayCard() {
   const [ankiLimits, setAnkiLimits] = useState<AnkiLimits>(DEFAULT_ANKI_LIMITS);
   const [daysToNearestExam, setDaysToNearestExam] = useState<number | null>(null);
 
-  const [timerOpen, setTimerOpen] = useState(false);
-  const [timerMode, setTimerMode] = useState<"50m" | "5m">("50m");
   const [manualLogOpen, setManualLogOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -177,10 +176,7 @@ export function TodayCard() {
           <Button
             size="sm"
             className="h-8 text-xs bg-emerald-700 hover:bg-emerald-800 text-white dark:bg-emerald-600 gap-1.5"
-            onClick={() => {
-              setTimerMode("50m");
-              setTimerOpen(true);
-            }}
+            onClick={() => openFocusTimerModal("50m")}
           >
             <Play className="w-3.5 h-3.5" />
             50m Focus Session
@@ -189,10 +185,7 @@ export function TodayCard() {
             size="sm"
             variant="outline"
             className="h-8 text-xs border-amber-300 text-amber-800 hover:bg-amber-50 dark:border-amber-500/40 dark:text-amber-300 dark:hover:bg-amber-500/10 gap-1.5"
-            onClick={() => {
-              setTimerMode("5m");
-              setTimerOpen(true);
-            }}
+            onClick={() => openFocusTimerModal("5m")}
           >
             <Zap className="w-3.5 h-3.5 text-amber-500" />
             Just 5 Min (Beat Procrastination)
@@ -376,11 +369,6 @@ export function TodayCard() {
         </div>
       </div>
 
-      <FocusTimerModal
-        open={timerOpen}
-        onOpenChange={setTimerOpen}
-        initialMode={timerMode}
-      />
       <ManualTimeLogModal
         open={manualLogOpen}
         onOpenChange={setManualLogOpen}

@@ -226,23 +226,35 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
     secondsLeft: number;
     initialSeconds: number;
   } | null>(null);
+  // Ref guard: ensures the struggle-timer completion toast fires exactly once
+  // per responseId, never inside a setState updater (the original bug).
+  // Reset in startStruggle so a re-drill on the same response toasts again.
+  const struggleDoneRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!struggleState || struggleState.secondsLeft <= 0) return;
     const t = setInterval(() => {
       setStruggleState((cur) => {
-        if (!cur || cur.secondsLeft <= 1) {
-          clearInterval(t);
-          toast.info("Struggle timer completed! Answer unlocked.");
-          return cur ? { ...cur, secondsLeft: 0 } : null;
-        }
+        if (!cur) return null;
+        if (cur.secondsLeft <= 1) return { ...cur, secondsLeft: 0 };
         return { ...cur, secondsLeft: cur.secondsLeft - 1 };
       });
     }, 1000);
     return () => clearInterval(t);
   }, [struggleState?.responseId, struggleState?.secondsLeft]);
 
+  // Completion side-effects live in an effect (NOT in the setStruggleState
+  // updater). Fires once per responseId thanks to the ref guard.
+  useEffect(() => {
+    if (!struggleState) return;
+    if (struggleState.secondsLeft > 0) return;
+    if (struggleDoneRef.current === struggleState.responseId) return;
+    struggleDoneRef.current = struggleState.responseId;
+    toast.info("Struggle timer completed! Answer unlocked.");
+  }, [struggleState]);
+
   function startStruggle(response: ResponseRecord) {
+    struggleDoneRef.current = null;
     setStruggleState({
       responseId: response.id,
       secondsLeft: 600, // 10 minutes

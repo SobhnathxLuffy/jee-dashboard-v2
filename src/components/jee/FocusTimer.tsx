@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Play, Pause, RotateCcw, Check, Clock, Plus } from "lucide-react";
 import {
   Dialog,
@@ -22,24 +22,37 @@ import {
   type TimeCategory,
   type TimeLogEntry,
 } from "@/lib/types";
+import {
+  closeFocusTimerModal,
+  useFocusTimer,
+  useFocusTimerModalState,
+} from "./useFocusTimer";
 
-export function FocusTimerModal({
-  open,
-  onOpenChange,
-  initialMode = "50m",
-}: {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  initialMode?: "50m" | "5m";
-}) {
+/**
+ * Singleton modal driven by the external store in useFocusTimer.ts.
+ * Opens from two places: the TodayCard "50m / 5m" buttons and the App header
+ * chip. While a timer is running, outside-click/Esc is intercepted so the
+ * session cannot be lost; the user must explicitly Log Done or Reset.
+ */
+export function FocusTimerModal() {
+  const { open, mode } = useFocusTimerModalState();
+  // Latest isRunning flag, kept in a ref so the Dialog's onOpenChange handler
+  // (which fires synchronously) can read it without re-running the hook.
+  const runningRef = useRef(false);
+
+  const handleOpenChange = (next: boolean) => {
+    if (!next && runningRef.current) {
+      // Block outside-click/Esc while a timer is running.
+      return;
+    }
+    if (!next) closeFocusTimerModal();
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+    <Dialog open={open} onOpenChange={handleOpenChange}>
+      <DialogContent className="max-w-md" showCloseButton={false}>
         {open ? (
-          <FocusTimerContent
-            initialMode={initialMode}
-            onClose={() => onOpenChange(false)}
-          />
+          <FocusTimerContent initialMode={mode} runningRef={runningRef} />
         ) : null}
       </DialogContent>
     </Dialog>
@@ -48,87 +61,52 @@ export function FocusTimerModal({
 
 function FocusTimerContent({
   initialMode,
-  onClose,
+  runningRef,
 }: {
   initialMode: "50m" | "5m";
-  onClose: () => void;
+  runningRef: React.MutableRefObject<boolean>;
 }) {
-  const [mode, setMode] = useState<"50m" | "5m">(initialMode);
-  const totalSeconds = mode === "50m" ? 50 * 60 : 5 * 60;
-  const [secondsLeft, setSecondsLeft] = useState(totalSeconds);
-  const [isRunning, setIsRunning] = useState(true);
-  const [category, setCategory] = useState<TimeCategory>("JEE");
-  const [activity, setActivity] = useState<string>("problems");
-  const [subject, setSubject] = useState<Subject | "none">("none");
-  const [showPromptConvert, setShowPromptConvert] = useState(false);
+  const timer = useFocusTimer(initialMode);
 
-  const logTime = useCallback(
-    async (minutes: number) => {
-      const entry: TimeLogEntry = {
-        id: uid(),
-        category,
-        activity,
-        date: todayStr(),
-        minutes,
-        subject: subject !== "none" ? subject : undefined,
-        note: `${mode === "5m" ? "5-minute spark" : "50-minute focus"} session`,
-        created_at: Date.now(),
-      };
-      await put("timelog", entry);
-      toast.success(`Logged ${minutes} min to ${category} (${activity})`);
-      onClose();
-    },
-    [category, activity, subject, mode, onClose]
-  );
-
+  // Mirror isRunning into the ref so the parent Dialog can block close-while-running.
+  // The ref is stable so listing it in deps is safe and satisfies exhaustive-deps.
   useEffect(() => {
-    if (!isRunning) return;
-    const interval = setInterval(() => {
-      setSecondsLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          setIsRunning(false);
-          if (mode === "5m") {
-            setShowPromptConvert(true);
-          } else {
-            toast.success("Focus session finished! Time logged.");
-            void logTime(50);
-          }
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+    runningRef.current = timer.isRunning;
+  }, [timer.isRunning, runningRef]);
 
-    return () => clearInterval(interval);
-  }, [isRunning, mode, logTime]);
+  const mins = Math.floor(timer.secondsLeft / 60);
+  const secs = timer.secondsLeft % 60;
 
-  function convertTo50m() {
-    setMode("50m");
-    setSecondsLeft(45 * 60); // 45 remaining minutes
-    setIsRunning(true);
-    setShowPromptConvert(false);
-    toast.success("Procrastination beaten! 45 min focus session started.");
+  async function handleLogDone() {
+    await timer.logDone();
+    closeFocusTimerModal();
   }
 
-  const mins = Math.floor(secondsLeft / 60);
-  const secs = secondsLeft % 60;
+  function handleReset() {
+    timer.reset();
+    closeFocusTimerModal();
+  }
+
+  async function handleLogFive() {
+    await timer.logFive();
+    closeFocusTimerModal();
+  }
 
   return (
     <>
       <DialogHeader>
         <DialogTitle className="flex items-center gap-2">
           <Clock className="w-5 h-5 text-emerald-600" />
-          {mode === "50m" ? "50-Minute Focus Session" : "Just 5 Minutes"}
+          {timer.mode === "50m" ? "50-Minute Focus Session" : "Just 5 Minutes"}
         </DialogTitle>
         <DialogDescription>
-          {mode === "50m"
+          {timer.mode === "50m"
             ? "Deep work sprint. Eliminate distractions until the timer ends."
             : "Too tired to start? Just commit to 5 minutes. You can stop or keep going."}
         </DialogDescription>
       </DialogHeader>
 
-      {showPromptConvert ? (
+      {timer.showPromptConvert ? (
         <div className="p-4 rounded-xl border border-emerald-300 bg-emerald-50 dark:border-emerald-500/30 dark:bg-emerald-500/10 space-y-3 text-center">
           <div className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">
             5 minutes completed! The hardest part is over.
@@ -141,14 +119,14 @@ function FocusTimerContent({
               variant="outline"
               size="sm"
               className="text-xs"
-              onClick={() => void logTime(5)}
+              onClick={() => void handleLogFive()}
             >
               Log 5m &amp; Stop
             </Button>
             <Button
               size="sm"
               className="text-xs bg-emerald-700 hover:bg-emerald-800 text-white"
-              onClick={convertTo50m}
+              onClick={timer.convertTo50m}
             >
               Keep Going (+45m)
             </Button>
@@ -163,7 +141,11 @@ function FocusTimerContent({
             </div>
             <div className="text-xs text-muted-foreground mt-2 flex items-center justify-center gap-1.5">
               <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              {isRunning ? "Focusing..." : secondsLeft === 0 ? "Completed" : "Paused"}
+              {timer.isRunning
+                ? "Focusing..."
+                : timer.secondsLeft === 0
+                  ? "Completed"
+                  : "Paused"}
             </div>
           </div>
 
@@ -176,9 +158,9 @@ function FocusTimerContent({
                   <button
                     key={cat}
                     type="button"
-                    onClick={() => setCategory(cat)}
+                    onClick={() => timer.setCategory(cat)}
                     className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
-                      category === cat
+                      timer.category === cat
                         ? "bg-primary text-primary-foreground"
                         : "border border-border text-muted-foreground hover:bg-accent hover:text-foreground"
                     }`}
@@ -189,7 +171,7 @@ function FocusTimerContent({
               </div>
             </div>
 
-            {category === "JEE" && (
+            {timer.category === "JEE" && (
               <>
                 <div className="space-y-1.5">
                   <label className="font-semibold text-foreground">JEE Activity</label>
@@ -198,9 +180,9 @@ function FocusTimerContent({
                       <button
                         key={act}
                         type="button"
-                        onClick={() => setActivity(act)}
+                        onClick={() => timer.setActivity(act)}
                         className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
-                          activity === act
+                          timer.activity === act
                             ? "bg-emerald-700 text-white dark:bg-emerald-600"
                             : "border border-border text-muted-foreground hover:bg-accent hover:text-foreground"
                         }`}
@@ -218,9 +200,9 @@ function FocusTimerContent({
                       <button
                         key={s}
                         type="button"
-                        onClick={() => setSubject(s)}
+                        onClick={() => timer.setSubject(s)}
                         className={`px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
-                          subject === s
+                          timer.subject === s
                             ? "bg-stone-800 text-white dark:bg-stone-200 dark:text-stone-900"
                             : "border border-border text-muted-foreground hover:bg-accent hover:text-foreground"
                         }`}
@@ -240,10 +222,7 @@ function FocusTimerContent({
               variant="outline"
               size="sm"
               className="h-8 text-xs gap-1"
-              onClick={() => {
-                setIsRunning(false);
-                setSecondsLeft(mode === "50m" ? 50 * 60 : 5 * 60);
-              }}
+              onClick={handleReset}
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Reset
@@ -252,11 +231,11 @@ function FocusTimerContent({
             <div className="flex items-center gap-2">
               <Button
                 size="sm"
-                variant={isRunning ? "secondary" : "default"}
+                variant={timer.isRunning ? "secondary" : "default"}
                 className="h-8 text-xs gap-1"
-                onClick={() => setIsRunning(!isRunning)}
+                onClick={() => (timer.paused ? timer.resume() : timer.pause())}
               >
-                {isRunning ? (
+                {timer.isRunning ? (
                   <>
                     <Pause className="w-3.5 h-3.5" />
                     Pause
@@ -272,10 +251,7 @@ function FocusTimerContent({
               <Button
                 size="sm"
                 className="h-8 text-xs gap-1 bg-emerald-700 hover:bg-emerald-800 text-white"
-                onClick={() => {
-                  const elapsedMins = Math.max(1, Math.round((totalSeconds - secondsLeft) / 60));
-                  void logTime(elapsedMins);
-                }}
+                onClick={() => void handleLogDone()}
               >
                 <Check className="w-3.5 h-3.5" />
                 Log Done

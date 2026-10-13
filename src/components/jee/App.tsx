@@ -74,6 +74,8 @@ import { PerformanceView } from "./Performance";
 import { ExternalLogView } from "./ExternalLog";
 import { SyllabusView } from "./Syllabus";
 import { DataView } from "./DataView";
+import { FocusTimerModal } from "./FocusTimer";
+import { useFocusTimerChip, openFocusTimerModal, promptEndedFocusTimerOnMount } from "./useFocusTimer";
 
 export type ViewName =
   | "dashboard"
@@ -149,6 +151,12 @@ export function AppRoot() {
       }
       await kvSet("syllabus_seeded_v1", "true");
     })();
+  }, []);
+
+  // Phase 3: on app open, if a stored focus timer already ended, ask the user
+  // whether to log N minutes (capped at the target) or discard.
+  useEffect(() => {
+    promptEndedFocusTimerOnMount();
   }, []);
 
   // check for an active (in-progress) session to resume or discard
@@ -281,6 +289,7 @@ export function AppRoot() {
               </div>
             </div>
             <div className="flex flex-wrap items-center justify-end gap-x-2 gap-y-1 shrink-0">
+              <FocusTimerChip />
               <CountdownChip />
               <ThemeToggle />
               <HeaderSettingsButton />
@@ -433,6 +442,8 @@ export function AppRoot() {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
+        <FocusTimerModal />
       </div>
     </MotionConfig>
   );
@@ -600,5 +611,34 @@ function CountdownChip() {
       </Popover>
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </>
+  );
+}
+
+/**
+ * Phase 3: header chip that shows `● MM:SS` while a focus timer is active
+ * (running or paused). Re-syncs every second from the persisted kv state —
+ * the same source the modal uses — so it cannot drift. Clicking it reopens
+ * the FocusTimerModal.
+ */
+function FocusTimerChip() {
+  const chip = useFocusTimerChip();
+  if (!chip) return null;
+  const mins = Math.floor(chip.remaining / 60);
+  const secs = chip.remaining % 60;
+  const label = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  return (
+    <button
+      type="button"
+      onClick={() => openFocusTimerModal(chip.mode)}
+      className="press rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-accent transition-colors whitespace-nowrap tabular-nums hidden sm:inline-flex items-center gap-1.5"
+      aria-label={`Focus timer ${chip.paused ? "paused" : "running"}: ${label} remaining. Click to open.`}
+    >
+      <span
+        className={`w-1.5 h-1.5 rounded-full ${
+          chip.paused ? "bg-amber-500" : "bg-emerald-500 animate-pulse"
+        }`}
+      />
+      <span className="font-mono">{label}</span>
+    </button>
   );
 }

