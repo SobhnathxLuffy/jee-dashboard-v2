@@ -48,6 +48,7 @@ export function ExternalLogView({ nav }: { nav: NavController }) {
   const [wrong, setWrong] = useState("");
   const [name, setName] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const maxNum = Math.max(1, Number(maxScore) || 300);
   const perMax = Math.ceil(maxNum / 3);
@@ -112,6 +113,7 @@ export function ExternalLogView({ nav }: { nav: NavController }) {
   }
 
   async function save() {
+    if (saving) return;
     const sc = Number(score);
     if (score.trim() === "" || Number.isNaN(sc)) {
       toast.error("Total score must be a number");
@@ -147,21 +149,28 @@ export function ExternalLogView({ nav }: { nav: NavController }) {
       external_meta:
         att !== undefined && wr !== undefined ? { attempts: att, wrong: wr } : undefined,
     };
-    if (editingId) {
-      const existing = tests.find((t) => t.id === editingId);
-      if (!existing) {
-        toast.error("Entry no longer exists");
-        cancelEdit();
-        return;
+    setSaving(true);
+    try {
+      if (editingId) {
+        const existing = tests.find((t) => t.id === editingId);
+        if (!existing) {
+          toast.error("Entry no longer exists");
+          cancelEdit();
+          return;
+        }
+        await put("tests", { ...existing, ...common });
+        toast.success("Entry updated — graphs recalculated");
+      } else {
+        const record: TestRecord = { id: uid(), created_at: Date.now(), ...common };
+        await put("tests", record);
+        toast.success("External test logged — graphs updated");
       }
-      await put("tests", { ...existing, ...common });
-      toast.success("Entry updated — graphs recalculated");
-    } else {
-      const record: TestRecord = { id: uid(), created_at: Date.now(), ...common };
-      await put("tests", record);
-      toast.success("External test logged — graphs updated");
+      cancelEdit();
+    } catch {
+      toast.error("Could not save — please try again");
+    } finally {
+      setSaving(false);
     }
-    cancelEdit();
   }
 
   return (
@@ -253,8 +262,8 @@ export function ExternalLogView({ nav }: { nav: NavController }) {
               <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Abhyas mock #4" />
             </div>
           </div>
-          <Button onClick={save} className="w-full mt-4 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:text-emerald-950">
-            {editingId ? "Update test" : "Log test"}
+          <Button onClick={save} disabled={saving} className="w-full mt-4 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:text-emerald-950">
+            {saving ? "Saving…" : editingId ? "Update test" : "Log test"}
           </Button>
           <p className="text-[11px] text-muted-foreground/70 mt-3">
             Correct-under-time from external mocks is estimated as attempts − wrong. Marks lost to

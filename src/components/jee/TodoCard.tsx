@@ -94,8 +94,20 @@ export function TodoCard() {
   }
 
   async function clearDone() {
-    for (const t of done) await del("tasks", t.id);
-    toast.success(`${done.length} completed task${done.length === 1 ? "" : "s"} cleared`);
+    if (done.length === 0) return;
+    // Undo toast: keep the deleted rows in memory; if user clicks Undo, re-insert them.
+    const snapshot = done;
+    for (const t of snapshot) await del("tasks", t.id);
+    toast(`Cleared ${snapshot.length} completed task${snapshot.length === 1 ? "" : "s"}`, {
+      duration: 6000,
+      action: {
+        label: "Undo",
+        onClick: async () => {
+          for (const t of snapshot) await put("tasks", t);
+          toast.success("Restored");
+        },
+      },
+    });
   }
 
   const overdueCount = open.filter((t) => t.due_date && t.due_date < today).length;

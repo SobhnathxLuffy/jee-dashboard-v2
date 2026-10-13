@@ -375,7 +375,7 @@ export function AppRoot() {
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.22, ease: EASE }}
             >
-              {view === "dashboard" ? <DashboardView nav={nav} key={`d-${dataVersion}`} /> : null}
+              {view === "dashboard" ? <DashboardView nav={nav} /> : null}
               {view === "bank" ? <QuestionBankView /> : null}
               {view === "test" ? (
                 <TestCreateView

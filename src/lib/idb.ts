@@ -208,8 +208,25 @@ export function getDB(): Promise<IDBDatabase> {
           }
         }
       };
-      req.onsuccess = () => resolve(req.result);
+      req.onsuccess = () => {
+        const db = req.result;
+        // If another tab is upgrading the DB, close this connection so the
+        // upgrade can proceed. Tell the user to reload.
+        db.onversionchange = () => {
+          db.close();
+          // Dynamic import to avoid coupling idb.ts to the UI layer.
+          import("sonner").then(({ toast }) => {
+            toast("App updated — reload this tab", { duration: 10000 });
+          }).catch(() => {});
+        };
+        resolve(db);
+      };
       req.onerror = () => reject(req.error);
+      // If this tab's open request is blocked by another tab holding the DB,
+      // reject with a clear message so the caller can surface it.
+      req.onblocked = () => {
+        reject(new Error("Database upgrade blocked — close other tabs of this app and reload."));
+      };
     });
   }
   return dbPromise;
