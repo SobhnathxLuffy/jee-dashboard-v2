@@ -1,13 +1,13 @@
 "use client";
 
-// ─── Phase 5: In-app tutorial ────────────────────────────────────────────────
+// ─── Phase 5: In-app tutorial ──────────────────────────────────────────────
 // Short, skippable, replayable. Runs on first launch (kv "tutorial-seen-v1"),
 // can be replayed from Settings, and has a static Guide page at /guide.
 //
 // Design:
 // - Module-level singleton store (mirrors the FocusTimer modal pattern) so any
 //   component can call `startTutorial()` without prop-drilling.
-// - `useTutorial()` reads kv once on mount and exposes `shouldShowOnLaunch`.
+// - `useTutorial()` reads localStorage + kv once on mount and exposes `shouldShowOnLaunch`.
 // - `TutorialOverlay` is rendered once at the App root; it subscribes to the
 //   store and only paints when active.
 // - Spotlight = a fixed full-screen black overlay with a cut-out (box-shadow
@@ -15,7 +15,7 @@
 //   a different tab) the card is centered instead.
 // - Keyboard: Tab/Shift+Tab cycle Back → Next → Skip; Enter/Space activates;
 //   Esc skips to the end. aria-modal + role="dialog" for screen readers.
-// - On dismiss/skip/done: writes "tutorial-seen-v1" = "1" to kv.
+// - On dismiss/skip/done: writes "tutorial-seen-v1" = "1" to localStorage + kv.
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { kvGet, kvSet } from "@/lib/idb";
@@ -27,6 +27,34 @@ export const TUTORIAL_SEEN_KEY = "tutorial-seen-v1";
 // Re-export so existing imports keep working.
 export type { TutorialStep };
 export { TUTORIAL_STEPS };
+
+export function isTutorialSeen(): boolean {
+  if (typeof window !== "undefined" || typeof localStorage !== "undefined") {
+    try {
+      if (typeof localStorage !== "undefined" && localStorage.getItem(TUTORIAL_SEEN_KEY) === "1") {
+        return true;
+      }
+    } catch {
+      /* ignore storage access restrictions */
+    }
+  }
+  return false;
+}
+
+export function markTutorialSeen(): void {
+  if (typeof window !== "undefined" || typeof localStorage !== "undefined") {
+    try {
+      if (typeof localStorage !== "undefined") {
+        localStorage.setItem(TUTORIAL_SEEN_KEY, "1");
+      }
+    } catch {
+      /* ignore storage access restrictions */
+    }
+  }
+  if (typeof window !== "undefined") {
+    void kvSet(TUTORIAL_SEEN_KEY, "1").catch(() => {});
+  }
+}
 
 // ─── Singleton store (mirrors the FocusTimer modal pattern) ──────────────────
 let activeStep: number | null = null;
@@ -49,17 +77,15 @@ export function startTutorial(): void {
 }
 export function dismissTutorial(): void {
   activeStep = null;
-  void kvSet(TUTORIAL_SEEN_KEY, "1");
+  markTutorialSeen();
   emit();
 }
 
 /**
- * Reads the "tutorial-seen-v1" kv flag on mount. Returns:
- * - `shouldShowOnLaunch` — true only once, when the flag has been read and is
- *   not "1". After the first call, callers can use this to decide whether to
- *   auto-start the tutorial.
+ * Reads the "tutorial-seen-v1" flag. Returns:
+ * - `shouldShowOnLaunch` — true only once, on fresh first launch.
  * - `start()` — opens the tutorial at step 0.
- * - `dismiss()` — closes the tutorial and marks it seen.
+ * - `dismiss()` — closes the tutorial and marks it seen permanently.
  */
 export function useTutorial(): {
   shouldShowOnLaunch: boolean;
@@ -67,12 +93,21 @@ export function useTutorial(): {
   start: () => void;
   dismiss: () => void;
 } {
-  const [seen, setSeen] = useState<boolean | undefined>(undefined);
+  const [seen, setSeen] = useState<boolean>(() => isTutorialSeen());
+
   useEffect(() => {
+    if (seen) return;
     let alive = true;
     kvGet<string>(TUTORIAL_SEEN_KEY)
       .then((v) => {
-        if (alive) setSeen(v === "1");
+        if (!alive) return;
+        const isSeen = v === "1";
+        if (isSeen) {
+          markTutorialSeen();
+          setSeen(true);
+        } else {
+          setSeen(false);
+        }
       })
       .catch(() => {
         if (alive) setSeen(false);
@@ -80,12 +115,31 @@ export function useTutorial(): {
     return () => {
       alive = false;
     };
+  }, [seen]);
+
+  // Sync if tutorial is dismissed from anywhere
+  useEffect(() => {
+    return subscribe(() => {
+      if (activeStep === null && isTutorialSeen()) {
+        setSeen(true);
+      }
+    });
   }, []);
+
+  const start = useCallback(() => {
+    startTutorial();
+  }, []);
+
+  const dismiss = useCallback(() => {
+    setSeen(true);
+    dismissTutorial();
+  }, []);
+
   return {
-    ready: seen !== undefined,
-    shouldShowOnLaunch: seen === false,
-    start: startTutorial,
-    dismiss: dismissTutorial,
+    ready: true,
+    shouldShowOnLaunch: !seen,
+    start,
+    dismiss,
   };
 }
 
@@ -130,7 +184,6 @@ export function TutorialOverlay() {
   // the user scrolls. requestAnimationFrame batches the updates per frame.
   useEffect(() => {
     if (!open || !stepDef) {
-      // defer to avoid cascading-render lint warning
       Promise.resolve().then(() => setRect(null));
       return;
     }
@@ -176,7 +229,9 @@ export function TutorialOverlay() {
     return () => window.clearTimeout(id);
   }, [open, step]);
 
-  const goNext = useCallback(() => {
+  const goNext = useCallback((e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     if (activeStep === null) return;
     if (activeStep >= TUTORIAL_STEPS.length - 1) {
       dismissTutorial();
@@ -186,7 +241,9 @@ export function TutorialOverlay() {
     emit();
   }, []);
 
-  const goBack = useCallback(() => {
+  const goBack = useCallback((e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     if (activeStep === null) return;
     if (activeStep > 0) {
       activeStep = activeStep - 1;
@@ -194,7 +251,9 @@ export function TutorialOverlay() {
     }
   }, []);
 
-  const skip = useCallback(() => {
+  const skip = useCallback((e?: React.MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     dismissTutorial();
   }, []);
 
@@ -222,7 +281,7 @@ export function TutorialOverlay() {
         const card = cardRef.current;
         if (!card) return;
         const focusables = Array.from(
-          card.querySelectorAll<HTMLButtonElement>('button:not([disabled])')
+          card.querySelectorAll<HTMLButtonElement>("button:not([disabled])")
         );
         if (focusables.length === 0) return;
         const idx = focusables.findIndex((b) => b === document.activeElement);
@@ -287,36 +346,43 @@ export function TutorialOverlay() {
       aria-modal="true"
       role="dialog"
       aria-label={`Tutorial: ${stepDef.title}`}
-      className="fixed inset-0 z-50"
+      className="fixed inset-0 z-50 select-none"
     >
-      {/* Spotlight overlay: full-screen black, with a cut-out via box-shadow */}
+      {/* Backdrop & spotlight cut-out: clicking backdrop dismisses */}
       {hasTarget && rect ? (
         <div
           aria-hidden="true"
-          className="absolute pointer-events-none"
-          style={{
-            left: rect.left - PAD,
-            top: rect.top - PAD,
-            width: rect.width + PAD * 2,
-            height: rect.height + PAD * 2,
-            borderRadius: 12,
-            boxShadow: "0 0 0 9999px rgba(0,0,0,0.65)",
-            border: "2px solid var(--primary, #059669)",
-            transition: "all 0.18s ease",
-          }}
-        />
+          onClick={skip}
+          className="absolute inset-0 cursor-default"
+        >
+          <div
+            className="absolute pointer-events-none"
+            style={{
+              left: rect.left - PAD,
+              top: rect.top - PAD,
+              width: rect.width + PAD * 2,
+              height: rect.height + PAD * 2,
+              borderRadius: 12,
+              boxShadow: "0 0 0 9999px rgba(0,0,0,0.65)",
+              border: "2px solid var(--primary, #059669)",
+              transition: "all 0.18s ease",
+            }}
+          />
+        </div>
       ) : (
         <div
           aria-hidden="true"
-          className="absolute inset-0 bg-black/65"
+          onClick={skip}
+          className="absolute inset-0 bg-black/65 cursor-default"
         />
       )}
 
-      {/* Card */}
+      {/* Card: pointer-events-auto ensures buttons and card are fully interactive */}
       <div
         ref={cardRef}
         style={cardStyle}
-        className="absolute bg-card border border-border rounded-xl shadow-xl p-4 space-y-3"
+        className="absolute bg-card border border-border rounded-xl shadow-xl p-4 space-y-3 pointer-events-auto z-10 select-text"
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
@@ -331,7 +397,8 @@ export function TutorialOverlay() {
             type="button"
             onClick={skip}
             aria-label="Skip tutorial"
-            className="text-muted-foreground hover:text-foreground rounded-md p-1 -mt-1 -mr-1"
+            data-tut-btn="close"
+            className="min-w-[28px] min-h-[28px] flex items-center justify-center text-muted-foreground hover:text-foreground rounded-md -mt-1 -mr-1 cursor-pointer transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -373,7 +440,7 @@ export function TutorialOverlay() {
           <button
             type="button"
             data-tut-btn="back"
-            className={`${btnBase} text-muted-foreground hover:bg-accent hover:text-foreground`}
+            className={`${btnBase} text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer`}
             onClick={goBack}
             disabled={step === 0}
           >
@@ -383,7 +450,7 @@ export function TutorialOverlay() {
             <button
               type="button"
               data-tut-btn="skip"
-              className={`${btnBase} text-muted-foreground hover:bg-accent hover:text-foreground`}
+              className={`${btnBase} text-muted-foreground hover:bg-accent hover:text-foreground cursor-pointer`}
               onClick={skip}
             >
               Skip
@@ -391,7 +458,7 @@ export function TutorialOverlay() {
             <button
               type="button"
               data-tut-btn="next"
-              className={`${btnBase} bg-emerald-700 hover:bg-emerald-800 text-white dark:bg-emerald-600 dark:hover:bg-emerald-700`}
+              className={`${btnBase} bg-emerald-700 hover:bg-emerald-800 text-white dark:bg-emerald-600 dark:hover:bg-emerald-700 cursor-pointer`}
               onClick={goNext}
             >
               {isLast ? "Done" : "Next"}

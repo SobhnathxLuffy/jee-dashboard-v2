@@ -1,7 +1,7 @@
 "use client";
 
 // ─── App shell: navigation + north-star header + view switching ─────────────
-import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import { useTheme } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
@@ -156,8 +156,10 @@ export function AppRoot() {
 
   // Tutorial: show on first launch (kv flag tutorial-seen-v1)
   const tutorial = useTutorial();
+  const tutorialAutoStartedRef = useRef(false);
   useEffect(() => {
-    if (tutorial.ready && tutorial.shouldShowOnLaunch) {
+    if (tutorial.ready && tutorial.shouldShowOnLaunch && !tutorialAutoStartedRef.current) {
+      tutorialAutoStartedRef.current = true;
       tutorial.start();
     }
   }, [tutorial.ready, tutorial.shouldShowOnLaunch, tutorial]);
