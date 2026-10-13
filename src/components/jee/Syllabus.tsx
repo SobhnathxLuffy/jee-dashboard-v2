@@ -36,6 +36,9 @@ import {
   type SyllabusRow,
 } from "@/lib/types";
 import { computeChapterHealth } from "@/lib/analytics";
+import { BookOpen, Mic } from "lucide-react";
+import { CoveragePaceCard } from "./CoveragePaceCard";
+import { RecallCheckModal } from "./RecallCheckModal";
 import type { ChapterHealth } from "@/lib/analytics";
 
 type SortMode = "tier" | "subject" | "due" | "risk";
@@ -51,6 +54,7 @@ export function SyllabusView() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState<SortMode>("tier");
   const [notesOpen, setNotesOpen] = useState<string | null>(null);
+  const [recallTarget, setRecallTarget] = useState<{ row: SyllabusRow; mode: "recall" | "explain" } | null>(null);
 
   const health = useMemo(
     () => computeChapterHealth(responses, tests),
@@ -174,6 +178,8 @@ export function SyllabusView() {
         }
       />
 
+      <CoveragePaceCard />
+
       <SectionCard
         title={`${rows.length} chapters`}
         subtitle="“70% Gate Passed” is a status you set — the color comes from your actual test data"
@@ -243,6 +249,7 @@ export function SyllabusView() {
                   onUpdate={update}
                   onMarkRevised={markRevised}
                   onReschedule={reschedule}
+                  onOpenRecall={(r, mode) => setRecallTarget({ row: r, mode })}
                 />
               ))}
             </div>
@@ -301,6 +308,7 @@ export function SyllabusView() {
                             today={today}
                             onMarkRevised={markRevised}
                             onReschedule={reschedule}
+                            onOpenRecall={(row, mode) => setRecallTarget({ row, mode })}
                           />
                         </td>
                         <td className="py-2.5 px-3">
@@ -330,6 +338,15 @@ export function SyllabusView() {
           </>
         )}
       </SectionCard>
+
+      <RecallCheckModal
+        open={Boolean(recallTarget)}
+        onOpenChange={(open) => {
+          if (!open) setRecallTarget(null);
+        }}
+        row={recallTarget?.row ?? null}
+        initialMode={recallTarget?.mode ?? "recall"}
+      />
     </div>
   );
 }
@@ -366,11 +383,13 @@ function RevisionControls({
   row,
   today,
   onReschedule,
+  onOpenRecall,
 }: {
   row: SyllabusRow;
   today: string;
   onMarkRevised?: (r: SyllabusRow) => void | Promise<void>;
   onReschedule: (r: SyllabusRow, date: string) => void | Promise<void>;
+  onOpenRecall?: (r: SyllabusRow, mode: "recall" | "explain") => void;
 }) {
   return (
     <div className="flex flex-col gap-1.5">
@@ -389,6 +408,30 @@ function RevisionControls({
           className="h-7 w-[8.5rem] px-2 text-[11px]"
           aria-label={`Reschedule revision for ${row.chapter}`}
         />
+        {onOpenRecall && (
+          <div className="flex items-center gap-1">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 px-2 text-[10px] gap-1 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950"
+              onClick={() => onOpenRecall(row, "recall")}
+              title="5m Recall Check on paper"
+            >
+              <BookOpen className="w-3 h-3" />
+              Recall
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 px-2 text-[10px] gap-1 border-purple-300 dark:border-purple-700 text-purple-800 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950"
+              onClick={() => onOpenRecall(row, "explain")}
+              title="10m Explain Mode"
+            >
+              <Mic className="w-3 h-3" />
+              Explain
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -473,6 +516,7 @@ function ChapterCard({
   onUpdate,
   onMarkRevised,
   onReschedule,
+  onOpenRecall,
 }: {
   row: SyllabusRow;
   health: ChapterHealth | undefined;
@@ -483,6 +527,7 @@ function ChapterCard({
   onUpdate: (row: SyllabusRow, patch: Partial<SyllabusRow>) => void | Promise<void>;
   onMarkRevised?: (r: SyllabusRow) => void | Promise<void>;
   onReschedule: (r: SyllabusRow, date: string) => void | Promise<void>;
+  onOpenRecall?: (r: SyllabusRow, mode: "recall" | "explain") => void;
 }) {
   return (
     <div className="border border-border rounded-lg bg-card p-4 space-y-3">
@@ -517,7 +562,7 @@ function ChapterCard({
         </SelectContent>
       </Select>
 
-      <RevisionControls row={row} today={today} onMarkRevised={onMarkRevised} onReschedule={onReschedule} />
+      <RevisionControls row={row} today={today} onMarkRevised={onMarkRevised} onReschedule={onReschedule} onOpenRecall={onOpenRecall} />
 
       <div className="border-t border-border/60 pt-2">
         {notesOpen ? (

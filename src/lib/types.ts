@@ -37,6 +37,7 @@ export interface Question {
   source: string;
   source_url?: string;
   image?: string; // optional figure as dataURL, rendered in bank + player
+  explanation?: string;
   created_at: number;
   updated_at?: number; // set when the question is edited in place (bank, Sprint D2)
 }
@@ -74,6 +75,7 @@ export interface TestRecord {
   score: number | null; // null = key-later test awaiting self-mark
   max_score: number;
   subject_scores: Partial<Record<Subject, number>>;
+  is_practice?: boolean;
   // in-app CBT
   question_ids?: string[];
   // pdf mode
@@ -348,6 +350,7 @@ export interface ActiveSession {
   q_times: Record<string, number>; // accumulated seconds per question
   q_entered_at: number; // epoch ms when current question was entered
   pdf_file_bytes?: ArrayBuffer; // kept only in memory, not persisted
+  is_practice?: boolean;
 }
 
 export const SUBJECTS: Subject[] = ["Physics", "Chemistry", "Mathematics"];
@@ -386,4 +389,21 @@ export function fmtSecs(s: number): string {
     return `${Math.floor(m / 60)}h ${m % 60}m`;
   }
   return `${m}m ${`${sec}`.padStart(2, "0")}s`;
+}
+
+// ─── Phase 2: Learning Loop & Spaced Retry Queue ─────────────────────────────
+export const RETRY_INTERVALS_DAYS = [1, 3, 7] as const;
+
+export interface RetryQueueItem {
+  id: string; // `${test_id}:${question_id}`
+  test_id: string;
+  question_id: string;
+  subject: Subject;
+  chapter: string;
+  error_tag: ErrorTag;
+  stage: number; // 0 = 1d, 1 = 3d, 2 = 7d, 3 = mastered
+  next_due: string; // YYYY-MM-DD
+  last_reviewed?: string;
+  created_at: number;
+  updated_at?: number;
 }

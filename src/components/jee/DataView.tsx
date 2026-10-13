@@ -1,6 +1,6 @@
 "use client";
 
-// ─── Data: JSON export / import, demo seed, wipe ────────────────────────────
+// ─── Data: JSON export / import, demo seed, wipe ──────────────────────────
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -65,6 +65,7 @@ export function DataView() {
   const tasks = useLive("tasks");
   const timelog = useLive("timelog");
   const ankiLog = useLive("anki_log");
+  const retryQueue = useLive("retry_queue");
   const fileRef = useRef<HTMLInputElement>(null);
 
   async function exportAll() {
@@ -178,25 +179,26 @@ export function DataView() {
           );
           await bulkPut("papers", asRows as never[]);
           total += asRows.length;
+        } else if (store === "kv") {
+          for (const r of rows) {
+            const kv = r as { key: string; value: unknown };
+            await kvSet(kv.key, kv.value);
+          }
+          total += rows.length;
         } else {
-          // touch:false — a backup restore replays history, it isn't a new
-          // edit; rows keep their original sync stamps (missing ones get one)
-          await bulkPut(store, rows as never[], { touch: false });
+          await bulkPut(store, rows as never[]);
           total += rows.length;
         }
       }
-      toast.success(
-        total === 0
-          ? "Nothing to import — the backup has no records"
-          : `Imported ${total} records (${counts.join(", ")}) — existing ids were merged`
-      );
+      toast.success(`Imported ${total} items (${counts.join(", ")})`);
     } catch (e) {
-      toast.error(`Import failed while writing: ${String(e)}`);
+      toast.error(`Import write failed: ${String(e)}`);
     }
   }
 
   async function loadDemo() {
-    await bulkPut("questions", buildDemoQuestions());
+    const demo = buildDemoQuestions();
+    await bulkPut("questions", demo);
     toast.success("12 demo questions added — go to New CBT and pick chapters");
   }
 
@@ -223,7 +225,7 @@ export function DataView() {
       <div className="grid md:grid-cols-2 gap-6">
         <SectionCard title="Backup & restore" subtitle="plain JSON — no cloud, no account">
           <div className="flex flex-col gap-3">
-            <div className="text-xs text-muted-foreground grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="text-xs text-muted-foreground grid grid-cols-2 sm:grid-cols-3 gap-2">
               <span>questions: <strong>{questions.length}</strong></span>
               <span>tests: <strong>{tests.length}</strong></span>
               <span>responses: <strong>{responses.length}</strong></span>
@@ -232,6 +234,7 @@ export function DataView() {
               <span>tasks: <strong>{tasks.length}</strong></span>
               <span>time logs: <strong>{timelog.length}</strong></span>
               <span>anki checks: <strong>{ankiLog.length}</strong></span>
+              <span>retry queue: <strong>{retryQueue.length}</strong></span>
             </div>
             <Button onClick={exportAll} className="bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:text-emerald-950">
               Export JSON backup

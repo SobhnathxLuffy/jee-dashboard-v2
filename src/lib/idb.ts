@@ -11,6 +11,7 @@ import type {
   PaperRecord,
   Question,
   ResponseRecord,
+  RetryQueueItem,
   SyllabusRow,
   Task,
   TestRecord,
@@ -21,7 +22,8 @@ const DB_NAME_BASE = "jee-study-app";
 // v5: adds "ai_cache" and "ai_usage"
 // v6: adds "sync_tombstones"
 // v7: adds "timelog" (category time tracking) and "anki_log" (daily Anki review check-in)
-const DB_VERSION = 7;
+// v8: adds "retry_queue" (spaced retry queue for C/F/A tagged mistakes)
+const DB_VERSION = 8;
 
 const DB_DEVICE = (() => {
   if (typeof window === "undefined") return null;
@@ -54,6 +56,7 @@ export const STORES = [
   "sync_tombstones",
   "timelog",
   "anki_log",
+  "retry_queue",
 ] as const;
 
 export type StoreName = (typeof STORES)[number];
@@ -70,6 +73,7 @@ export const SYNCED_STORES = [
   "papers",
   "timelog",
   "anki_log",
+  "retry_queue",
 ] as const;
 
 type SyncedStore = (typeof SYNCED_STORES)[number];
@@ -107,309 +111,298 @@ type StoreValueMap = {
   sync_tombstones: TombstoneRow;
   timelog: TimeLogEntry;
   anki_log: AnkiLogEntry;
+  retry_queue: RetryQueueItem;
 };
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
-function openDB(): Promise<IDBDatabase> {
-  if (dbPromise) return dbPromise;
-  dbPromise = new Promise((resolve, reject) => {
-    const req = indexedDB.open(DB_NAME, DB_VERSION);
-    req.onupgradeneeded = () => {
-      const db = req.result;
-      for (const name of STORES) {
-        if (!db.objectStoreNames.contains(name)) {
-          db.createObjectStore(name, { keyPath: name === "kv" ? "key" : "id" });
+// internal write-event hub: listeners run on write/delete/clear
+const listeners = new Set<(store: StoreName) => void>();
+
+function notify(store: StoreName) {
+  for (const fn of listeners) {
+    try {
+      fn(store);
+    } catch {
+      // never let a subscriber error break an IDB callback
+    }
+  }
+}
+
+export function subscribeToStore(fn: (store: StoreName) => void): () => void {
+  listeners.add(fn);
+  return () => {
+    listeners.delete(fn);
+  };
+}
+
+export function getDB(): Promise<IDBDatabase> {
+  if (typeof window === "undefined") {
+    return Promise.reject(new Error("IndexedDB is only available in the browser"));
+  }
+  if (!dbPromise) {
+    dbPromise = new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = (e) => {
+        const db = req.result;
+        const tx = (e.currentTarget as IDBOpenDBRequest).transaction;
+        for (const s of STORES) {
+          if (!db.objectStoreNames.contains(s)) {
+            const os = db.createObjectStore(s, {
+              keyPath: s === "kv" ? "key" : "id",
+            });
+            if (s === "responses") {
+              os.createIndex("by_test", "test_id", { unique: false });
+              os.createIndex("by_question", "question_id", { unique: false });
+            }
+            if (s === "questions") {
+              os.createIndex("by_subject", "subject", { unique: false });
+              os.createIndex("by_chapter", "chapter", { unique: false });
+            }
+            if (s === "tasks") {
+              os.createIndex("by_scheduled", "scheduled_date", { unique: false });
+              os.createIndex("by_status", "status", { unique: false });
+            }
+            if (s === "cal_events") {
+              os.createIndex("by_calendar", "calendar_id", { unique: false });
+              os.createIndex("by_start", "start_time", { unique: false });
+            }
+          }
         }
-      }
-    };
-    req.onsuccess = () => resolve(req.result);
-    req.onerror = () => reject(req.error);
-  });
+        // upgrade from v5: ensure ai_cache / ai_usage exist if DB opened from older version
+        if (!db.objectStoreNames.contains("ai_cache")) {
+          db.createObjectStore("ai_cache", { keyPath: "id" });
+        }
+        if (!db.objectStoreNames.contains("ai_usage")) {
+          db.createObjectStore("ai_usage", { keyPath: "id" });
+        }
+        // upgrade from v5 -> v6: ensure sync_tombstones exists
+        if (!db.objectStoreNames.contains("sync_tombstones")) {
+          db.createObjectStore("sync_tombstones", { keyPath: "key" });
+        }
+        // upgrade from v6 -> v7: ensure timelog / anki_log exist
+        if (!db.objectStoreNames.contains("timelog")) {
+          db.createObjectStore("timelog", { keyPath: "id" });
+        }
+        if (!db.objectStoreNames.contains("anki_log")) {
+          db.createObjectStore("anki_log", { keyPath: "id" });
+        }
+        // upgrade from v7 -> v8: ensure retry_queue exists
+        if (!db.objectStoreNames.contains("retry_queue")) {
+          db.createObjectStore("retry_queue", { keyPath: "id" });
+        }
+        // upgrade from v3: add "created_at" index to tests if missing
+        if (db.objectStoreNames.contains("tests") && tx) {
+          const testStore = tx.objectStore("tests");
+          if (!testStore.indexNames.contains("by_created")) {
+            testStore.createIndex("by_created", "created_at", { unique: false });
+          }
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
   return dbPromise;
 }
 
-function tx<T>(
-  store: StoreName,
-  mode: IDBTransactionMode,
-  fn: (os: IDBObjectStore) => IDBRequest<T>
-): Promise<T> {
-  return openDB().then(
-    (db) =>
-      new Promise<T>((resolve, reject) => {
-        const t = db.transaction(store, mode);
-        const req = fn(t.objectStore(store));
-        req.onsuccess = () => resolve(req.result);
-        req.onerror = () => reject(req.error);
-      })
-  );
+/** Reset DB connection so subsequent calls re-open the database. Useful in tests/resets. */
+export function resetDBPromise(): void {
+  dbPromise = null;
 }
 
-// ─── change notification (all live hooks refetch on any write) ───────────────
-type Listener = () => void;
-const listeners = new Set<Listener>();
-function notify() {
-  listeners.forEach((l) => l());
-}
-
-export function subscribeLive(fn: Listener): () => void {
-  listeners.add(fn);
-  return () => listeners.delete(fn);
-}
-
-// ─── CRUD ────────────────────────────────────────────────────────────────────
-
-/**
- * Sync timestamp policy for synced stores:
- *  - default (touch): every app write bumps `updated_at` → the sync engine
- *    sees it as a change to push.
- *  - `{ touch: false }`: keeps the incoming stamp and only stamps if missing —
- *    used by the sync engine (applying remote rows must not re-stamp, or
- *    changes ping-pong forever) and by backup restore (a backup is history,
- *    not a new edit).
- */
-export interface PutOptions {
-  touch?: boolean;
-}
-
-function stamp<T>(store: StoreName, value: T, opts?: PutOptions): T {
-  if (!isSyncedStore(store)) return value;
-  const rec = value as { updated_at?: number };
-  if (opts?.touch === false) {
-    if (typeof rec.updated_at !== "number") rec.updated_at = Date.now();
-  } else {
-    rec.updated_at = Date.now();
-  }
-  return value;
-}
-
-export async function getAll<S extends StoreName>(
-  store: S
-): Promise<StoreValueMap[S][]> {
-  const rows = await tx<StoreValueMap[S][]>(store, "readonly", (os) =>
-    os.getAll()
-  );
-  return rows ?? [];
-}
-
-export async function get<S extends StoreName>(
-  store: S,
+// ─── CRUD primitives ────────────────────────────────────────────────────────
+export async function get<K extends StoreName>(
+  store: K,
   id: string
-): Promise<StoreValueMap[S] | undefined> {
-  return tx<StoreValueMap[S] | undefined>(store, "readonly", (os) =>
-    os.get(id)
-  );
-}
-
-export async function put<S extends StoreName>(
-  store: S,
-  value: StoreValueMap[S],
-  opts?: PutOptions
-): Promise<void> {
-  await tx(store, "readwrite", (os) => os.put(stamp(store, value, opts)));
-  notify();
-}
-
-export async function bulkPut<S extends StoreName>(
-  store: S,
-  values: StoreValueMap[S][],
-  opts?: PutOptions
-): Promise<void> {
-  const db = await openDB();
-  const stamped = values.map((v) => stamp(store, v, opts));
-  await new Promise<void>((resolve, reject) => {
-    const t = db.transaction(store, "readwrite");
-    const os = t.objectStore(store);
-    for (const v of stamped) os.put(v);
-    t.oncomplete = () => resolve();
-    t.onerror = () => reject(t.error);
+): Promise<StoreValueMap[K] | undefined> {
+  const db = await getDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, "readonly");
+    const os = tx.objectStore(store);
+    const req = os.get(id);
+    req.onsuccess = () => resolve(req.result as StoreValueMap[K] | undefined);
+    req.onerror = () => reject(req.error);
   });
-  notify();
 }
 
-/**
- * Delete a record. On synced stores a tombstone is recorded first so the
- * sync engine can replay the deletion to other devices (a plain remote
- * absence is indistinguishable from "created on another device later").
- */
-export async function del(store: StoreName, id: string): Promise<void> {
+export async function getAll<K extends StoreName>(store: K): Promise<StoreValueMap[K][]> {
+  const db = await getDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, "readonly");
+    const os = tx.objectStore(store);
+    const req = os.getAll();
+    req.onsuccess = () => resolve((req.result as StoreValueMap[K][]) || []);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function put<K extends StoreName>(
+  store: K,
+  value: StoreValueMap[K]
+): Promise<void> {
+  const db = await getDB();
+  // Stamp updated_at automatically on synced stores if not already stamped
+  // within the last 100ms (preserves remote stamps during sync pull).
+  if (isSyncedStore(store) && typeof value === "object" && value !== null) {
+    const rec = value as { updated_at?: number };
+    if (!rec.updated_at || Date.now() - rec.updated_at > 100) {
+      rec.updated_at = Date.now();
+    }
+  }
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, "readwrite");
+    const os = tx.objectStore(store);
+    const req = os.put(value);
+    req.onsuccess = () => {
+      notify(store);
+      resolve();
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function bulkPut<K extends StoreName>(
+  store: K,
+  values: StoreValueMap[K][]
+): Promise<void> {
+  if (values.length === 0) return;
+  const db = await getDB();
+  const now = Date.now();
   if (isSyncedStore(store)) {
-    await tx("sync_tombstones", "readwrite", (os) =>
-      os.put({
+    for (const v of values) {
+      if (typeof v === "object" && v !== null) {
+        const rec = v as { updated_at?: number };
+        if (!rec.updated_at) rec.updated_at = now;
+      }
+    }
+  }
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, "readwrite");
+    const os = tx.objectStore(store);
+    for (const v of values) {
+      os.put(v);
+    }
+    tx.oncomplete = () => {
+      notify(store);
+      resolve();
+    };
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+export async function del<K extends StoreName>(store: K, id: string): Promise<void> {
+  const db = await getDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(
+      isSyncedStore(store) ? [store, "sync_tombstones"] : [store],
+      "readwrite"
+    );
+    const os = tx.objectStore(store);
+    os.delete(id);
+    if (isSyncedStore(store)) {
+      const tombstones = tx.objectStore("sync_tombstones");
+      const row: TombstoneRow = {
         key: `${store}:${id}`,
         store,
         id,
         deleted_at: Date.now(),
-      } satisfies TombstoneRow)
-    );
-  }
-  await tx(store, "readwrite", (os) => os.delete(id));
-  notify();
-}
-
-/**
- * Remote-delete apply path (sync engine only): removes the record and plants
- * the tombstone with the REMOTE timestamp, so this deletion isn't re-pushed
- * as a newer local event.
- */
-export async function applyRemoteDelete(
-  store: SyncedStore,
-  id: string,
-  deletedAtMs: number
-): Promise<void> {
-  await tx("sync_tombstones", "readwrite", (os) =>
-    os.put({
-      key: `${store}:${id}`,
-      store,
-      id,
-      deleted_at: deletedAtMs,
-    } satisfies TombstoneRow)
-  );
-  await tx(store, "readwrite", (os) => os.delete(id));
-  notify();
-}
-
-export async function clearStore(store: StoreName): Promise<void> {
-  await tx(store, "readwrite", (os) => os.clear());
-  notify();
+      };
+      tombstones.put(row);
+    }
+    tx.oncomplete = () => {
+      notify(store);
+      resolve();
+    };
+    tx.onerror = () => reject(tx.error);
+  });
 }
 
 export async function wipeAll(): Promise<void> {
   for (const s of STORES) {
-    await clearStore(s);
+    await clear(s);
   }
 }
 
-// ─── one-time migration: stamp legacy rows so LWW sync has a baseline ───────
-const MIGRATE_KEY = "sync-updated-at-migrated";
-
-/**
- * Records written before sync existed have no `updated_at`. Stamp them once
- * (staggered by a few ms so per-record ordering stays stable) and remember
- * the migration in kv. Safe to call on every boot — the kv guard makes it a
- * no-op after the first run, and rows already stamped are left alone.
- */
-export async function ensureUpdatedAtStamps(): Promise<void> {
-  const done = await kvGet<boolean>(MIGRATE_KEY).catch(() => false);
-  if (done) return;
-  const base = Date.now();
-  let touched = 0;
-  for (const store of SYNCED_STORES) {
-    const rows = await getAll(store);
-    const missing = rows.filter((r) => typeof (r as { updated_at?: number }).updated_at !== "number");
-    if (missing.length === 0) continue;
-    const stamped = missing.map((r, i) => ({
-      ...(r as { updated_at?: number }),
-      updated_at: base + i,
-    }));
-    await bulkPut(store, stamped as never[], { touch: false });
-    touched += stamped.length;
-  }
-  await kvSet(MIGRATE_KEY, true);
-  if (touched > 0) console.info(`[sync] stamped ${touched} legacy record(s) with updated_at`);
+export async function clear<K extends StoreName>(store: K): Promise<void> {
+  const db = await getDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(store, "readwrite");
+    const os = tx.objectStore(store);
+    const req = os.clear();
+    req.onsuccess = () => {
+      notify(store);
+      resolve();
+    };
+    req.onerror = () => reject(req.error);
+  });
 }
 
-// ─── kv helpers (active session etc.) ────────────────────────────────────────
+// ─── Key-value helpers ──────────────────────────────────────────────────────
 export async function kvGet<T>(key: string): Promise<T | undefined> {
   const row = await get("kv", key);
   return row ? (row.value as T) : undefined;
 }
 
-export async function kvSet(key: string, value: unknown): Promise<void> {
-  await put("kv", { key, value } as KVRow);
+export async function kvSet<T>(key: string, value: T): Promise<void> {
+  await put("kv", { key, value });
 }
 
 export async function kvDel(key: string): Promise<void> {
   await del("kv", key);
 }
 
-// ─── session helpers (legacy sessions are normalized on read) ────────────────
-export async function saveSession(s: ActiveSession): Promise<void> {
-  await kvSet("active-session", s);
-}
+// ─── Session persistence (for in-progress tests) ────────────────────────────
+const ACTIVE_SESSION_KEY = "active-test-session";
 
-/** Defensively normalize legacy session shapes so old data resumes without crashing. */
-function normalizeSession(raw: ActiveSession): ActiveSession {
-  const s: ActiveSession = {
-    ...raw,
-    answers: raw.answers ?? {},
-    marked: Array.isArray(raw.marked) ? raw.marked : [],
-    q_times: raw.q_times ?? {},
-    current: typeof raw.current === "number" ? raw.current : 0,
-  };
-  const meta = s.pdf_meta;
-  if (s.mode === "pdf" && meta) {
-    const key = Array.isArray(meta.key) ? meta.key : [];
-    s.pdf_meta = {
-      ...meta,
-      key: key
-        .filter((k) => k && typeof k.no === "number")
-        .map((k) => {
-          const answer =
-            typeof k.answer === "string" ? k.answer : (k.answers?.[0] ?? "");
-          return {
-            ...k,
-            answer,
-            answers:
-              Array.isArray(k.answers) && k.answers.length > 0 ? k.answers : [answer],
-          };
-        }),
-      first_q: typeof meta.first_q === "number" ? meta.first_q : 1,
-      sections:
-        Array.isArray(meta.sections) && meta.sections.length > 0
-          ? meta.sections
-          : [
-              {
-                subject: meta.subject,
-                chapter: meta.chapter,
-                first_q: 1,
-                last_q: meta.total_questions,
-                start_page: meta.start_page,
-                end_page: meta.end_page,
-              },
-            ],
-    };
-  }
-  return s;
+export async function saveSession(session: ActiveSession): Promise<void> {
+  await kvSet(ACTIVE_SESSION_KEY, session);
 }
 
 export async function loadSession(): Promise<ActiveSession | undefined> {
-  const s = await kvGet<ActiveSession>("active-session");
-  return s ? normalizeSession(s) : undefined;
+  return kvGet<ActiveSession>(ACTIVE_SESSION_KEY);
 }
 
 export async function clearSession(): Promise<void> {
-  await kvDel("active-session");
+  await kvDel(ACTIVE_SESSION_KEY);
 }
 
-// ─── live hook ───────────────────────────────────────────────────────────────
-export function useLive<S extends StoreName>(store: S): StoreValueMap[S][] {
-  const [rows, setRows] = useState<StoreValueMap[S][]>([]);
+// ─── React hooks for live updates ───────────────────────────────────────────
+/**
+ * Hook that returns live store data and auto-re-renders whenever any write/delete/clear
+ * happens against this store.
+ */
+export function useLive<K extends StoreName>(store: K): StoreValueMap[K][] {
+  const [data, setData] = useState<StoreValueMap[K][]>([]);
+
   useEffect(() => {
-    let alive = true;
-    const refetch = () => {
-      getAll(store).then((r) => {
-        if (alive) setRows(r);
+    let mounted = true;
+    const reload = () => {
+      void getAll(store).then((res) => {
+        if (mounted) setData(res);
       });
     };
-    refetch();
-    const unsub = subscribeLive(refetch);
+    reload();
+    const unsub = subscribeToStore((s) => {
+      if (s === store) reload();
+    });
     return () => {
-      alive = false;
+      mounted = false;
       unsub();
     };
   }, [store]);
-  return rows;
+
+  return data;
 }
 
-/** Re-render on any data change anywhere (for cross-store views). */
+/**
+ * A monotonically increasing version number that increments on any write across any store.
+ * Useful for components like Dashboard that depend on derived cross-store analytics.
+ */
 export function useDataVersion(): number {
-  const [v, setV] = useState(0);
+  const [ver, setVer] = useState(0);
   useEffect(() => {
-    const unsub = subscribeLive(() => setV((x) => x + 1));
-    return () => {
-      unsub();
-    };
+    return subscribeToStore(() => setVer((v) => v + 1));
   }, []);
-  return v;
+  return ver;
 }

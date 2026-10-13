@@ -1,5 +1,7 @@
 "use client";
 
+import { syncResponseToRetryQueue, syncAllMistakesToRetryQueue } from "@/lib/retry";
+
 // ─── Post-test analysis: score, accuracy, per-question review, error tags ───
 // Sprint D review side: paper-numbered questions + subject chips + next-untagged
 // jump (D3), retry-wrong as a new CBT session (D1), key-later self-mark with
@@ -39,6 +41,7 @@ import {
   SUBJECTS,
   SUBJECT_SHORT,
   fmtSecs,
+  todayStr,
   uid,
   type ActiveSession,
   type ErrorTag,
@@ -318,7 +321,10 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
   }
 
   async function tagResponse(r: ResponseRecord, tag: ErrorTag) {
-    await patchResponse(r.id, { error_tag: tag });
+    const updated = await patchResponse(r.id, { error_tag: tag });
+    if (updated) {
+      void syncResponseToRetryQueue(updated, test?.date ?? todayStr());
+    }
   }
 
   // D7: one-line note, saved on blur (Enter blurs). Toast on the first save of each note only.

@@ -26,6 +26,9 @@ import { CountUp, Stagger, StaggerItem } from "./motion";
 import { TodoCard } from "./TodoCard";
 import { TargetExamsCard } from "./TargetExamsCard";
 import { TodayCard } from "./TodayCard";
+import { SpacedRetryCard } from "./SpacedRetryCard";
+import { RecallCheckModal } from "./RecallCheckModal";
+import type { SyllabusRow } from "@/lib/types";
 import { kvGet, kvSet, useLive } from "@/lib/idb";
 import {
   amberQueue,
@@ -100,6 +103,7 @@ export function DashboardView({ nav }: { nav: NavController }) {
   // C3: backup nudge — weekly reminder to export backup (checks last-export-at in kv)
   const [lastExportAt, setLastExportAt] = useState<string | null | undefined>(undefined);
   const [backupDismissed, setBackupDismissed] = useState(false);
+  const [recallRow, setRecallRow] = useState<SyllabusRow | null>(null);
   useEffect(() => {
     let alive = true;
     kvGet<string>("last-export-at")
@@ -307,6 +311,9 @@ export function DashboardView({ nav }: { nav: NavController }) {
         </div>
       </div>
 
+      {/* Spaced Retry Queue for C/F/A mistakes */}
+      <SpacedRetryCard nav={nav} />
+
       {/* Amber queue + repeated failures */}
       <div className="grid md:grid-cols-2 gap-6">
         <SectionCard
@@ -407,9 +414,11 @@ export function DashboardView({ nav }: { nav: NavController }) {
               <Badge
                 key={s.id}
                 variant="outline"
-                className="border-emerald-300 bg-emerald-50 text-emerald-800 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-300 text-xs"
+                onClick={() => setRecallRow(s)}
+                className="border-emerald-300 bg-emerald-50 text-emerald-800 dark:border-emerald-500/40 dark:bg-emerald-500/10 dark:text-emerald-300 text-xs cursor-pointer hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors"
+                title="Tap to run 5m Recall Check or 10m Explain Mode"
               >
-                {s.chapter} · due {s.next_revision === today ? "tonight" : s.next_revision}
+                {s.chapter} · due {s.next_revision === today ? "tonight" : s.next_revision} ⚡
               </Badge>
             ))}
             {due.length > 24 ? (
@@ -658,6 +667,14 @@ export function DashboardView({ nav }: { nav: NavController }) {
           </div>
         )}
       </SectionCard>
+
+      <RecallCheckModal
+        open={Boolean(recallRow)}
+        onOpenChange={(open) => {
+          if (!open) setRecallRow(null);
+        }}
+        row={recallRow}
+      />
     </div>
   );
 }

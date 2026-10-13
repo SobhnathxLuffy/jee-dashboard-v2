@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { ChevronLeft, ChevronRight, Minus, Plus, Pin } from "lucide-react";
+import { ChevronLeft, ChevronRight, Minus, Plus, Pin, CheckCircle2, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { saveSession, useLive } from "@/lib/idb";
 import { marksFor } from "@/lib/scoring";
@@ -127,6 +127,7 @@ export function PlayerView({
   const [pageInput, setPageInput] = useState("1");
   const [zoom, setZoom] = useState(1.6);
   const [numPages, setNumPages] = useState<number | null>(null);
+  const [isPracticeMode, setIsPracticeMode] = useState<boolean>(() => Boolean(session.is_practice));
   const submittingRef = useRef(false);
   const pdfDocRef = useRef<Awaited<ReturnType<typeof import("pdfjs-dist").getDocument>["promise"]> | null>(null);
   const renderTaskRef = useRef<{ cancel: () => void; promise: Promise<unknown> } | null>(null);
@@ -643,6 +644,20 @@ export function PlayerView({
           ⌨ 1-4 · Enter · ← · M · C
         </div>
         <div className="flex items-center gap-3">
+          <Button
+            size="sm"
+            variant={isPracticeMode ? "default" : "outline"}
+            onClick={() => setIsPracticeMode(!isPracticeMode)}
+            className={cn(
+              "h-8 text-xs gap-1.5",
+              isPracticeMode
+                ? "bg-emerald-700 hover:bg-emerald-800 text-white dark:bg-emerald-600"
+                : "text-muted-foreground"
+            )}
+          >
+            <span className={cn("w-1.5 h-1.5 rounded-full", isPracticeMode ? "bg-white" : "bg-muted-foreground")} />
+            Practice: {isPracticeMode ? "ON" : "OFF"}
+          </Button>
           <div
             className={cn(
               "text-2xl font-black tabular-nums px-4 py-1.5 rounded-lg",
@@ -866,6 +881,37 @@ export function PlayerView({
                   </p>
                 </div>
               )}
+
+              {isPracticeMode && selected !== null && selected !== undefined && selected !== "" && (() => {
+                const keyEntry = session.pdf_meta?.key?.find((k) => k.no === currentSlot.no);
+                if (!keyEntry) return null;
+                const isCorrect = keyEntry.bonus || (typeof selected === "string" && (
+                  (keyEntry.answers && keyEntry.answers.includes(selected.toUpperCase())) ||
+                  keyEntry.answer.toUpperCase() === selected.toUpperCase() ||
+                  (session.pdf_meta?.tolerance !== undefined &&
+                    Math.abs(Number(selected) - Number(keyEntry.answer)) <= (session.pdf_meta.tolerance ?? 0))
+                ));
+                return (
+                  <div className={cn(
+                    "p-3 rounded-xl border mt-3 text-xs flex items-center gap-2 max-w-md",
+                    isCorrect
+                      ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-300 dark:border-emerald-500/40 text-emerald-950 dark:text-emerald-200"
+                      : "bg-red-50 dark:bg-red-500/10 border-red-300 dark:border-red-500/40 text-red-950 dark:text-red-200"
+                  )}>
+                    {isCorrect ? (
+                      <>
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span className="font-bold">Correct! (+4)</span>
+                      </>
+                    ) : (
+                      <>
+                        <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
+                        <span>Incorrect · Correct key is <strong>{keyEntry.answer || keyEntry.answers?.join(", ")}</strong></span>
+                      </>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
           ) : curQ ? (
             <AnimatePresence mode="wait" initial={false}>
@@ -903,30 +949,55 @@ export function PlayerView({
 
                 {curQ.type === "MCQ" ? (
                   <div className="space-y-2">
-                    {curQ.options.map((opt, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setAnswer(currentSlot.slot, i)}
-                        className={cn(
-                          "press w-full text-left px-4 py-3 rounded-lg border text-sm transition-colors flex items-center gap-3",
-                          selected === i
-                            ? "border-emerald-700 bg-emerald-50 dark:border-emerald-500 dark:bg-emerald-500/15 font-medium"
-                            : "border-border hover:border-emerald-400 dark:hover:border-emerald-500 hover:bg-accent/50"
-                        )}
-                      >
-                        <span
+                    {curQ.options.map((opt, i) => {
+                      const isChosen = selected === i;
+                      const isCorrect = Number(curQ.answer) === i;
+                      const showPractice = isPracticeMode && selected !== null && selected !== undefined;
+                      let extraBorder = "";
+                      if (showPractice) {
+                        if (isCorrect) {
+                          extraBorder = "border-emerald-600 bg-emerald-50/80 dark:bg-emerald-500/20 text-emerald-950 dark:text-emerald-100 font-medium";
+                        } else if (isChosen) {
+                          extraBorder = "border-red-500 bg-red-50/80 dark:bg-red-500/20 text-red-950 dark:text-red-100 font-medium";
+                        }
+                      }
+                      return (
+                        <button
+                          key={i}
+                          onClick={() => setAnswer(currentSlot.slot, i)}
                           className={cn(
-                            "w-6 h-6 rounded-full grid place-items-center text-xs font-bold border shrink-0",
-                            selected === i
-                              ? "bg-emerald-700 dark:bg-emerald-500 text-white dark:text-emerald-950 border-emerald-700 dark:border-emerald-500"
-                              : "border-border text-muted-foreground"
+                            "press w-full text-left px-4 py-3 rounded-lg border text-sm transition-colors flex items-center gap-3",
+                            extraBorder || (
+                              selected === i
+                                ? "border-emerald-700 bg-emerald-50 dark:border-emerald-500 dark:bg-emerald-500/15 font-medium"
+                                : "border-border hover:border-emerald-400 dark:hover:border-emerald-500 hover:bg-accent/50"
+                            )
                           )}
                         >
-                          {LETTERS[i]}
-                        </span>
-                        {opt}
-                      </button>
-                    ))}
+                          <span
+                            className={cn(
+                              "w-6 h-6 rounded-full grid place-items-center text-xs font-bold border shrink-0",
+                              showPractice && isCorrect
+                                ? "bg-emerald-600 text-white border-emerald-600"
+                                : showPractice && isChosen
+                                  ? "bg-red-600 text-white border-red-600"
+                                  : selected === i
+                                    ? "bg-emerald-700 dark:bg-emerald-500 text-white dark:text-emerald-950 border-emerald-700 dark:border-emerald-500"
+                                    : "border-border text-muted-foreground"
+                            )}
+                          >
+                            {LETTERS[i]}
+                          </span>
+                          <span className="flex-1">{opt}</span>
+                          {showPractice && isCorrect && (
+                            <span className="text-[11px] font-semibold text-emerald-700 dark:text-emerald-300">✓ Correct</span>
+                          )}
+                          {showPractice && isChosen && !isCorrect && (
+                            <span className="text-[11px] font-semibold text-red-600 dark:text-red-400">✗ Incorrect</span>
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="max-w-xs">
@@ -941,6 +1012,43 @@ export function PlayerView({
                       Exact match within the question&apos;s tolerance. Numericals carry −1 for wrong
                       entries — leave blank instead of guessing.
                     </p>
+                  </div>
+                )}
+
+                {isPracticeMode && selected !== null && selected !== undefined && selected !== "" && (
+                  <div
+                    className={cn(
+                      "p-3 rounded-xl border mt-4 text-xs space-y-2",
+                      curQ.type === "MCQ"
+                        ? Number(selected) === Number(curQ.answer)
+                          ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-300 dark:border-emerald-500/40 text-emerald-950 dark:text-emerald-200"
+                          : "bg-red-50 dark:bg-red-500/10 border-red-300 dark:border-red-500/40 text-red-950 dark:text-red-200"
+                        : Math.abs(Number(selected) - Number(curQ.answer)) <= (curQ.tolerance ?? 0)
+                          ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-300 dark:border-emerald-500/40 text-emerald-950 dark:text-emerald-200"
+                          : "bg-red-50 dark:bg-red-500/10 border-red-300 dark:border-red-500/40 text-red-950 dark:text-red-200"
+                    )}
+                  >
+                    <div className="flex items-center gap-2 font-bold">
+                      {(curQ.type === "MCQ" ? Number(selected) === Number(curQ.answer) : Math.abs(Number(selected) - Number(curQ.answer)) <= (curQ.tolerance ?? 0)) ? (
+                        <>
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                          <span>Correct (+4 marks)</span>
+                        </>
+                      ) : (
+                        <>
+                          <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 shrink-0" />
+                          <span>
+                            Incorrect (-1 mark) &middot; Correct Answer: {curQ.type === "MCQ" ? `Option ${LETTERS[Number(curQ.answer)] ?? curQ.answer}` : curQ.answer}
+                          </span>
+                        </>
+                      )}
+                    </div>
+                    {curQ.explanation && (
+                      <div className="pt-2 border-t border-current/15 text-[11px] leading-relaxed">
+                        <span className="font-semibold block mb-0.5">Explanation:</span>
+                        {curQ.explanation}
+                      </div>
+                    )}
                   </div>
                 )}
               </motion.div>

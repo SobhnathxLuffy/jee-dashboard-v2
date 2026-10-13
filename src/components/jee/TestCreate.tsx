@@ -53,6 +53,7 @@ export function TestCreateView({ nav, prefill }: { nav: NavController; prefill?:
   const [duration, setDuration] = useState("10");
   const [durationTouched, setDurationTouched] = useState(false);
   const [shuffle, setShuffle] = useState(false);
+  const [isPractice, setIsPractice] = useState(false);
 
   // chapters mode — prefill (when provided) selects the subject tab + chapter
   // chip on mount via lazy initial state (purely additive prop, default undefined)
@@ -200,6 +201,7 @@ export function TestCreateView({ nav, prefill }: { nav: NavController; prefill?:
       ),
       question_ids: ids,
       duration_min: mins,
+      is_practice: isPractice,
       started_at: Date.now(),
       answers: {},
       marked: [],
@@ -286,6 +288,21 @@ export function TestCreateView({ nav, prefill }: { nav: NavController; prefill?:
               />
               <span className="text-xs text-muted-foreground">
                 Shuffle within subject (order always stays P → C → M)
+              </span>
+            </label>
+
+            <label
+              htmlFor="practice-mode"
+              className="flex items-center gap-2 mt-2.5 cursor-pointer select-none w-fit"
+            >
+              <Checkbox
+                id="practice-mode"
+                checked={isPractice}
+                onCheckedChange={(v) => setIsPractice(v === true)}
+                className="h-5 w-5"
+              />
+              <span className="text-xs font-medium text-emerald-800 dark:text-emerald-300">
+                Practice Mode <span className="text-[11px] font-normal text-muted-foreground">(Instant answer &amp; solution reveal after each question)</span>
               </span>
             </label>
             {/* full-mock shortfall warning — advisory, never blocks the start */}
