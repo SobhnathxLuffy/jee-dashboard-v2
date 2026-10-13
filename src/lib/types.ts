@@ -18,7 +18,7 @@ export type ErrorTag = "C" | "F" | "A" | "R" | "T" | "G";
 
 export const ERROR_TAGS: { code: ErrorTag; label: string; hint: string }[] = [
   { code: "C", label: "Concept", hint: "Didn't know / misunderstood the concept" },
-  { code: "F", label: "Formula", hint: "Knew the idea, forgot the formula → goes to formula sheet" },
+  { code: "F", label: "Formula", hint: "Knew the idea, forgot the formula" },
   { code: "A", label: "Algebra-calc", hint: "Concept fine, arithmetic / algebra slipped" },
   { code: "R", label: "Read wrong", hint: "Misread the question" },
   { code: "T", label: "Time-strategy", hint: "Right approach, ran out of time or bad call" },
@@ -244,6 +244,90 @@ export interface AiUsageRecord {
   completion_tokens: number;
   cost_inr: number; // rough estimate from the model's ₹/M table
   created_at: number;
+}
+
+/** ─── Phase 1: Time, Deadlines, Anki ─────────────────────────────────────── */
+
+export type TimeCategory =
+  | "JEE"
+  | "Money"
+  | "Branding"
+  | "Polymathy"
+  | "Entertainment";
+
+export const TIME_CATEGORIES: TimeCategory[] = [
+  "JEE",
+  "Money",
+  "Branding",
+  "Polymathy",
+  "Entertainment",
+];
+
+export type JeeActivity =
+  | "new learning"
+  | "problems"
+  | "recall"
+  | "revision"
+  | "mock";
+
+export const JEE_ACTIVITIES: JeeActivity[] = [
+  "new learning",
+  "problems",
+  "recall",
+  "revision",
+  "mock",
+];
+
+export interface TimeLogEntry {
+  id: string;
+  category: TimeCategory;
+  activity: string;
+  date: string; // YYYY-MM-DD
+  minutes: number;
+  subject?: Subject;
+  todoId?: string;
+  note?: string;
+  created_at?: number;
+  updated_at?: number;
+}
+
+export type AnkiMinutesBucket = "<10" | "10-20" | "20+";
+
+export interface AnkiLogEntry {
+  id: string; // date YYYY-MM-DD
+  date: string; // YYYY-MM-DD
+  done: boolean;
+  minutes_bucket?: AnkiMinutesBucket;
+  created_at?: number;
+  updated_at?: number;
+}
+
+export interface TargetExam {
+  id: string;
+  name: string;
+  date: string; // YYYY-MM-DD
+}
+
+export type ExamPhase = "Cover" | "Consolidate" | "Mock-only" | "Done";
+
+export function deriveExamPhase(daysLeft: number): ExamPhase {
+  if (daysLeft < 0) return "Done";
+  if (daysLeft <= 28) return "Mock-only"; // < 4 weeks
+  if (daysLeft <= 84) return "Consolidate"; // 4-12 weeks
+  return "Cover"; // > 12 weeks
+}
+
+export interface TimeTargets {
+  jeeDailyMinutes: number; // default 360
+  moneyDailyMinutes: number; // default 120
+  brandingDailyMinutes: number; // default 60
+  polymathyWeeklyMinutes: number; // default 210
+}
+
+export interface AnkiLimits {
+  newCardsPerDay: number; // default 15
+  reviewCapMinutes: number; // default 20
+  reminderTime: string; // default "18:00"
 }
 
 /** In-progress test session (survives refresh via IndexedDB) */

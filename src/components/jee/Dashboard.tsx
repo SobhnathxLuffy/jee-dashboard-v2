@@ -17,8 +17,6 @@ import {
   YAxis,
 } from "recharts";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -26,7 +24,9 @@ import type { NavController } from "./App";
 import { ChartNote, ChartTip, CH, EmptyNote, GRID, PageTitle, SectionCard, StatCard, TICK, TICK_MONO } from "./shared";
 import { CountUp, Stagger, StaggerItem } from "./motion";
 import { TodoCard } from "./TodoCard";
-import { del, kvGet, kvSet, put, useLive } from "@/lib/idb";
+import { TargetExamsCard } from "./TargetExamsCard";
+import { TodayCard } from "./TodayCard";
+import { kvGet, kvSet, useLive } from "@/lib/idb";
 import {
   amberQueue,
   computeChapterHealth,
@@ -97,7 +97,7 @@ export function DashboardView({ nav }: { nav: NavController }) {
     }
   }
 
-  // C3: backup nudge — data exists but no export in the last 7 days
+  // C3: backup nudge — weekly reminder to export backup (checks last-export-at in kv)
   const [lastExportAt, setLastExportAt] = useState<string | null | undefined>(undefined);
   const [backupDismissed, setBackupDismissed] = useState(false);
   useEffect(() => {
@@ -115,13 +115,13 @@ export function DashboardView({ nav }: { nav: NavController }) {
   }, []);
 
   const backupNudge = useMemo<{ label: string } | null>(() => {
-    if (lastExportAt === undefined || tests.length === 0) return null;
+    if (lastExportAt === undefined) return null;
     if (!lastExportAt) return { label: "never" };
     const t = Date.parse(lastExportAt);
     if (Number.isNaN(t)) return { label: "never" };
     const days = Math.floor((Date.now() - t) / 86400000);
     return days > 7 ? { label: `${days} day${days === 1 ? "" : "s"} ago` } : null;
-  }, [lastExportAt, tests.length]);
+  }, [lastExportAt]);
 
   const star = useMemo(() => northStar(tests, responses), [tests, responses]);
   const timeline = useMemo(() => scoreTimeline(tests), [tests]);
@@ -267,121 +267,126 @@ export function DashboardView({ nav }: { nav: NavController }) {
         </StaggerItem>
       </Stagger>
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* C3: backup nudge — slim amber banner above the Today card */}
-        {backupNudge && !backupDismissed ? (
-          <div className="lg:col-span-3 bg-amber-50 border border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/25 rounded-lg px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
-            <span className="text-sm text-amber-800 dark:text-amber-300">
-              <span className="font-medium">Last backup: {backupNudge.label}</span> — export a JSON
-              backup to keep your data safe.
-            </span>
-            <div className="flex items-center gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-8 border-amber-300 text-amber-800 hover:bg-amber-100 dark:border-amber-500/40 dark:text-amber-300 dark:hover:bg-amber-500/10"
-                onClick={() => nav.go("data")}
-              >
-                Export backup
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-8 text-amber-700 hover:text-amber-800 hover:bg-amber-100 dark:text-amber-400 dark:hover:text-amber-300 dark:hover:bg-amber-500/10"
-                onClick={() => setBackupDismissed(true)}
-              >
-                Dismiss
-              </Button>
-            </div>
+      {/* C3: backup reminder — weekly prompt to export JSON backup */}
+      {backupNudge && !backupDismissed ? (
+        <div className="bg-amber-50 border border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/25 rounded-lg px-4 py-2.5 flex flex-wrap items-center justify-between gap-2">
+          <span className="text-sm text-amber-800 dark:text-amber-300">
+            <span className="font-medium">Backup reminder:</span> Last backup: {backupNudge.label} — export a JSON backup to keep your study data safe.
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 border-amber-300 text-amber-800 hover:bg-amber-100 dark:border-amber-500/40 dark:text-amber-300 dark:hover:bg-amber-500/10"
+              onClick={() => nav.go("data")}
+            >
+              Export backup
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-8 text-amber-700 hover:text-amber-800 hover:bg-amber-100 dark:text-amber-400 dark:hover:text-amber-300 dark:hover:bg-amber-500/10"
+              onClick={() => setBackupDismissed(true)}
+            >
+              Dismiss
+            </Button>
           </div>
-        ) : null}
+        </div>
+      ) : null}
 
-        {/* To-do card */}
+      {/* Target exams and derived phase markers */}
+      <TargetExamsCard />
+
+      {/* Today card (focus timer, time tracking, Anki check-in) + To-do card */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <TodayCard />
+        </div>
         <div className="lg:col-span-1">
           <TodoCard />
         </div>
+      </div>
 
-        {/* Amber queue + repeated failures */}
-        <div className="lg:col-span-2 grid md:grid-cols-2 gap-6">
-          <SectionCard
-            title="Amber-first repair queue"
-            subtitle="40–70% accuracy chapters, most recent first — 50%→80% beats resurrecting deep red"
-          >
-            {ambers.length === 0 ? (
-              <EmptyNote>
-                No Amber chapters yet. Take a chapter test — the queue builds itself from your
-                errors.
-              </EmptyNote>
-            ) : (
-              <ul className="space-y-2 max-h-72 overflow-y-auto pr-1">
-                {ambers.slice(0, 12).map((h) => (
-                  <li
-                    key={`${h.subject}:${h.chapter}`}
-                    className="flex items-center justify-between gap-2 text-sm bg-amber-50 border border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/25 rounded-lg px-3 py-2"
-                  >
-                    <div className="min-w-0">
-                      <div className="font-medium text-foreground truncate">{h.chapter}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {h.subject} · {h.correct}/{h.attempted} correct
-                      </div>
+      {/* Amber queue + repeated failures */}
+      <div className="grid md:grid-cols-2 gap-6">
+        <SectionCard
+          title="Amber-first repair queue"
+          subtitle="40–70% accuracy chapters, most recent first — 50%→80% beats resurrecting deep red"
+        >
+          {ambers.length === 0 ? (
+            <EmptyNote>
+              No Amber chapters yet. Take a chapter test — the queue builds itself from your
+              errors.
+            </EmptyNote>
+          ) : (
+            <ul className="space-y-2 max-h-72 overflow-y-auto pr-1">
+              {ambers.slice(0, 12).map((h) => (
+                <li
+                  key={`${h.subject}:${h.chapter}`}
+                  className="flex items-center justify-between gap-2 text-sm bg-amber-50 border border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/25 rounded-lg px-3 py-2"
+                >
+                  <div className="min-w-0">
+                    <div className="font-medium text-foreground truncate">{h.chapter}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {h.subject} · {h.correct}/{h.attempted} correct
                     </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <Badge className="bg-amber-400 hover:bg-amber-400 text-amber-950 border-0">
-                        {h.accuracy}%
-                      </Badge>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-7 px-2.5 text-[11px]"
-                        aria-label={`Create a test for ${h.chapter}`}
-                        onClick={() => nav.toTestCreate({ subject: h.subject, chapter: h.chapter })}
-                      >
-                        Test
-                      </Button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </SectionCard>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <Badge className="bg-amber-400 hover:bg-amber-400 text-amber-950 border-0">
+                      {h.accuracy}%
+                    </Badge>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 px-2.5 text-[11px]"
+                      aria-label={`Create a test for ${h.chapter}`}
+                      onClick={() => nav.toTestCreate({ subject: h.subject, chapter: h.chapter })}
+                    >
+                      Test
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </SectionCard>
 
-          <SectionCard
-            title="Chapters producing repeated failure"
-            subtitle="flagged when errors appear across ≥2 different tests"
-          >
-            {repeatFails.length === 0 ? (
-              <EmptyNote>No chapter has failed across 2+ tests yet.</EmptyNote>
-            ) : (
-              <ul className="space-y-2 max-h-72 overflow-y-auto pr-1">
-                {repeatFails.slice(0, 12).map((r) => (
-                  <li
-                    key={`${r.subject}:${r.chapter}`}
-                    className="flex items-center justify-between gap-2 text-sm bg-red-50 border border-red-200 dark:bg-red-500/10 dark:border-red-500/25 rounded-lg px-3 py-2"
-                  >
-                    <div className="min-w-0">
-                      <div className="font-medium text-foreground truncate">{r.chapter}</div>
-                      <div className="text-xs text-muted-foreground">{r.subject}</div>
-                    </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <Badge variant="outline" className="border-red-300 text-red-700 dark:border-red-500/40 dark:text-red-300">
-                        failed {r.tests_failed} tests · {r.wrongs} wrong
-                      </Badge>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-7 px-2.5 text-[11px]"
-                        aria-label={`Create a test for ${r.chapter}`}
-                        onClick={() => nav.toTestCreate({ subject: r.subject, chapter: r.chapter })}
-                      >
-                        Test
-                      </Button>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </SectionCard>
-        </div>
+        <SectionCard
+          title="Chapters producing repeated failure"
+          subtitle="flagged when errors appear across ≥2 different tests"
+        >
+          {repeatFails.length === 0 ? (
+            <EmptyNote>No chapter has failed across 2+ tests yet.</EmptyNote>
+          ) : (
+            <ul className="space-y-2 max-h-72 overflow-y-auto pr-1">
+              {repeatFails.slice(0, 12).map((r) => (
+                <li
+                  key={`${r.subject}:${r.chapter}`}
+                  className="flex items-center justify-between gap-2 text-sm bg-red-50 border border-red-200 dark:bg-red-500/10 dark:border-red-500/25 rounded-lg px-3 py-2"
+                >
+                  <div className="min-w-0">
+                    <div className="font-medium text-foreground truncate">{r.chapter}</div>
+                    <div className="text-xs text-muted-foreground">{r.subject}</div>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <Badge variant="outline" className="border-red-300 text-red-700 dark:border-red-500/40 dark:text-red-300">
+                      failed {r.tests_failed} tests · {r.wrongs} wrong
+                    </Badge>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 px-2.5 text-[11px]"
+                      aria-label={`Create a test for ${r.chapter}`}
+                      onClick={() => nav.toTestCreate({ subject: r.subject, chapter: r.chapter })}
+                    >
+                      Test
+                    </Button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+        </SectionCard>
       </div>
 
       {/* Revision due strip */}

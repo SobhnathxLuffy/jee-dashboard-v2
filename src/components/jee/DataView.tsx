@@ -63,6 +63,8 @@ export function DataView() {
   const syllabus = useLive("syllabus");
   const papers = useLive("papers");
   const tasks = useLive("tasks");
+  const timelog = useLive("timelog");
+  const ankiLog = useLive("anki_log");
   const fileRef = useRef<HTMLInputElement>(null);
 
   async function exportAll() {
@@ -138,14 +140,14 @@ export function DataView() {
     }
     const meta = data._meta;
     if (
+      !meta ||
       typeof meta !== "object" ||
-      meta === null ||
-      (meta as Record<string, unknown>).app !== "jee-study-app"
+      (meta as { app?: string }).app !== "jee-study-app"
     ) {
-      toast.error("Import failed: not a JEE Study App backup (_meta.app mismatch) — refusing");
+      toast.error("Import failed: JSON file is not a valid JEE Study App backup");
       return;
     }
-    // validate every store first — nothing is written unless the whole file checks out
+
     const toWrite: { store: StoreName; rows: Record<string, unknown>[] }[] = [];
     const counts: string[] = [];
     try {
@@ -221,13 +223,15 @@ export function DataView() {
       <div className="grid md:grid-cols-2 gap-6">
         <SectionCard title="Backup & restore" subtitle="plain JSON — no cloud, no account">
           <div className="flex flex-col gap-3">
-            <div className="text-xs text-muted-foreground grid grid-cols-3 gap-2">
+            <div className="text-xs text-muted-foreground grid grid-cols-2 sm:grid-cols-4 gap-2">
               <span>questions: <strong>{questions.length}</strong></span>
               <span>tests: <strong>{tests.length}</strong></span>
               <span>responses: <strong>{responses.length}</strong></span>
               <span>syllabus: <strong>{syllabus.length}</strong></span>
               <span>papers: <strong>{papers.length}</strong></span>
               <span>tasks: <strong>{tasks.length}</strong></span>
+              <span>time logs: <strong>{timelog.length}</strong></span>
+              <span>anki checks: <strong>{ankiLog.length}</strong></span>
             </div>
             <Button onClick={exportAll} className="bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:text-emerald-950">
               Export JSON backup

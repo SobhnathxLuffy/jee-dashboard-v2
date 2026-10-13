@@ -4,6 +4,7 @@ import type {
   ActiveSession,
   AiCacheRecord,
   AiUsageRecord,
+  AnkiLogEntry,
   CalEventRecord,
   DailyLog,
   FormulaEntry,
@@ -13,21 +14,15 @@ import type {
   SyllabusRow,
   Task,
   TestRecord,
+  TimeLogEntry,
 } from "./types";
 
 const DB_NAME_BASE = "jee-study-app";
-// v5: adds "ai_cache" (explanations / coach reports — re-views never re-bill)
-// and "ai_usage" (per-call token + ₹ estimate log). onupgradeneeded creates
-// any missing store from STORES, so v1–v4 installs upgrade in place — no
-// data loss.
-// v6: adds "sync_tombstones" — delete markers the sync engine replays so a
-// deletion on one device removes the record on every other device.
-const DB_VERSION = 6;
+// v5: adds "ai_cache" and "ai_usage"
+// v6: adds "sync_tombstones"
+// v7: adds "timelog" (category time tracking) and "anki_log" (daily Anki review check-in)
+const DB_VERSION = 7;
 
-// ?device=<name> opens a separate IndexedDB under the same origin — used by
-// the two-tab sync E2E (two "devices" in one browser) and by anyone who wants
-// an isolated scratch profile. Invisible in normal use. Sync state that
-// logically belongs to the database (pull/push cursors) keys off this too.
 const DB_DEVICE = (() => {
   if (typeof window === "undefined") return null;
   try {
@@ -57,16 +52,12 @@ export const STORES = [
   "ai_cache",
   "ai_usage",
   "sync_tombstones",
+  "timelog",
+  "anki_log",
 ] as const;
 
 export type StoreName = (typeof STORES)[number];
 
-/**
- * Stores replicated by the optional Supabase sync. Papers sync WITH their
- * PDF as a base64 data URL (codec in sync.ts) up to ~4.8 MB — bigger PDFs
- * travel metadata-only and stay re-uploadable. kv / ai_* are device-local by
- * design (session state, provider keys, token accounting).
- */
 export const SYNCED_STORES = [
   "questions",
   "tests",
@@ -77,6 +68,8 @@ export const SYNCED_STORES = [
   "tasks",
   "cal_events",
   "papers",
+  "timelog",
+  "anki_log",
 ] as const;
 
 type SyncedStore = (typeof SYNCED_STORES)[number];
@@ -112,6 +105,8 @@ type StoreValueMap = {
   ai_cache: AiCacheRecord;
   ai_usage: AiUsageRecord;
   sync_tombstones: TombstoneRow;
+  timelog: TimeLogEntry;
+  anki_log: AnkiLogEntry;
 };
 
 let dbPromise: Promise<IDBDatabase> | null = null;
@@ -314,7 +309,7 @@ export async function ensureUpdatedAtStamps(): Promise<void> {
   if (touched > 0) console.info(`[sync] stamped ${touched} legacy record(s) with updated_at`);
 }
 
-// ─── kv helpers (active session etc.) ───────────────────────────────────────
+// ─── kv helpers (active session etc.) ────────────────────────────────────────
 export async function kvGet<T>(key: string): Promise<T | undefined> {
   const row = await get("kv", key);
   return row ? (row.value as T) : undefined;
@@ -347,7 +342,6 @@ function normalizeSession(raw: ActiveSession): ActiveSession {
     const key = Array.isArray(meta.key) ? meta.key : [];
     s.pdf_meta = {
       ...meta,
-      // legacy key entries {no, answer} → {no, answer, answers:[answer]}
       key: key
         .filter((k) => k && typeof k.no === "number")
         .map((k) => {
@@ -361,7 +355,6 @@ function normalizeSession(raw: ActiveSession): ActiveSession {
           };
         }),
       first_q: typeof meta.first_q === "number" ? meta.first_q : 1,
-      // legacy pdf_meta without sections → synthesize the single-section equivalent
       sections:
         Array.isArray(meta.sections) && meta.sections.length > 0
           ? meta.sections

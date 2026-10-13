@@ -1,13 +1,12 @@
 "use client";
 
 // ─── App shell: navigation + north-star header + view switching ─────────────
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import { useTheme } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   DropdownMenu,
@@ -29,6 +28,7 @@ import {
   Moon,
   Monitor,
   Check,
+  Settings,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -57,9 +57,11 @@ import {
   useLive,
 } from "@/lib/idb";
 import { SYLLABUS_SEED } from "@/lib/syllabus-seed";
-import type { ActiveSession, PaperRecord } from "@/lib/types";
+import type { ActiveSession, PaperRecord, TargetExam } from "@/lib/types";
 import { todayStr } from "@/lib/types";
 import { northStar } from "@/lib/analytics";
+import { getTargetExams } from "@/lib/settings";
+import { SettingsDialog } from "./SettingsDialog";
 
 import { DashboardView } from "./Dashboard";
 import { QuestionBankView } from "./QuestionBank";
@@ -108,8 +110,6 @@ const NAV_GROUPS: ViewName[][] = [
 // every legal view name — used to validate a restored deep link
 const ALL_VIEWS: ViewName[] = [...NAV.map((n) => n.id), "player", "results"];
 
-const DEFAULT_EXAM_DATE = "2027-01-22"; // JEE Main 2027 Session 1
-
 export interface NavController {
   go: (v: ViewName) => void;
   openResults: (testId: string) => void;
@@ -121,123 +121,109 @@ export interface NavController {
 }
 
 export function AppRoot() {
-  const [view, setView] = useState<ViewName>("dashboard");
+  const [view, setView] = useState<ViewName>(() => {
+    if (typeof window === "undefined") return "dashboard";
+    const h = window.location.hash.replace(/^#/, "");
+    return ALL_VIEWS.includes(h as ViewName) ? (h as ViewName) : "dashboard";
+  });
   const [session, setSession] = useState<ActiveSession | null>(null);
   const [resumable, setResumable] = useState<ActiveSession | null>(null);
   const [resultsTestId, setResultsTestId] = useState<string | null>(null);
   const [testPrefill, setTestPrefill] = useState<TestCreatePrefill | undefined>(undefined);
   const [paperForImport, setPaperForImport] = useState<PaperRecord | null>(null);
   const [confirmDiscard, setConfirmDiscard] = useState(false);
-  const pdfBlobRef = useRef<Blob | null>(null);
-  const seededRef = useRef(false);
-  const dataVersion = useDataVersion();
+  const [activePdfBlob, setActivePdfBlob] = useState<Blob | null>(null);
 
   const tests = useLive("tests");
   const responses = useLive("responses");
+  const dataVersion = useDataVersion();
 
-  // First load: persist storage, seed syllabus if empty, check for a resumable
-  // session, restore deep links (last view + results target)
+  // seed syllabus on very first open
   useEffect(() => {
-    if (seededRef.current) return;
-    seededRef.current = true;
-    try {
-      void Promise.resolve(navigator.storage?.persist?.()).catch(() => {});
-    } catch {
-      // ancient browsers without the API — ignore
-    }
-    (async () => {
-      try {
-        const rows = await getAll("syllabus");
-        if (rows.length === 0) {
-          await bulkPut("syllabus", SYLLABUS_SEED);
-        }
-      } catch {
-        // seeding is best-effort; the app still works without it
+    void (async () => {
+      const seeded = await kvGet<string>("syllabus_seeded_v1");
+      if (seeded) return;
+      const existing = await getAll("syllabus");
+      if (existing.length === 0) {
+        await bulkPut("syllabus", SYLLABUS_SEED);
       }
-      const s = await loadSession().catch(() => undefined);
-      if (s) setResumable(s);
-      try {
-        const [v, rid] = await Promise.all([
-          kvGet<ViewName>("view"),
-          kvGet<string>("results-testid"),
-        ]);
-        let restored: ViewName = "dashboard";
-        if (v && ALL_VIEWS.includes(v)) restored = v;
-        if (restored === "player") restored = "dashboard";
-        if (restored === "results") {
-          if (rid) setResultsTestId(rid);
-          else restored = "dashboard";
-        }
-        setView(restored);
-      } catch {
-        // deep links are best-effort
-      }
+      await kvSet("syllabus_seeded_v1", "true");
     })();
   }, []);
 
-  const applyView = useCallback((v: ViewName) => {
-    setView(v);
-    void kvSet("view", v).catch(() => {});
+  // check for an active (in-progress) session to resume or discard
+  useEffect(() => {
+    void loadSession().then((s) => {
+      if (s) setResumable(s);
+    });
+  }, [view]);
+
+  // hash-based navigation so reload restores the active tab, and back button works
+  const applyView = useCallback((next: ViewName) => {
+    setView(next);
+    const targetHash = `#${next}`;
+    if (window.location.hash !== targetHash) {
+      window.location.hash = targetHash;
+    }
+  }, []);
+
+  useEffect(() => {
+    const parse = (): ViewName => {
+      const h = window.location.hash.replace(/^#/, "");
+      return ALL_VIEWS.includes(h as ViewName) ? (h as ViewName) : "dashboard";
+    };
+    const onHash = () => setView(parse());
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
   }, []);
 
   const go = useCallback(
     (v: ViewName) => {
-      setTestPrefill(undefined);
+      if (session && v !== "player") {
+        toast.info("A test is in progress — switch back via 'Resume' banner anytime");
+      }
       applyView(v);
     },
-    [applyView]
+    [session, applyView]
   );
 
   const openResults = useCallback(
     (testId: string) => {
       setResultsTestId(testId);
       applyView("results");
-      void kvSet("results-testid", testId).catch(() => {});
     },
     [applyView]
   );
 
   const startSession = useCallback(
     (s: ActiveSession, pdfBlob?: Blob | null) => {
-      pdfBlobRef.current = pdfBlob ?? null;
-      setResumable(null);
+      setActivePdfBlob(pdfBlob ?? null);
       setSession(s);
+      setResumable(null);
       applyView("player");
-      void import("@/lib/idb").then((m) => m.saveSession(s).catch(() => {}));
     },
     [applyView]
   );
 
-  const resume = useCallback(
-    async () => {
-      if (!resumable) return;
-      const s = resumable;
-      if (s.mode === "pdf") {
-        try {
-          const blob = await (await import("@/lib/idb")).kvGet<Blob>("pdf-blob");
-          pdfBlobRef.current = blob ?? null;
-        } catch {
-          pdfBlobRef.current = null;
-        }
-      }
-      setSession(s);
-      setResumable(null);
-      applyView("player");
-    },
-    [resumable, applyView]
-  );
+  const resume = useCallback(() => {
+    if (!resumable) return;
+    setSession(resumable);
+    setResumable(null);
+    applyView("player");
+  }, [resumable, applyView]);
 
   const discardSession = useCallback(async () => {
     await clearSession();
-    await kvDel("pdf-blob");
+    await kvDel("active-test-paper-blob");
     setResumable(null);
+    setSession(null);
+    setActivePdfBlob(null);
+    toast.success("Discarded unfinished test");
   }, []);
 
   const finishSession = useCallback(
-    async (testId: string) => {
-      await clearSession();
-      await kvDel("pdf-blob");
-      pdfBlobRef.current = null;
+    (testId: string) => {
+      setActivePdfBlob(null);
       setSession(null);
       openResults(testId);
     },
@@ -284,6 +270,7 @@ export function AppRoot() {
             <div className="flex flex-wrap items-center justify-end gap-x-2 gap-y-1 shrink-0">
               <CountdownChip />
               <ThemeToggle />
+              <HeaderSettingsButton />
               <div className="text-right">
                 <div className="text-[10px] uppercase tracking-[0.08em] text-muted-foreground font-medium hidden sm:block">
                   Correct under time
@@ -378,7 +365,7 @@ export function AppRoot() {
               {view === "player" && session ? (
                 <PlayerView
                   session={session}
-                  pdfBlob={pdfBlobRef.current}
+                  pdfBlob={activePdfBlob}
                   onPersist={setSession}
                   onFinish={finishSession}
                 />
@@ -450,12 +437,12 @@ function ThemeToggle() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="press h-8 w-8 grid place-items-center rounded-full border border-border bg-card text-muted-foreground hover:text-foreground hover:bg-accent"
-          aria-label="Change theme"
+          className="press rounded-full border border-border bg-card p-2 text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+          aria-label="Toggle theme"
         >
-          <span className="relative w-4 h-4">
+          <span className="relative block w-4 h-4">
             <Sun
-              className="absolute inset-0 w-4 h-4 transition-all duration-300 rotate-0 scale-100 dark:-rotate-90 dark:scale-0"
+              className="w-4 h-4 transition-all duration-300 rotate-0 scale-100 dark:-rotate-90 dark:scale-0"
               strokeWidth={1.75}
               aria-hidden="true"
             />
@@ -484,6 +471,24 @@ function ThemeToggle() {
   );
 }
 
+function HeaderSettingsButton() {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-8 w-8 text-muted-foreground hover:text-foreground"
+        onClick={() => setOpen(true)}
+        aria-label="Settings"
+      >
+        <Settings className="w-4 h-4" />
+      </Button>
+      <SettingsDialog open={open} onOpenChange={setOpen} />
+    </>
+  );
+}
+
 function daysUntil(fromStr: string, toStr: string): number {
   const a = new Date(`${fromStr}T12:00:00`).getTime();
   const b = new Date(`${toStr}T12:00:00`).getTime();
@@ -491,90 +496,96 @@ function daysUntil(fromStr: string, toStr: string): number {
 }
 
 function CountdownChip() {
-  const [target, setTarget] = useState<string | null>(null);
+  const [exams, setExams] = useState<TargetExam[]>([]);
   const [open, setOpen] = useState(false);
-  const [draft, setDraft] = useState("");
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const dataVersion = useDataVersion();
 
   useEffect(() => {
     let alive = true;
-    kvGet<string>("target-exam-date")
-      .then((v) => {
-        if (alive) {
-          setTarget(typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) ? v : DEFAULT_EXAM_DATE);
-        }
-      })
-      .catch(() => {
-        if (alive) setTarget(DEFAULT_EXAM_DATE);
-      });
+    void getTargetExams().then((e) => {
+      if (alive) setExams(e);
+    });
     return () => {
       alive = false;
     };
-  }, []);
+  }, [dataVersion, settingsOpen]);
 
-  async function saveDate() {
-    if (!draft || !/^\d{4}-\d{2}-\d{2}$/.test(draft)) return;
-    setTarget(draft);
-    setOpen(false);
-    try {
-      await kvSet("target-exam-date", draft);
-      const n = daysUntil(todayStr(), draft);
-      toast.success(
-        n > 0
-          ? `Countdown set — ${n} day${n === 1 ? "" : "s"} to go`
-          : n === 0
-            ? "Countdown set — exam day is today"
-            : "Countdown set — date is in the past"
-      );
-    } catch {
-      toast.error("Could not save the target date");
-    }
-  }
+  const today = todayStr();
+  const upcoming = exams
+    .filter((e) => daysUntil(today, e.date) >= 0)
+    .sort((a, b) => a.date.localeCompare(b.date));
+  const nearest = upcoming[0] ?? exams[0];
 
-  if (target === null) return null;
+  if (!nearest) return null;
 
-  const n = daysUntil(todayStr(), target);
+  const n = daysUntil(today, nearest.date);
   const label =
     n > 0
-      ? `${n} day${n === 1 ? "" : "s"} · JEE Main`
+      ? `${n}d · ${nearest.name}`
       : n === 0
-        ? "Exam day!"
-        : `${-n} day${n === -1 ? "" : "s"} since`;
+        ? `0d · ${nearest.name} (Today!)`
+        : `${-n}d ago · ${nearest.name}`;
 
   return (
-    <Popover
-      open={open}
-      onOpenChange={(o) => {
-        setOpen(o);
-        if (o) setDraft(target);
-      }}
-    >
-      <PopoverTrigger asChild>
-        <button
-          className="press rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors whitespace-nowrap tabular-nums hidden sm:inline-flex"
-          aria-label={`Exam countdown: ${label}. Change target date.`}
-        >
-          {label}
-        </button>
-      </PopoverTrigger>
-      <PopoverContent className="w-64 p-3" align="end">
-        <div className="space-y-2">
-          <div className="text-xs font-semibold text-foreground">Target exam date</div>
-          <Input
-            type="date"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            className="h-8 text-xs"
-          />
-          <div className="flex justify-end gap-2 pt-1">
-            <Button size="sm" variant="ghost" className="h-7 text-xs" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-            <Button size="sm" className="h-7 text-xs bg-emerald-700 hover:bg-emerald-800 text-white" onClick={saveDate}>
-              Save
+    <>
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <button
+            className="press rounded-full border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-accent hover:text-foreground transition-colors whitespace-nowrap tabular-nums hidden sm:inline-flex items-center gap-1.5"
+            aria-label={`Exam countdown: ${label}. View and edit target exams.`}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            {label}
+          </button>
+        </PopoverTrigger>
+        <PopoverContent className="w-72 p-3" align="end">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between border-b border-border pb-1.5">
+              <span className="text-xs font-semibold text-foreground">Target Exams</span>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 px-1.5 text-[11px] text-primary"
+                onClick={() => {
+                  setOpen(false);
+                  setSettingsOpen(true);
+                }}
+              >
+                Manage all
+              </Button>
+            </div>
+            <div className="space-y-1.5 max-h-48 overflow-y-auto">
+              {exams.map((e) => {
+                const days = daysUntil(today, e.date);
+                return (
+                  <div
+                    key={e.id}
+                    className="flex items-center justify-between text-xs py-1 border-b border-border/50 last:border-0"
+                  >
+                    <span className="font-medium truncate pr-2 text-foreground">{e.name}</span>
+                    <span className="font-mono text-[11px] text-muted-foreground shrink-0">
+                      {days >= 0 ? `${days}d left` : `${-days}d ago`}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            <Button
+              size="sm"
+              variant="outline"
+              className="w-full h-7 text-xs"
+              onClick={() => {
+                setOpen(false);
+                setSettingsOpen(true);
+              }}
+            >
+              Edit Dates &amp; Targets
             </Button>
           </div>
-        </div>
-      </PopoverContent>
-    </Popover>
+        </PopoverContent>
+      </Popover>
+      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+    </>
   );
 }
