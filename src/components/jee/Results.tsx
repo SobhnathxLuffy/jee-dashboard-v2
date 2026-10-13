@@ -712,7 +712,22 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
                           {r.type === "numerical" ? "NUM" : "MCQ"}
                         </Badge>
                         <span className="text-[11px] text-muted-foreground/70">{r.chapter}</span>
-                        <span className="text-[11px] text-muted-foreground/70">{fmtSecs(r.time_spent)}</span>
+                        <span className="text-[11px] font-mono text-muted-foreground/70">{fmtSecs(r.time_spent)}</span>
+                        {r.attempted && r.time_spent > (r.type === "numerical" ? 240 : 150) && (
+                          <Badge variant="outline" className="text-[9px] border-amber-300 text-amber-700 dark:border-amber-500/40 dark:text-amber-300">
+                            ⏱️ Slow
+                          </Badge>
+                        )}
+                        {r.attempted && r.correct === false && r.time_spent < 30 && (
+                          <Badge variant="outline" className="text-[9px] border-purple-300 text-purple-700 dark:border-purple-500/40 dark:text-purple-300">
+                            ⚡ Rushed
+                          </Badge>
+                        )}
+                        {r.attempted && r.correct === false && r.time_spent > 180 && (
+                          <Badge variant="outline" className="text-[9px] border-red-300 text-red-700 dark:border-red-500/40 dark:text-red-300">
+                            Struggle trap
+                          </Badge>
+                        )}
                         {!r.attempted ? (
                           <Badge variant="outline" className="text-[10px] border-border text-muted-foreground/70">
                             unattempted

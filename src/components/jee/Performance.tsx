@@ -28,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import type { NavController } from "./App";
+import { WeeklyScorecard } from "./WeeklyScorecard";
 import { AnswerBits, CH, ChartNote, ChartTip, EmptyNote, GRID, PageTitle, SectionCard, StatCard, TICK, TICK_MONO } from "./shared";
 import { CountUp, Stagger, StaggerItem } from "./motion";
 import { useLive } from "@/lib/idb";
@@ -266,6 +267,9 @@ export function PerformanceView({ nav }: { nav: NavController }) {
         title="Performance"
         subtitle="Drill from a subject down to a chapter: trends, every test score, and every mistake with the correct answer."
       />
+
+      {/* Weekly Scorecard: planned vs actual, rolling avg, accuracy change, Anki, recall & retries */}
+      <WeeklyScorecard nav={nav} />
 
       {/* filters */}
       <div className="bg-card border border-border card-shadow rounded-lg p-4 flex flex-wrap items-end gap-3">
@@ -590,6 +594,17 @@ export function PerformanceView({ nav }: { nav: NavController }) {
                           {r.type === "numerical" ? "NUM" : "MCQ"}
                         </Badge>
                         <span className="text-[11px] text-muted-foreground/70">{r.chapter}</span>
+                        <span className="text-[11px] font-mono text-muted-foreground/70">{fmtSecs(r.time_spent)}</span>
+                        {r.time_spent > (r.type === "numerical" ? 240 : 150) && (
+                          <Badge variant="outline" className="text-[9px] border-amber-300 text-amber-700 dark:border-amber-500/40 dark:text-amber-300">
+                            ⏱️ Slow
+                          </Badge>
+                        )}
+                        {r.time_spent < 30 && (
+                          <Badge variant="outline" className="text-[9px] border-purple-300 text-purple-700 dark:border-purple-500/40 dark:text-purple-300">
+                            ⚡ Rushed
+                          </Badge>
+                        )}
                         {r.error_tag ? (
                           <Badge variant="outline" className={cn("text-[10px]", TAG_CLS[r.error_tag])}>
                             {tagOf(r.error_tag)}
