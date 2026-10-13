@@ -19,6 +19,16 @@ export interface ChapterHealth {
   last_seen: number; // epoch of latest response
 }
 
+/** A response is "pending" if attempted but not yet self-marked (key-later mode). */
+export function isPending(r: ResponseRecord): boolean {
+  return r.attempted && r.correct === null;
+}
+
+/** A response is "wrong" only if explicitly marked wrong (not pending). */
+export function isWrong(r: ResponseRecord): boolean {
+  return r.attempted && r.correct === false;
+}
+
 export function computeChapterHealth(
   responses: ResponseRecord[],
   tests: TestRecord[]
@@ -27,6 +37,7 @@ export function computeChapterHealth(
   const map = new Map<string, ChapterHealth>();
   for (const r of responses) {
     if (!r.attempted) continue;
+    if (isPending(r)) continue; // pending self-marks are not wrong — exclude entirely
     const key = `${r.subject}::${r.chapter}`;
     let h = map.get(key);
     if (!h) {
@@ -120,7 +131,8 @@ export function scoreTimeline(tests: TestRecord[]) {
 
 export function subjectAccuracy(responses: ResponseRecord[]) {
   return SUBJECTS.map((s) => {
-    const rows = responses.filter((r) => r.subject === s && r.attempted);
+    // Exclude pending self-marks (correct === null) from both numerator and denominator.
+    const rows = responses.filter((r) => r.subject === s && r.attempted && !isPending(r));
     const attempted = rows.length;
     const correct = rows.filter((r) => r.correct).length;
     return {
@@ -149,7 +161,8 @@ export function negativeMarksByTest(tests: TestRecord[], responses: ResponseReco
       if (t.type === "external" && t.external_meta) {
         wrong = t.external_meta.wrong;
       } else {
-        wrong = responses.filter((r) => r.test_id === t.id && r.attempted && !r.correct).length;
+        // Only count explicitly-wrong responses; pending self-marks (correct === null) are not wrong.
+        wrong = responses.filter((r) => r.test_id === t.id && isWrong(r)).length;
       }
       return {
         label: `${t.date.slice(5)} · ${t.source.slice(0, 10)}`,

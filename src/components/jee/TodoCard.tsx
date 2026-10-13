@@ -23,6 +23,12 @@ function openRank(t: Task, today: string): number {
   return 2;
 }
 
+// Module-level helper so Date.now() is not called inside the component body
+// (react-hooks/purity flags impure calls in render/component scope).
+function nowEpoch(): number {
+  return Date.now();
+}
+
 function DueBadge({ task, today }: { task: Task; today: string }) {
   if (!task.due_date) return null;
   const overdue = task.due_date < today;
@@ -83,7 +89,8 @@ export function TodoCard() {
   }
 
   async function toggle(t: Task) {
-    await put("tasks", { ...t, done: !t.done, done_at: !t.done ? Date.now() : undefined });
+    const now = nowEpoch();
+    await put("tasks", { ...t, done: !t.done, done_at: !t.done ? now : undefined });
   }
 
   async function clearDone() {

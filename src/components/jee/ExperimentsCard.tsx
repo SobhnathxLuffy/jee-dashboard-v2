@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   FlaskConical,
   Plus,
@@ -38,6 +38,12 @@ import { addDays, todayStr, uid, type TrialRecord } from "@/lib/types";
 export function ExperimentsCard() {
   const trials = useLive("trials");
   const today = todayStr();
+  // Stable "now" for render-pure date math (Date.now() is impure in render per react-hooks/purity)
+  const [nowMs, setNowMs] = useState<number>(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNowMs(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
 
   const [createOpen, setCreateOpen] = useState(false);
   const [concludeTarget, setConcludeTarget] = useState<TrialRecord | null>(null);
@@ -171,7 +177,7 @@ export function ExperimentsCard() {
             activeStudyTrials.map((t) => {
               const daysLeft = Math.max(
                 0,
-                Math.ceil((new Date(`${t.endDate}T12:00:00`).getTime() - Date.now()) / 86400000)
+                Math.ceil((new Date(`${t.endDate}T12:00:00`).getTime() - nowMs) / 86400000)
               );
               return (
                 <div
@@ -238,7 +244,7 @@ export function ExperimentsCard() {
               {activeSkillTrials.map((t) => {
                 const daysLeft = Math.max(
                   0,
-                  Math.ceil((new Date(`${t.endDate}T12:00:00`).getTime() - Date.now()) / 86400000)
+                  Math.ceil((new Date(`${t.endDate}T12:00:00`).getTime() - nowMs) / 86400000)
                 );
                 return (
                   <div

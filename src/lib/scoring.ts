@@ -6,16 +6,19 @@ export const MARKS = { CORRECT: 4, WRONG: -1, UNATTEMPTED: 0 } as const;
 
 /**
  * Marks for one question under the NTA scheme.
- * - unattempted → 0 (even when a key exists)
  * - bonus (dropped question) → +4 for everyone, attempted or not
+ * - unattempted → 0 (even when a key exists)
  * - correct === null (pending self-mark, key-later mode) → 0 until marked
+ * - correct → +4 ; wrong → −1 (MCQ and numerical alike)
+ *
+ * Bonus is checked FIRST so unattempted bonus questions still award +4.
  */
 export function marksFor(
   attempted: boolean,
   correct: boolean | null,
   bonus = false
 ): number {
-  if (!attempted) return MARKS.UNATTEMPTED;
   if (bonus) return MARKS.CORRECT;
+  if (!attempted) return MARKS.UNATTEMPTED;
   return correct === true ? MARKS.CORRECT : correct === false ? MARKS.WRONG : MARKS.UNATTEMPTED;
 }

@@ -105,6 +105,12 @@ export function DashboardView({ nav }: { nav: NavController }) {
   const [lastExportAt, setLastExportAt] = useState<string | null | undefined>(undefined);
   const [backupDismissed, setBackupDismissed] = useState(false);
   const [recallRow, setRecallRow] = useState<SyllabusRow | null>(null);
+  // Stable "now" for render-pure date math (Date.now() is impure in render per react-hooks/purity)
+  const [nowMs, setNowMs] = useState<number>(() => Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNowMs(Date.now()), 60_000);
+    return () => clearInterval(id);
+  }, []);
   useEffect(() => {
     let alive = true;
     kvGet<string>("last-export-at")
@@ -124,9 +130,9 @@ export function DashboardView({ nav }: { nav: NavController }) {
     if (!lastExportAt) return { label: "never" };
     const t = Date.parse(lastExportAt);
     if (Number.isNaN(t)) return { label: "never" };
-    const days = Math.floor((Date.now() - t) / 86400000);
+    const days = Math.floor((nowMs - t) / 86400000);
     return days > 7 ? { label: `${days} day${days === 1 ? "" : "s"} ago` } : null;
-  }, [lastExportAt]);
+  }, [lastExportAt, nowMs]);
 
   const star = useMemo(() => northStar(tests, responses), [tests, responses]);
   const timeline = useMemo(() => scoreTimeline(tests), [tests]);
