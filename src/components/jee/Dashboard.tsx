@@ -27,6 +27,7 @@ import { TodoCard } from "./TodoCard";
 import { TargetExamsCard } from "./TargetExamsCard";
 import { TodayCard } from "./TodayCard";
 import { SpacedRetryCard } from "./SpacedRetryCard";
+import { ExperimentsCard } from "./ExperimentsCard";
 import { RecallCheckModal } from "./RecallCheckModal";
 import type { SyllabusRow } from "@/lib/types";
 import { kvGet, kvSet, useLive } from "@/lib/idb";
@@ -427,6 +428,9 @@ export function DashboardView({ nav }: { nav: NavController }) {
           </div>
         )}
       </SectionCard>
+
+      {/* Controlled Experiments & Skill Trials */}
+      <ExperimentsCard />
 
       {/* charts grid */}
       <div className="grid md:grid-cols-2 gap-6">

@@ -28,6 +28,7 @@ import { AnswerBits, EmptyNote, PageTitle, SectionCard, StatCard } from "./share
 import { CountUp, ScoreRing, Stagger, StaggerItem } from "./motion";
 import { useLive, put, get, getAll } from "@/lib/idb";
 import { marksFor } from "@/lib/scoring";
+import { Timer } from "lucide-react";
 import { fileToDataUrl } from "@/lib/image";
 import {
   applyLateKey,
@@ -220,6 +221,59 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
   // D4: key-later tests stay in self-mark mode for their whole life (score is
   // recomputed to a number on the first toggle, so the flag is the discriminator)
   const selfMark = test?.pdf_meta?.key_later === true;
+  const [struggleState, setStruggleState] = useState<{
+    responseId: string;
+    secondsLeft: number;
+    initialSeconds: number;
+  } | null>(null);
+
+  useEffect(() => {
+    if (!struggleState || struggleState.secondsLeft <= 0) return;
+    const t = setInterval(() => {
+      setStruggleState((cur) => {
+        if (!cur || cur.secondsLeft <= 1) {
+          clearInterval(t);
+          toast.info("Struggle timer completed! Answer unlocked.");
+          return cur ? { ...cur, secondsLeft: 0 } : null;
+        }
+        return { ...cur, secondsLeft: cur.secondsLeft - 1 };
+      });
+    }, 1000);
+    return () => clearInterval(t);
+  }, [struggleState?.responseId, struggleState?.secondsLeft]);
+
+  function startStruggle(response: ResponseRecord) {
+    setStruggleState({
+      responseId: response.id,
+      secondsLeft: 600, // 10 minutes
+      initialSeconds: 600,
+    });
+    toast.success("10m Struggle Drill started. Work on scrap paper before viewing the answer.");
+  }
+
+  async function concludeStruggle(response: ResponseRecord, solved: boolean) {
+    if (!struggleState) return;
+    const elapsedSeconds = struggleState.initialSeconds - struggleState.secondsLeft;
+    const minutes = Math.max(1, Math.round(elapsedSeconds / 60));
+
+    await put("timelog", {
+      id: uid(),
+      category: "JEE",
+      activity: "problems",
+      date: todayStr(),
+      minutes,
+      subject: response.subject,
+      note: `Struggle drill (${solved ? "Solved" : "Attempted"}): ${response.chapter}`,
+      created_at: Date.now(),
+    });
+
+    if (solved) {
+      toast.success(`Great job! Logged ${minutes}m focus time.`);
+    } else {
+      toast.info(`Answer unlocked. Logged ${minutes}m focus time.`);
+    }
+    setStruggleState(null);
+  }
 
   // D3: displayed number = the paper/test number stored at submit (q_no),
   // falling back to the row's stable position — never re-indexed by filters.
@@ -747,18 +801,55 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
                         )}
                       </div>
                       <p className="text-sm text-foreground">{r.question_snippet}</p>
-                      <div className="mt-1.5">
-                        <AnswerBits
-                          selected={r.selected}
-                          correctAnswer={r.correct_answer}
-                          type={r.type}
-                          options={r.options}
-                          isPdf={r.question_id.startsWith("pdf:")}
-                          tolerance={test.pdf_meta?.tolerance ?? 0}
-                          attempted={r.attempted}
-                          status={r.correct === true ? "right" : r.correct === false ? "wrong" : null}
-                        />
-                      </div>
+                      {(() => {
+                        const isStruggling = struggleState?.responseId === r.id && struggleState.secondsLeft > 0;
+                        return (
+                          <>
+                            {isStruggling && (
+                              <div className="p-2.5 rounded-lg border border-purple-300 dark:border-purple-600 bg-purple-50 dark:bg-purple-950/40 flex items-center justify-between gap-2 mt-2 mb-2">
+                                <div className="flex items-center gap-2">
+                                  <Timer className="w-4 h-4 text-purple-600 dark:text-purple-400 animate-pulse" />
+                                  <span className="text-xs font-mono font-bold text-purple-900 dark:text-purple-200">
+                                    {fmtSecs(struggleState.secondsLeft)} left
+                                  </span>
+                                  <span className="text-[11px] text-purple-700 dark:text-purple-300">
+                                    Solve on paper before unlocking
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                  <Button
+                                    size="sm"
+                                    className="h-6 px-2 text-[10px] bg-emerald-600 hover:bg-emerald-700 text-white"
+                                    onClick={() => void concludeStruggle(r, true)}
+                                  >
+                                    ✓ Solved it!
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-6 px-2 text-[10px] text-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-600"
+                                    onClick={() => void concludeStruggle(r, false)}
+                                  >
+                                    Unlock Answer
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                            <div className="mt-1.5">
+                              <AnswerBits
+                                selected={r.selected}
+                                correctAnswer={isStruggling ? "🔒 Hidden (Struggle active)" : r.correct_answer}
+                                type={r.type}
+                                options={r.options}
+                                isPdf={r.question_id.startsWith("pdf:")}
+                                tolerance={test.pdf_meta?.tolerance ?? 0}
+                                attempted={r.attempted}
+                                status={r.correct === true ? "right" : r.correct === false ? "wrong" : null}
+                              />
+                            </div>
+                          </>
+                        );
+                      })()}
 
                       {/* D7: one-line note (optional, blur-save) */}
                       <Input
@@ -850,6 +941,21 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
                         </div>
                       </div>
                     ) : null}
+
+                    {/* Struggle timer button for mistakes / unattempted */}
+                    {(r.correct === false || !r.attempted) && struggleState?.responseId !== r.id && (
+                      <div className="flex items-center justify-end mb-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-6 px-2 text-[10px] gap-1 border-purple-300 dark:border-purple-700 text-purple-800 dark:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-950"
+                          onClick={() => startStruggle(r)}
+                        >
+                          <Timer className="w-3 h-3" />
+                          10m Struggle Drill
+                        </Button>
+                      </div>
+                    )}
 
                     {/* tag UI: wrong-marked rows only (self-marked wrongs flow in here too) */}
                     {r.attempted && r.correct === false ? (

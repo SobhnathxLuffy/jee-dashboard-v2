@@ -66,6 +66,7 @@ export function DataView() {
   const timelog = useLive("timelog");
   const ankiLog = useLive("anki_log");
   const retryQueue = useLive("retry_queue");
+  const trials = useLive("trials");
   const fileRef = useRef<HTMLInputElement>(null);
 
   async function exportAll() {
@@ -235,6 +236,7 @@ export function DataView() {
               <span>time logs: <strong>{timelog.length}</strong></span>
               <span>anki checks: <strong>{ankiLog.length}</strong></span>
               <span>retry queue: <strong>{retryQueue.length}</strong></span>
+              <span>trials: <strong>{trials.length}</strong></span>
             </div>
             <Button onClick={exportAll} className="bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:text-emerald-950">
               Export JSON backup

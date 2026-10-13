@@ -1,3 +1,9 @@
+export type ChapterType = "concepts" | "facts" | "procedures";
+export const CHAPTER_TYPES: { type: ChapterType; label: string; desc: string }[] = [
+  { type: "concepts", label: "Concepts", desc: "Principles & mental models (e.g. Mechanics, Thermodynamics)" },
+  { type: "facts", label: "Facts", desc: "Memory & recall heavy (e.g. Inorganic, Trends, Reagents)" },
+  { type: "procedures", label: "Procedures", desc: "Step-by-step algorithms & technique (e.g. Calculus, Vectors)" },
+];
 // ─── JEE Study App — data model ──────────────────────────────────────────────
 // Local-first: everything lives in IndexedDB. No backend, no auth.
 
@@ -156,6 +162,7 @@ export interface SyllabusRow {
   subject: Subject;
   tier: 1 | 2 | 3;
   status: ChapterStatus;
+  chapter_type?: ChapterType;
   notes: string;
   last_revised: string | null; // YYYY-MM-DD
   revision_stage: number; // 0..3 index into REVISION_INTERVALS_DAYS
@@ -404,6 +411,20 @@ export interface RetryQueueItem {
   stage: number; // 0 = 1d, 1 = 3d, 2 = 7d, 3 = mastered
   next_due: string; // YYYY-MM-DD
   last_reviewed?: string;
+  created_at: number;
+  updated_at?: number;
+}
+
+// ─── Phase 4: Experiments & Trials Store ─────────────────────────────────────
+export interface TrialRecord {
+  id: string;
+  hypothesis: string;
+  metric: string;
+  startDate: string; // YYYY-MM-DD
+  endDate: string; // YYYY-MM-DD
+  resultLine?: string;
+  status: "active" | "concluded" | "abandoned";
+  type: "study" | "skill"; // max 1 active study test, 2 active skill trials
   created_at: number;
   updated_at?: number;
 }

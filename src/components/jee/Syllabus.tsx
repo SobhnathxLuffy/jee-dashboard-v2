@@ -33,6 +33,8 @@ import {
   addDays,
   todayStr,
   type ChapterStatus,
+  type ChapterType,
+  type Subject,
   type SyllabusRow,
 } from "@/lib/types";
 import { computeChapterHealth } from "@/lib/analytics";
@@ -40,6 +42,54 @@ import { BookOpen, Mic } from "lucide-react";
 import { CoveragePaceCard } from "./CoveragePaceCard";
 import { RecallCheckModal } from "./RecallCheckModal";
 import type { ChapterHealth } from "@/lib/analytics";
+
+
+const CHAPTER_TYPE_STYLES: Record<ChapterType, { label: string; cls: string }> = {
+  concepts: {
+    label: "Concepts",
+    cls: "border-purple-300 bg-purple-50 text-purple-700 dark:border-purple-500/40 dark:bg-purple-500/10 dark:text-purple-300",
+  },
+  facts: {
+    label: "Facts",
+    cls: "border-sky-300 bg-sky-50 text-sky-700 dark:border-sky-500/40 dark:bg-sky-500/10 dark:text-sky-300",
+  },
+  procedures: {
+    label: "Procedures",
+    cls: "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-300",
+  },
+};
+
+function inferDefaultChapterType(subject: Subject, chapter: string): ChapterType {
+  if (subject === "Chemistry") {
+    const ch = chapter.toLowerCase();
+    if (
+      ch.includes("block") ||
+      ch.includes("periodic") ||
+      ch.includes("coordination") ||
+      ch.includes("metallurgy") ||
+      ch.includes("qualitative") ||
+      ch.includes("biomolecules") ||
+      ch.includes("everyday") ||
+      ch.includes("polymer") ||
+      ch.includes("environmental")
+    ) {
+      return "facts";
+    }
+  }
+  if (subject === "Mathematics") {
+    return "procedures";
+  }
+  return "concepts";
+}
+
+function ChapterTypeBadge({ type }: { type: ChapterType }) {
+  const style = CHAPTER_TYPE_STYLES[type] ?? CHAPTER_TYPE_STYLES.concepts;
+  return (
+    <Badge variant="outline" className={cn("text-[10px] cursor-pointer transition-colors hover:opacity-80", style.cls)}>
+      {style.label}
+    </Badge>
+  );
+}
 
 type SortMode = "tier" | "subject" | "due" | "risk";
 
@@ -261,6 +311,7 @@ export function SyllabusView() {
                   <tr>
                     <th className="py-2 px-3">Chapter</th>
                     <th className="py-2 px-3">Tier</th>
+                    <th className="py-2 px-3">Type</th>
                     <th className="py-2 px-3">Accuracy</th>
                     <th className="py-2 px-3">Status</th>
                     <th className="py-2 px-3">Revision</th>
@@ -277,6 +328,20 @@ export function SyllabusView() {
                           <div className="text-[11px] text-muted-foreground/70">{r.subject}</div>
                         </td>
                         <td className="py-2.5 px-3"><TierBadge tier={r.tier} /></td>
+                        <td className="py-2.5 px-3">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const cur = r.chapter_type ?? inferDefaultChapterType(r.subject, r.chapter);
+                              const nextType: ChapterType = cur === "concepts" ? "facts" : cur === "facts" ? "procedures" : "concepts";
+                              void update(r, { chapter_type: nextType });
+                            }}
+                            title="Tap to cycle type: Concepts → Facts → Procedures"
+                            className="focus:outline-none"
+                          >
+                            <ChapterTypeBadge type={r.chapter_type ?? inferDefaultChapterType(r.subject, r.chapter)} />
+                          </button>
+                        </td>
                         <td className="py-2.5 px-3">
                           <div className="flex items-center gap-1.5">
                             <HealthChip color={h?.color ?? "gray"} accuracy={h ? h.accuracy : null} />
@@ -543,6 +608,17 @@ function ChapterCard({
           </div>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => {
+              const cur = row.chapter_type ?? inferDefaultChapterType(row.subject, row.chapter);
+              const nextType: ChapterType = cur === "concepts" ? "facts" : cur === "facts" ? "procedures" : "concepts";
+              void onUpdate(row, { chapter_type: nextType });
+            }}
+            title="Tap to cycle type: Concepts → Facts → Procedures"
+          >
+            <ChapterTypeBadge type={row.chapter_type ?? inferDefaultChapterType(row.subject, row.chapter)} />
+          </button>
           <TierBadge tier={row.tier} />
           <HealthChip color={health?.color ?? "gray"} accuracy={health ? health.accuracy : null} />
         </div>
