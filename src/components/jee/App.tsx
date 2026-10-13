@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { PwaRegister } from "./PwaRegister";
+import { TutorialOverlay, useTutorial } from "./Tutorial";
 import { cn } from "@/lib/utils";
 import { EASE } from "./motion";
 import {
@@ -152,6 +153,14 @@ export function AppRoot() {
       await kvSet("syllabus_seeded_v1", "true");
     })();
   }, []);
+
+  // Tutorial: show on first launch (kv flag tutorial-seen-v1)
+  const tutorial = useTutorial();
+  useEffect(() => {
+    if (tutorial.ready && tutorial.shouldShowOnLaunch) {
+      tutorial.start();
+    }
+  }, [tutorial.ready, tutorial.shouldShowOnLaunch, tutorial]);
 
   // Phase 3: on app open, if a stored focus timer already ended, ask the user
   // whether to log N minutes (capped at the target) or discard.
@@ -275,6 +284,7 @@ export function AppRoot() {
       <div className="min-h-screen flex flex-col bg-background">
         <PwaRegister />
         <Toaster position="bottom-right" />
+        <TutorialOverlay />
         <header className="bg-background/85 backdrop-blur-md border-b border-border sticky top-0 z-30">
           <div className="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
             <div className="flex items-center gap-3 min-w-0">

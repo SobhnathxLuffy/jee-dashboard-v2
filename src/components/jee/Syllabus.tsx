@@ -206,7 +206,7 @@ export function SyllabusView() {
   );
 
   return (
-    <div className="space-y-6">
+    <div data-tutorial="syllabus" className="space-y-6">
       <PageTitle
         title="Syllabus Tracker"
         subtitle="Tier-1 chapters deliver ~30% of each subject. Accuracy auto-colors chapters: ≥70% green (gate passed), 40–70% amber, <40% red. Deleted chapters are excluded entirely."

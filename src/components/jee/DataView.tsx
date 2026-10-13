@@ -224,7 +224,7 @@ export function DataView() {
         subtitle="Local-first means your data lives in this browser's IndexedDB. Export a backup before clearing browser data."
       />
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div data-tutorial="data-export" className="grid md:grid-cols-2 gap-6">
         <SectionCard title="Backup & restore" subtitle="plain JSON — no cloud, no account">
           <div className="flex flex-col gap-3">
             <div className="text-xs text-muted-foreground grid grid-cols-2 sm:grid-cols-3 gap-2">

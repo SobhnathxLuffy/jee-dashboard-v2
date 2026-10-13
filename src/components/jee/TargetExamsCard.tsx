@@ -66,6 +66,7 @@ export function TargetExamsCard() {
   }
 
   return (
+    <div data-tutorial="target-exams">
     <SectionCard
       title="Target Exams & Deadlines"
       subtitle="Milestones derived automatically into strategic phases"
@@ -115,5 +116,6 @@ export function TargetExamsCard() {
 
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </SectionCard>
+    </div>
   );
 }

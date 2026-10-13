@@ -99,7 +99,7 @@ export function CoveragePaceCard() {
   }, [syllabus, weeksLeft]);
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-4 sm:p-5 card-shadow space-y-4">
+    <div data-tutorial="coverage-pace" className="bg-card border border-border rounded-2xl p-4 sm:p-5 card-shadow space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2.5">

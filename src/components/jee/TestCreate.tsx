@@ -221,7 +221,7 @@ export function TestCreateView({ nav, prefill }: { nav: NavController; prefill?:
   const previewCount = Math.min(10, orderedIds.length);
 
   return (
-    <div className="space-y-6">
+    <div data-tutorial="test-create" className="space-y-6">
       <PageTitle
         title="New CBT"
         subtitle="Chapter tests are first-class citizens — a Day-10 chapter test beats a 3-hour mock. Timer is configurable per test."

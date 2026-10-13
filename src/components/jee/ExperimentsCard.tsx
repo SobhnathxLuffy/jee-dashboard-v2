@@ -125,6 +125,7 @@ export function ExperimentsCard() {
   }
 
   return (
+    <div data-tutorial="experiments">
     <SectionCard
       title="Experiments & Skill Trials"
       subtitle="Run controlled tests on your routine: max 1 study test, max 2 skill trials (linked to Polymathy)"
@@ -436,5 +437,6 @@ export function ExperimentsCard() {
         </DialogContent>
       </Dialog>
     </SectionCard>
+    </div>
   );
 }

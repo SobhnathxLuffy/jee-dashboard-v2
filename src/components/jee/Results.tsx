@@ -477,7 +477,7 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
   const markedCount = stats.attempted - stats.pending;
 
   return (
-    <div className="space-y-6">
+    <div data-tutorial="results-tags" className="space-y-6">
       <PageTitle
         title={test.name}
         subtitle={`${test.date} · ${test.source} · ${test.duration_min} min · ${test.type} test`}

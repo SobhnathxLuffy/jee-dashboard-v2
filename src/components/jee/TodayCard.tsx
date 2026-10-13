@@ -147,6 +147,7 @@ export function TodayCard() {
   }
 
   return (
+    <div data-tutorial="today-card">
     <SectionCard
       title="Today's Focus & Activity"
       subtitle="Track deep work across goals and protect your daily streak"
@@ -309,7 +310,7 @@ export function TodayCard() {
         )}
 
         {/* Anki Daily Check-In Row */}
-        <div className="p-3 border border-border rounded-lg bg-card/80 space-y-2">
+        <div data-tutorial="anki-checkin" className="p-3 border border-border rounded-lg bg-card/80 space-y-2">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <button
@@ -375,5 +376,6 @@ export function TodayCard() {
       />
       <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </SectionCard>
+    </div>
   );
 }

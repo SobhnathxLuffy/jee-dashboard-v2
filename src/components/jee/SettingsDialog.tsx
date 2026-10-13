@@ -373,17 +373,38 @@ export function SettingsDialog({
           </div>
         )}
 
-        <div className="flex justify-end gap-2 pt-3 border-t border-border">
-          <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => setShow(false)}>
-            Cancel
-          </Button>
-          <Button
-            size="sm"
-            className="h-8 text-xs bg-emerald-700 hover:bg-emerald-800 text-white dark:bg-emerald-600"
-            onClick={handleSave}
-          >
-            Save Changes
-          </Button>
+        <div className="flex flex-wrap justify-between gap-2 pt-3 border-t border-border">
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-8 text-xs"
+              onClick={() => {
+                import("./Tutorial").then(({ startTutorial }) => startTutorial());
+                setShow(false);
+              }}
+            >
+              Replay tutorial
+            </Button>
+            <a
+              href="/guide"
+              className="inline-flex items-center justify-center h-8 px-3 text-xs rounded-md border border-border hover:bg-accent"
+            >
+              Open guide
+            </a>
+          </div>
+          <div className="flex gap-2">
+            <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => setShow(false)}>
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              className="h-8 text-xs bg-emerald-700 hover:bg-emerald-800 text-white dark:bg-emerald-600"
+              onClick={handleSave}
+            >
+              Save Changes
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

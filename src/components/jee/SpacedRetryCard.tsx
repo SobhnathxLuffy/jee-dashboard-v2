@@ -118,7 +118,7 @@ export function SpacedRetryCard({ nav }: { nav: NavController }) {
   }
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-4 sm:p-5 card-shadow space-y-4">
+    <div data-tutorial="spaced-retry" className="bg-card border border-border rounded-2xl p-4 sm:p-5 card-shadow space-y-4">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-600 dark:text-orange-400 grid place-items-center">
