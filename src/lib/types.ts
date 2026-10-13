@@ -390,8 +390,10 @@ export function uid(): string {
 }
 
 export function fmtSecs(s: number): string {
-  const m = Math.floor(s / 60);
-  const sec = Math.round(s % 60);
+  // Round to whole seconds first so 59.5s → 60s → 1m 00s (not "0m 60s")
+  const total = Math.round(s);
+  const m = Math.floor(total / 60);
+  const sec = total % 60;
   if (m >= 60) {
     return `${Math.floor(m / 60)}h ${m % 60}m`;
   }

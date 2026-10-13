@@ -25,7 +25,7 @@ import {
   saveTargetExams,
   saveTimeTargets,
 } from "@/lib/settings";
-import { deriveExamPhase, uid, type AnkiLimits, type TargetExam, type TimeTargets } from "@/lib/types";
+import { deriveExamPhase, todayStr, uid, type AnkiLimits, type TargetExam, type TimeTargets } from "@/lib/types";
 
 export function SettingsDialog({
   open,
@@ -75,7 +75,7 @@ export function SettingsDialog({
   function addExam() {
     setExams([
       ...exams,
-      { id: uid(), name: "New Exam", date: new Date().toISOString().slice(0, 10) },
+      { id: uid(), name: "New Exam", date: todayStr() },
     ]);
   }
 
@@ -159,7 +159,7 @@ export function SettingsDialog({
             </div>
             <div className="space-y-2.5">
               {exams.map((exam) => {
-                const a = new Date(`${new Date().toISOString().slice(0, 10)}T12:00:00`).getTime();
+                const a = new Date(`${todayStr()}T12:00:00`).getTime();
                 const b = new Date(`${exam.date}T12:00:00`).getTime();
                 const days = Math.ceil((b - a) / 86400000);
                 const phase = deriveExamPhase(days);

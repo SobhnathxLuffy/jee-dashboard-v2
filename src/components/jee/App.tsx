@@ -222,10 +222,23 @@ export function AppRoot() {
   }, []);
 
   const finishSession = useCallback(
-    (testId: string) => {
+    async (testId: string) => {
+      // Clean up the persisted session + cached PDF blob so the "paused test"
+      // banner can't reappear after submit. A resubmit must not duplicate responses.
+      if (testId) {
+        try {
+          const { delResponsesByTest } = await import("@/lib/idb");
+          await delResponsesByTest(testId);
+        } catch {
+          /* non-fatal — bulkPut below will still overwrite by id */
+        }
+      }
+      await clearSession();
+      await kvDel("active-test-paper-blob");
+      setResumable(null);
       setActivePdfBlob(null);
       setSession(null);
-      openResults(testId);
+      if (testId) openResults(testId);
     },
     [openResults]
   );

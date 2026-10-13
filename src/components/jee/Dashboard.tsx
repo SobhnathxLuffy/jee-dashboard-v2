@@ -150,14 +150,18 @@ export function DashboardView({ nav }: { nav: NavController }) {
   const due = useMemo(() => revisionDueRows(syllabus), [syllabus]);
 
   const totals = useMemo(() => {
-    const attempted = responses.filter((r) => r.attempted).length;
-    const correct = responses.filter((r) => r.correct).length;
-    const tagged = responses.filter((r) => !r.correct && r.error_tag).length;
-    const wrong = responses.filter((r) => r.attempted && !r.correct).length;
+    // Pending self-marks (correct === null, key-later) are not wrong — exclude from numerators AND denominators.
+    const attemptedRows = responses.filter((r) => r.attempted && r.correct !== null);
+    const attempted = attemptedRows.length;
+    const correct = attemptedRows.filter((r) => r.correct).length;
+    const wrong = attemptedRows.filter((r) => !r.correct).length;
+    const tagged = attemptedRows.filter((r) => !r.correct && r.error_tag).length;
+    const pending = responses.filter((r) => r.attempted && r.correct === null).length;
     return {
       attempted,
       correct,
       wrong,
+      pending,
       accuracy: attempted ? Math.round((correct / attempted) * 100) : 0,
       tagCoverage: wrong ? Math.round((tagged / wrong) * 100) : 100,
       timeTotal: responses.reduce((a, r) => a + (r.time_spent || 0), 0),
@@ -261,6 +265,16 @@ export function DashboardView({ nav }: { nav: NavController }) {
             sparkColor="var(--sem-stone)"
           />
         </StaggerItem>
+        {totals.pending > 0 && (
+          <StaggerItem>
+            <StatCard
+              label="Pending self-mark"
+              value={<CountUp value={totals.pending} />}
+              tone="warn"
+              hint="key-later questions awaiting your mark — not counted as wrong"
+            />
+          </StaggerItem>
+        )}
         <StaggerItem>
           <StatCard
             label="Error tagging"

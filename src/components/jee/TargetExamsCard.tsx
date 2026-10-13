@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SectionCard } from "./shared";
 import { getTargetExams } from "@/lib/settings";
-import { deriveExamPhase, type ExamPhase, type TargetExam } from "@/lib/types";
+import { deriveExamPhase, todayStr, type ExamPhase, type TargetExam } from "@/lib/types";
 import { SettingsDialog } from "./SettingsDialog";
 import { useDataVersion } from "@/lib/idb";
 
@@ -19,7 +19,7 @@ export function TargetExamsCard() {
     void getTargetExams().then(setExams);
   }, [dataVersion, settingsOpen]);
 
-  const todayMs = new Date(`${new Date().toISOString().slice(0, 10)}T12:00:00`).getTime();
+  const todayMs = new Date(`${todayStr()}T12:00:00`).getTime();
 
   const sortedExams = [...exams].sort((a, b) => a.date.localeCompare(b.date));
 

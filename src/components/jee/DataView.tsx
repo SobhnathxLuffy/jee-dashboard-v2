@@ -18,6 +18,7 @@ import {
 } from "@/lib/idb";
 import { buildDemoQuestions } from "@/lib/demo-questions";
 import { SYLLABUS_SEED } from "@/lib/syllabus-seed";
+import { todayStr } from "@/lib/types";
 
 /** Papers (PDF blobs) are base64-packed into the JSON up to this total size. */
 const PAPERS_EXPORT_CAP = 60 * 1024 * 1024;
@@ -119,7 +120,7 @@ export function DataView() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `jee-study-backup-${new Date().toISOString().slice(0, 10)}.json`;
+      a.download = `jee-study-backup-${todayStr()}.json`;
       a.click();
       URL.revokeObjectURL(url);
       await kvSet("last-export-at", new Date().toISOString());

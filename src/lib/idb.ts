@@ -327,6 +327,40 @@ export async function del<K extends StoreName>(store: K, id: string): Promise<vo
   });
 }
 
+/**
+ * Delete all responses for a given test_id (used before re-submitting a test
+ * so a resubmit can't duplicate response rows). Writes tombstones for sync.
+ */
+export async function delResponsesByTest(testId: string): Promise<void> {
+  const db = await getDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(["responses", "sync_tombstones"], "readwrite");
+    const os = tx.objectStore("responses");
+    const tombstones = tx.objectStore("sync_tombstones");
+    const req = os.getAll();
+    req.onsuccess = () => {
+      const rows = req.result as ResponseRecord[];
+      const now = Date.now();
+      for (const r of rows) {
+        if (r.test_id === testId) {
+          os.delete(r.id);
+          tombstones.put({
+            key: `responses:${r.id}`,
+            store: "responses",
+            id: r.id,
+            deleted_at: now,
+          } as TombstoneRow);
+        }
+      }
+    };
+    tx.oncomplete = () => {
+      notify("responses");
+      resolve();
+    };
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
 export async function wipeAll(): Promise<void> {
   for (const s of STORES) {
     await clear(s);
