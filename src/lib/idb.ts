@@ -139,6 +139,35 @@ function notify(store: StoreName) {
   }
 }
 
+// ─── Cross-tab live updates ────────────────────────────────────────────────────
+// useLive used to be tab-local: a second tab writing timelog/responses never
+// refreshed this tab (two tabs could both show — and act on — stale data, e.g.
+// both running the same resumed test). A BroadcastChannel mirrors every local
+// write to the other tabs, whose listeners re-read the store.
+let bcRef: BroadcastChannel | null = null;
+function broadcast(store: StoreName): void {
+  if (typeof window === "undefined" || typeof BroadcastChannel === "undefined") return;
+  try {
+    if (!bcRef) bcRef = new BroadcastChannel("jee-study-idb");
+    bcRef.postMessage(store);
+  } catch {
+    // channel errors are never fatal
+  }
+}
+if (typeof window !== "undefined" && typeof BroadcastChannel !== "undefined") {
+  try {
+    bcRef = new BroadcastChannel("jee-study-idb");
+    bcRef.onmessage = (e: MessageEvent) => {
+      const store = e.data as StoreName;
+      if (typeof store === "string" && (STORES as readonly string[]).includes(store)) {
+        notify(store);
+      }
+    };
+  } catch {
+    bcRef = null;
+  }
+}
+
 export function subscribeToStore(fn: (store: StoreName) => void): () => void {
   listeners.add(fn);
   return () => {
@@ -293,6 +322,7 @@ export async function put<K extends StoreName>(
     const req = os.put(value);
     req.onsuccess = () => {
       notify(store);
+      broadcast(store);
       resolve();
     };
     req.onerror = () => reject(req.error);
@@ -322,6 +352,7 @@ export async function bulkPut<K extends StoreName>(
     }
     tx.oncomplete = () => {
       notify(store);
+      broadcast(store);
       resolve();
     };
     tx.onerror = () => reject(tx.error);
@@ -349,6 +380,7 @@ export async function del<K extends StoreName>(store: K, id: string): Promise<vo
     }
     tx.oncomplete = () => {
       notify(store);
+      broadcast(store);
       resolve();
     };
     tx.onerror = () => reject(tx.error);
@@ -383,9 +415,73 @@ export async function delResponsesByTest(testId: string): Promise<void> {
     };
     tx.oncomplete = () => {
       notify("responses");
+      broadcast("responses");
       resolve();
     };
     tx.onerror = () => reject(tx.error);
+  });
+}
+
+/**
+ * ATOMIC test submission — the single write path every submit must use.
+ *
+ * Why this exists: the previous flow ran THREE separate transactions
+ * (delete old responses → bulkPut new responses → put test record). A second
+ * overlapping submit (two tabs / resumed expired session) or a page killed
+ * mid-flight could leave the store with the old responses deleted and nothing
+ * written — permanently destroying a completed attempt (bug report: 50 real
+ * responses lost, replaced by fabricated placeholders).
+ *
+ * This runs delete + insert + record in ONE readwrite transaction: either the
+ * whole submission lands, or nothing changes. Callers should check
+ * `get("tests", testId)` FIRST and never re-submit an existing test
+ * (idempotency guard lives in the caller).
+ */
+export async function submitTestRecord(
+  testId: string,
+  responses: ResponseRecord[],
+  record: TestRecord
+): Promise<void> {
+  const db = await getDB();
+  const now = Date.now();
+  if (isSyncedStore("responses")) {
+    for (const r of responses) {
+      if (!r.updated_at) r.updated_at = now;
+    }
+  }
+  if (isSyncedStore("tests") && !record.updated_at) record.updated_at = now;
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(["responses", "tests", "sync_tombstones"], "readwrite");
+    const os = tx.objectStore("responses");
+    const tombstones = tx.objectStore("sync_tombstones");
+    const tests = tx.objectStore("tests");
+    const req = os.getAll();
+    req.onsuccess = () => {
+      const rows = (req.result as ResponseRecord[]) || [];
+      const delAt = Date.now();
+      for (const r of rows) {
+        if (r.test_id === testId) {
+          os.delete(r.id);
+          tombstones.put({
+            key: `responses:${r.id}`,
+            store: "responses",
+            id: r.id,
+            deleted_at: delAt,
+          } as TombstoneRow);
+        }
+      }
+      for (const v of responses) os.put(v);
+      tests.put(record);
+    };
+    tx.oncomplete = () => {
+      notify("responses");
+      broadcast("responses");
+      notify("tests");
+      broadcast("tests");
+      resolve();
+    };
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error ?? new Error("submit transaction aborted"));
   });
 }
 
@@ -403,6 +499,7 @@ export async function clear<K extends StoreName>(store: K): Promise<void> {
     const req = os.clear();
     req.onsuccess = () => {
       notify(store);
+      broadcast(store);
       resolve();
     };
     req.onerror = () => reject(req.error);

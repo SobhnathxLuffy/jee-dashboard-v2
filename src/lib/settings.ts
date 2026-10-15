@@ -73,3 +73,35 @@ export async function getAnkiLimits(): Promise<AnkiLimits> {
 export async function saveAnkiLimits(limits: AnkiLimits): Promise<void> {
   await kvSet("anki-limits", limits);
 }
+
+// ─── Auto-tagging of mistakes ────────────────────────────────────────────────
+// Wrong / unattempted answers are auto-enrolled into the spaced retry loop at
+// submit time so the queue is never empty just because the user skipped manual
+// tagging. Every tag stays fully editable in the Results review.
+export type { ErrorTag } from "./types";
+
+export interface AutoTagConfig {
+  enabled: boolean;
+  /** default classification applied to every wrong / skipped question */
+  tag: "C" | "F" | "A";
+}
+
+export const DEFAULT_AUTO_TAG: AutoTagConfig = { enabled: true, tag: "C" };
+
+const AUTO_TAG_KEY = "auto-tag-config";
+
+export async function getAutoTagConfig(): Promise<AutoTagConfig> {
+  try {
+    const c = await kvGet<AutoTagConfig>(AUTO_TAG_KEY);
+    if (c && typeof c.enabled === "boolean" && ["C", "F", "A"].includes(c.tag)) {
+      return c;
+    }
+  } catch {
+    // fallback
+  }
+  return DEFAULT_AUTO_TAG;
+}
+
+export async function saveAutoTagConfig(cfg: AutoTagConfig): Promise<void> {
+  await kvSet(AUTO_TAG_KEY, cfg);
+}

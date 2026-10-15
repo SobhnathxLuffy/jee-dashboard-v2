@@ -24,8 +24,9 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { ChevronLeft, ChevronRight, Minus, Plus, Pin, CheckCircle2, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { saveSession, useLive } from "@/lib/idb";
+import { clearSession, saveSession, useLive } from "@/lib/idb";
 import { marksFor } from "@/lib/scoring";
+import { getAutoTagConfig } from "@/lib/settings";
 import {
   checkPdfAnswer,
   entryIsLetter,
@@ -317,6 +318,22 @@ export function PlayerView({
     if (submittingRef.current) return;
     submittingRef.current = true;
     const s = sessionRef.current;
+    const idb = await import("@/lib/idb");
+
+    // ── IDEMPOTENCY GUARD (data-destruction fix) ──
+    // A second overlapping submit (two tabs on the same shared session, or a
+    // resumed expired session after a reload) used to run
+    // delResponsesByTest() and WIPE the first submit's saved answers — the
+    // reported "CBT results empty, nothing tagged" bug. If this test record
+    // already exists, the work is done: drop the stale session and open the
+    // results instead of ever touching the saved rows.
+    const alreadySaved = await idb.get("tests", s.test_id);
+    if (alreadySaved) {
+      await clearSession();
+      onFinish(s.test_id);
+      return;
+    }
+
     // completion micro-interaction: one tasteful burst, brand palette
     // (research: canvas-confetti is the shipped ed-tech completion pattern)
     const celebrate = () => {
@@ -347,10 +364,12 @@ export function PlayerView({
     };
 
     if (s.mode === "cbt") {
-      const idb = await import("@/lib/idb");
       const allQs = await idb.getAll("questions");
       const fullQMap = new Map([...allQs.map((q) => [q.id, q] as const), ...qMap.entries()]);
       const scheme = { correct: s.marks_correct ?? 4, wrong: s.marks_wrong ?? -1 };
+      // auto-tag config: wrong / skipped questions enter the spaced retry loop
+      // automatically unless the user turned it off in Settings
+      const autoTag = await getAutoTagConfig();
       let pos = 0;
       for (const id of s.question_ids) {
         pos += 1;
@@ -359,7 +378,9 @@ export function PlayerView({
         const raw = s.answers[id];
         const selected = raw === undefined || raw === "" || raw === null ? null : raw;
         const attempted = selected !== null;
-        let correct = false;
+        // tri-state: null = pending/none — unattempted rows must NOT read as
+        // `correct: false` (that polluted accuracy & "wrong" filters)
+        let correct: boolean | null = null;
         if (attempted) {
           if (q.type === "MCQ") correct = selected === q.answer;
           else {
@@ -372,6 +393,10 @@ export function PlayerView({
         const marks = marksFor(attempted, correct, false, scheme);
         score += marks;
         subjectScores[q.subject] += marks;
+        // Auto-tag: every wrong or skipped question gets the default error tag
+        // (C by default) so the retry queue is populated without manual work.
+        const isMistake = !attempted || correct === false;
+        const errorTag = isMistake && autoTag.enabled && !s.is_practice ? autoTag.tag : null;
         responses.push({
           id: uid(),
           test_id: s.test_id,
@@ -381,7 +406,7 @@ export function PlayerView({
           attempted,
           q_no: pos,
           time_spent: Math.round(qTimes[id] ?? 0),
-          error_tag: null,
+          error_tag: errorTag,
           subject: q.subject,
           chapter: q.chapter,
           question_snippet: q.question.slice(0, 240),
@@ -405,10 +430,11 @@ export function PlayerView({
         question_ids: s.question_ids,
         marks_correct: scheme.correct,
         marks_wrong: scheme.wrong,
+        is_practice: s.is_practice ?? false,
       };
-      await idb.delResponsesByTest(s.test_id);
-      await idb.bulkPut("responses", responses);
-      await idb.put("tests", record);
+      // ATOMIC write: delete-old + insert-new + record in ONE transaction —
+      // a crash/tab-close mid-submit can no longer leave the test empty.
+      await idb.submitTestRecord(s.test_id, responses, record);
 
       const { logTestTime } = await import("@/lib/timelog");
       const totalQSec = Object.values(qTimes).reduce((a, b) => a + (b || 0), 0);
@@ -423,8 +449,11 @@ export function PlayerView({
         s.subject_order?.length === 1 ? s.subject_order[0] : undefined
       );
 
-      celebrate();
+      // Finish FIRST (clears the persisted session + navigates to results),
+      // confetti second — a reload during the celebration window can no longer
+      // leave a submitted test looking "paused/resumable".
       onFinish(s.test_id);
+      celebrate();
       return;
     }
 
@@ -491,11 +520,10 @@ export function PlayerView({
       pdf_meta: meta,
       marks_correct: scheme.correct,
       marks_wrong: scheme.wrong,
+      is_practice: s.is_practice ?? false,
     };
-    const idb = await import("@/lib/idb");
-    await idb.delResponsesByTest(s.test_id);
-    await idb.bulkPut("responses", responses);
-    await idb.put("tests", record);
+    // ATOMIC write (same guarantee as the CBT branch)
+    await idb.submitTestRecord(s.test_id, responses, record);
 
     const { logTestTime } = await import("@/lib/timelog");
     const totalQSec = Object.values(qTimes).reduce((a, b) => a + (b || 0), 0);
@@ -507,8 +535,8 @@ export function PlayerView({
     if (keyLater) {
       toast.info("Self-mark each question to compute your score.");
     }
-    celebrate();
     onFinish(s.test_id);
+    celebrate();
   }, [qMap, onFinish, slots]);
 
   // auto-submit when the clock hits zero
@@ -658,6 +686,19 @@ export function PlayerView({
 
   return (
     <div className="space-y-4">
+      {/* Floating submit — the in-header Submit scrolls behind the sticky app
+          header on shorter viewports, which read as "can't submit". A compact
+          always-reachable action keeps the exit one tap away. */}
+      {!confirmOpen ? (
+        <Button
+          onClick={() => setConfirmOpen(true)}
+          className="fixed bottom-4 right-4 z-40 shadow-lg bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:text-emerald-950"
+          aria-label="Submit test"
+        >
+          <CheckCircle2 className="w-4 h-4 mr-1.5" aria-hidden="true" />
+          Submit ({answeredCount}/{slots.length})
+        </Button>
+      ) : null}
       {/* header — the hairline under the clock drains away as time runs out */}
       <div
         className={cn(

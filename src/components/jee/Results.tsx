@@ -226,8 +226,19 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
     let alive = true;
     void (async () => {
       const { getAll, bulkPut } = await import("@/lib/idb");
+      // ── RACE FIX ── useLive("responses") starts as [] and streams in async.
+      // The hook-state guard above used to pass on first paint (empty array ≠
+      // "no responses"), fabricating placeholder rows OVER real ones whenever
+      // the tests store resolved first. Re-check against the DB itself — the
+      // authoritative source — before writing anything.
+      const existing = await getAll("responses");
+      if (!alive) return;
+      if (existing.some((r) => r.test_id === testId)) return;
+
       const allQs = await getAll("questions");
       const qm = new Map(allQs.map((q) => [q.id, q] as const));
+      const fallbackSubject =
+        (test.pdf_meta?.sections?.[0]?.subject as Subject | undefined) ?? "Physics";
       const recovered: ResponseRecord[] = [];
       let pos = 1;
       for (const qid of test.question_ids!) {
@@ -242,7 +253,7 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
           q_no: pos++,
           time_spent: Math.round(((test.duration_min || 60) * 60) / test.question_ids!.length),
           error_tag: null,
-          subject: q?.subject ?? "Chemistry",
+          subject: q?.subject ?? fallbackSubject,
           chapter: q?.chapter ?? "General",
           question_snippet: q ? q.question.slice(0, 240) : `Question ${pos - 1}`,
           correct_answer: q?.answer ?? "",
@@ -252,6 +263,9 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
       }
       if (recovered.length > 0 && alive) {
         await bulkPut("responses", recovered);
+        toast.warning(
+          "No saved answers found for this test — showing placeholders. The original attempt data was lost (likely a submit interrupted before the atomic-submit fix)."
+        );
       }
     })();
     return () => {
