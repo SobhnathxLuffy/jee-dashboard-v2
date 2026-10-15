@@ -1,0 +1,3821 @@
+{
+  "_meta": {
+    "app": "jee-study-app",
+    "version": 1,
+    "exported_at": "2026-10-15T07:39:13.120Z",
+    "pdf_blob_included": false,
+    "papers_included": 0,
+    "note": "pdf blob not included (kv entries with binary values are always skipped)",
+    "papers_note": "papers embedded as base64"
+  },
+  "questions": [
+    {
+      "id": "mv94rjoy_0001_f243b9",
+      "question": "The value of van't Hoff factor, i, for CH3COOH solution in water will be:",
+      "options": [
+        "Between 1 and 2",
+        "Less than 1",
+        "2",
+        "1"
+      ],
+      "answer": 0,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Solutions",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667471)",
+      "order": 1,
+      "created_at": 1792044061810,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0002_78822b",
+      "question": "The following solutions were prepared by dissolving 1 g of solute in 1 L of the solution. Arrange the following solutions in decreasing order of their molarity:\n(A) Glucose (molar mass = 180 g mol⁻¹)\n(B) NaOH (molar mass = 40 g mol⁻¹)\n(C) NaCl (molar mass = 58.5 g mol⁻¹)\n(D) KCl (molar mass = 74.5 g mol⁻¹)\n\nChoose the correct answer from the options given below:",
+      "options": [
+        "(A), (D), (C), (B)",
+        "(A), (B), (D), (C)",
+        "(B), (C), (D), (A)",
+        "(D), (C), (A), (B)"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Solutions",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667472)",
+      "order": 2,
+      "created_at": 1792044061811,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0003_8f62e2",
+      "question": "Match List-I with List-II:\n\nList-I (Solutions):\n(A) Saturated solution\n(B) Isotonic solutions\n(C) Binary solution\n(D) Hypertonic solution\n\nList-II (Explanation):\n(I) Solution having two components.\n(II) A solution whose osmotic pressure is more than that of another.\n(III) A solution which contains the maximum amount of solute that can be dissolved in a given amount of solvent at a given temperature.\n(IV) The solutions having same osmotic pressure at a given temperature.\n\nChoose the correct answer from the options given below:",
+      "options": [
+        "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)",
+        "(A)-(I), (B)-(III), (C)-(II), (D)-(IV)",
+        "(A)-(I), (B)-(II), (C)-(IV), (D)-(III)",
+        "(A)-(III), (B)-(IV), (C)-(I), (D)-(II)"
+      ],
+      "answer": 3,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Solutions",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667473)",
+      "order": 3,
+      "created_at": 1792044061812,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0004_88d352",
+      "question": "Give the reason for low concentration of oxygen in the blood and tissues of people living at high altitude:",
+      "options": [
+        "Both low temperature and high atmospheric pressure",
+        "Low temperature",
+        "Low atmospheric pressure",
+        "High atmospheric pressure"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Solutions",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667474)",
+      "order": 4,
+      "created_at": 1792044061813,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0005_0e5326",
+      "question": "Calculate the molality of KI if the density of 20% (mass/mass) aqueous solution of KI is 1.202 g mL⁻¹. (Molar mass of KI is 166 g mol⁻¹)",
+      "options": [
+        "1.5 mol kg⁻¹",
+        "1.2 mol kg⁻¹",
+        "15 mol kg⁻¹",
+        "0.12 mol kg⁻¹"
+      ],
+      "answer": 0,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Solutions",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667475)",
+      "order": 5,
+      "created_at": 1792044061814,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0006_18815a",
+      "question": "The unit of E_cell is:",
+      "options": [
+        "V m⁻¹",
+        "S cm⁻¹",
+        "V",
+        "S cm² mol⁻¹"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Electrochemistry",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667476)",
+      "order": 6,
+      "created_at": 1792044061815,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0007_128cee",
+      "question": "Match List-I with List-II:\n\nList-I (Property):\n(A) Cell constant\n(B) Molar conductance\n(C) Specific conductance\n(D) Conductance\n\nList-II (Unit):\n(I) cm⁻¹\n(II) ohm⁻¹ cm² mol⁻¹\n(III) ohm⁻¹ cm⁻¹\n(IV) ohm⁻¹\n\nChoose the correct answer from the options given below:",
+      "options": [
+        "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)",
+        "(A)-(I), (B)-(III), (C)-(II), (D)-(IV)",
+        "(A)-(I), (B)-(II), (C)-(IV), (D)-(III)",
+        "(A)-(III), (B)-(IV), (C)-(I), (D)-(II)"
+      ],
+      "answer": 0,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Electrochemistry",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667477)",
+      "order": 7,
+      "created_at": 1792044061816,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0008_7e3e3e",
+      "question": "The following statements describe various properties of a Mercury cell:\n(A) It converts energy of combustion into electrical energy\n(B) It is rechargeable\n(C) The cell reaction involved is Zn(Hg) + HgO(s) → ZnO(s) + Hg(l)\n(D) It is a low current device used in hearing aids\n\nChoose the correct answer from the options given below:",
+      "options": [
+        "(A), (B) and (D) only",
+        "(A) and (C) only",
+        "(A), (B), (C) and (D)",
+        "(C) and (D) only"
+      ],
+      "answer": 3,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Electrochemistry",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667478)",
+      "order": 8,
+      "created_at": 1792044061817,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0009_dc2826",
+      "question": "Which cell is used in automobiles and inverters?",
+      "options": [
+        "Mercury cell",
+        "Dry cell",
+        "Lead storage cell",
+        "Fuel cell"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Electrochemistry",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667479)",
+      "order": 9,
+      "created_at": 1792044061818,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0010_9a7eac",
+      "question": "A galvanic cell behaves as electrolytic cell when:",
+      "options": [
+        "E_cell = E_ext",
+        "E_cell = 0",
+        "E_ext > E_cell",
+        "E_cell > E_ext"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Electrochemistry",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667480)",
+      "order": 10,
+      "created_at": 1792044061819,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0011_352bb3",
+      "question": "Which of the following does not represent a correct application of the coordination compound?",
+      "options": [
+        "cis-platin effectively inhibit the growth of tumours.",
+        "chlorophyll help in photosynthesis",
+        "desferrioxime B is used in treatment of lead poisoning",
+        "cyanocobalamine, antipernicious anemia factor is a coordination compound of Co"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Coordination Compounds",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667481)",
+      "order": 11,
+      "created_at": 1792044061820,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0012_d4b935",
+      "question": "Arrange the following ions in increasing order of number of 3d-electrons:\n(A) Cr²⁺\n(B) Cu⁺\n(C) Ti³⁺\n(D) Mn⁺\n\nChoose the correct answer from the options given below:",
+      "options": [
+        "(B), (A), (C), (D)",
+        "(C), (A), (D), (B)",
+        "(C), (D), (A), (B)",
+        "(D), (B), (C), (A)"
+      ],
+      "answer": 1,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "d- and f-Block Elements",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667482)",
+      "order": 12,
+      "created_at": 1792044061821,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0013_d3f215",
+      "question": "The atomic number of Lanthanum is 57. Its electronic configuration will be:",
+      "options": [
+        "[Xe] 5d¹ 6s²",
+        "[Xe] 4f¹ 5d²",
+        "[Xe] 4f³",
+        "[Xe] 4f¹ 5d¹ 6s¹"
+      ],
+      "answer": 0,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "d- and f-Block Elements",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667483)",
+      "order": 13,
+      "created_at": 1792044061822,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0014_c8b373",
+      "question": "Match compound/elements of List-I with their uses given in List-II:\n\nList-I (Compound/Elements):\n(A) Magnesium based alloy is constituent of\n(B) Lanthanoid oxide\n(C) Mixed oxides of Lanthanoids are employed in\n(D) Misch metal\n\nList-II (Uses):\n(I) Bullets\n(II) Petroleum cracking\n(III) Television screen\n(IV) Lanthanoid metal and iron\n\nChoose the correct answer from the options given below:",
+      "options": [
+        "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)",
+        "(A)-(I), (B)-(III), (C)-(II), (D)-(IV)",
+        "(A)-(I), (B)-(II), (C)-(IV), (D)-(III)",
+        "(A)-(III), (B)-(IV), (C)-(I), (D)-(II)"
+      ],
+      "answer": 1,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "d- and f-Block Elements",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667484)",
+      "order": 14,
+      "created_at": 1792044061823,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0015_808e98",
+      "question": "What is the color of Fe³⁺(aq) ion?",
+      "options": [
+        "Yellow",
+        "Violet",
+        "Colourless",
+        "Bluepink"
+      ],
+      "answer": 0,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "d- and f-Block Elements",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667485)",
+      "order": 15,
+      "created_at": 1792044061824,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0016_91280d",
+      "question": "Why is HCl not used to make the medium acidic in oxidation reactions of KMnO4 in acidic medium?",
+      "options": [
+        "KMnO4 is weaker oxidizing agent than HCl",
+        "KMnO4 oxidises HCl into Cl2 which is also an oxidizing agent",
+        "Both HCl and KMnO4 act as oxidizing agent",
+        "KMnO4 act as a reducing agent in the presence of HCl"
+      ],
+      "answer": 1,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "d- and f-Block Elements",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667486)",
+      "order": 16,
+      "created_at": 1792044061825,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0017_5fd5ad",
+      "question": "Acidified potassium dichromate oxidizes sulphides (S²⁻) to:",
+      "options": [
+        "SO4²⁻",
+        "SO3²⁻",
+        "sulphur (S)",
+        "SO2"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "d- and f-Block Elements",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667487)",
+      "order": 17,
+      "created_at": 1792044061826,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0018_ba347a",
+      "question": "What is the decreasing order of field strength of given ligands?\n(A) S²⁻\n(B) Ethylenediamine\n(C) NCS⁻\n(D) CN⁻\n\nChoose the correct answer from the options given below:",
+      "options": [
+        "(A), (C), (B), (D)",
+        "(A), (B), (C), (D)",
+        "(D), (B), (C), (A)",
+        "(D), (C), (B), (A)"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Coordination Compounds",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667488)",
+      "order": 18,
+      "created_at": 1792044061827,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0019_cdd712",
+      "question": "What is the IUPAC name of [Pt(NH3)2Cl2] ?",
+      "options": [
+        "Diamminedichloridoplatinum (IV)",
+        "Diamminedichloridoplatinum (II)",
+        "Diamminedichloridoplatinum (0)",
+        "Dichloridodiammineplatinum (IV)"
+      ],
+      "answer": 1,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Coordination Compounds",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667489)",
+      "order": 19,
+      "created_at": 1792044061828,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0020_251bd2",
+      "question": "Select the correct statements for [Fe(CN)6]³⁻ complex:\n(A) Paramagnetic\n(B) sp³d² hybridization\n(C) Magnetic moment = 5.92 BM\n(D) d²sp³ hybridization\n\nChoose the correct answer from the options given below:",
+      "options": [
+        "(A) and (D) only",
+        "(A), (B) and (C) only",
+        "(B) and (C) only",
+        "(B), (C) and (D) only"
+      ],
+      "answer": 0,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Coordination Compounds",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667490)",
+      "order": 20,
+      "created_at": 1792044061829,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0021_c69c61",
+      "question": "Match List-I with List-II:\n\nList-I:\n(A) Ambident nucleophiles\n(B) Plane polarized light\n(C) Superimposable mirror image\n(D) β-elimination reaction\n\nList-II:\n(I) Symmetrical object\n(II) Saytzeff rule\n(III) Cyanides and nitrites\n(IV) Nicol Prism\n\nChoose the correct answer from the options given below:",
+      "options": [
+        "(A)-(III), (B)-(IV), (C)-(I), (D)-(II)",
+        "(A)-(I), (B)-(III), (C)-(II), (D)-(IV)",
+        "(A)-(I), (B)-(II), (C)-(IV), (D)-(III)",
+        "(A)-(III), (B)-(IV), (C)-(II), (D)-(I)"
+      ],
+      "answer": 0,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Haloalkanes and Haloarenes",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667491)",
+      "order": 21,
+      "created_at": 1792044061830,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0022_9cecb6",
+      "question": "Optically active alkyl halide undergoing S_N2 substitution involves:",
+      "options": [
+        "retention of configuration",
+        "racemic mixture",
+        "inversion of configuration",
+        "formation of carbocation"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Haloalkanes and Haloarenes",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667492)",
+      "order": 22,
+      "created_at": 1792044061831,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0023_e87da9",
+      "question": "Gabriel phthalimide synthesis is used for the preparation of:",
+      "options": [
+        "tertiary amine",
+        "acid synthesis",
+        "primary amine",
+        "secondary amine"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Amines",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667493)",
+      "order": 23,
+      "created_at": 1792044061832,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0024_8add60",
+      "question": "C6H5-Cl + 2Na + CH3-Cl --(Heat, Dry ether)--> C6H5-CH3 + 2NaCl\n\nThe above reaction is an example of:",
+      "options": [
+        "Sandmeyer's reaction",
+        "Wurtz reaction",
+        "Wurtz Fittig reaction",
+        "Kolbe reaction"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Haloalkanes and Haloarenes",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667494)",
+      "order": 24,
+      "created_at": 1792044061833,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0025_09002a",
+      "question": "The reagent(s) used in hydroboration oxidation of propene are:\n(A) B2H6\n(B) H2O\n(C) H2O2\n(D) OH⁻\n\nChoose the correct answer from the options given below:",
+      "options": [
+        "(A), (B) and (D) only",
+        "(A), (B) and (C) only",
+        "(A), (B), (C) and (D)",
+        "(B), (C) and (D) only"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Alcohols, Phenols and Ethers",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667495)",
+      "order": 25,
+      "created_at": 1792044061834,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0026_fc8045",
+      "question": "The carbohydrate used as storage molecule in plants is:",
+      "options": [
+        "Starch",
+        "Glycogen",
+        "Cellulose",
+        "Glucose"
+      ],
+      "answer": 0,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Biomolecules",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667496)",
+      "order": 26,
+      "created_at": 1792044061835,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0027_d0d8f4",
+      "question": "Hell-Volhard Zelinsky reaction is used for the formation of:",
+      "options": [
+        "alcohols",
+        "aldehydes",
+        "ketones",
+        "α-halocarboxylic acids"
+      ],
+      "answer": 3,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Aldehydes, Ketones and Carboxylic Acids",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667497)",
+      "order": 27,
+      "created_at": 1792044061836,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0028_ecc785",
+      "question": "What is the correct sequence of increasing reactivity of the following compounds towards nucleophilic addition reaction?\n(A) Ethanal\n(B) Propanone\n(C) Propanal\n(D) Butanone\n\nChoose the correct answer from the options given below:",
+      "options": [
+        "(A), (B), (C), (D)",
+        "(D), (B), (C), (A)",
+        "(A), (C), (B), (D)",
+        "(C), (B), (D), (A)"
+      ],
+      "answer": 1,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Aldehydes, Ketones and Carboxylic Acids",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667498)",
+      "order": 28,
+      "created_at": 1792044061837,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0029_cd6f01",
+      "question": "Which of the following reagent(s) is required for the conversion of Benzene to methyl benzoate?\n(A) Br2/FeBr3\n(B) Mg, dry Ether\n(C) CO2, H3O⁺\n(D) Methanol, Conc. H2SO4\n\nChoose the correct answer from the options given below:",
+      "options": [
+        "(A), (B) and (C) only",
+        "(A), (B) and (D) only",
+        "(A), (B), (C) and (D)",
+        "(B), (C) and (D) only"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Aldehydes, Ketones and Carboxylic Acids",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667499)",
+      "order": 29,
+      "created_at": 1792044061838,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0030_5bd985",
+      "question": "Which reagent will distinguish Benzophenone from acetone?",
+      "options": [
+        "Fehling's reagent",
+        "Tollen's reagent",
+        "2,4-DNP reagent",
+        "I2/NaOH"
+      ],
+      "answer": 3,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Aldehydes, Ketones and Carboxylic Acids",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667500)",
+      "order": 30,
+      "created_at": 1792044061839,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0031_6ba5d5",
+      "question": "The structural feature in carbonyl compound for Aldol condensation:",
+      "options": [
+        "presence of at least one β-hydrogen",
+        "presence of at least one α-hydrogen",
+        "Concentrated base",
+        "lack of α hydrogen"
+      ],
+      "answer": 1,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Aldehydes, Ketones and Carboxylic Acids",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667501)",
+      "order": 31,
+      "created_at": 1792044061840,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0032_645b3d",
+      "question": "The nitrogen atom in amines is trivalent and possess an unshared pair of electrons. The geometry of trimethyl amine is:",
+      "options": [
+        "Tetrahedral",
+        "Pyramidal",
+        "Square planar",
+        "Triangular"
+      ],
+      "answer": 1,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Amines",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667502)",
+      "order": 32,
+      "created_at": 1792044061841,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0033_6d02a9",
+      "question": "What happens when C6H5-O-R is treated with HX?",
+      "options": [
+        "RX and C6H5OH are formed",
+        "ROH and C6H5X are formed",
+        "C6H4X2 and ROH are formed",
+        "RX and C6H5X are formed"
+      ],
+      "answer": 0,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Alcohols, Phenols and Ethers",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667503)",
+      "order": 33,
+      "created_at": 1792044061842,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0034_29bfa9",
+      "question": "In the nitration of benzene using a mixture of conc. H2SO4 and conc. HNO3, the nitrating species is:",
+      "options": [
+        "NO2⁻",
+        "NO2⁺",
+        "NO⁺",
+        "NO2 and NO2⁺"
+      ],
+      "answer": 1,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Haloalkanes and Haloarenes",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667504)",
+      "order": 34,
+      "created_at": 1792044061843,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0035_201c29",
+      "question": "Which of the following compounds will not give azo coupling reaction with benzene diazonium chloride?",
+      "options": [
+        "Nitrobenzene",
+        "Aniline",
+        "o-Toluidine",
+        "Phenol"
+      ],
+      "answer": 0,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Amines",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667505)",
+      "order": 35,
+      "created_at": 1792044061844,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0036_5e1a99",
+      "question": "Amylose is a water-soluble part of starch. What is the percentage solubility of it?",
+      "options": [
+        "20 to 30%",
+        "15 to 20%",
+        "30 to 60%",
+        "50 to 70%"
+      ],
+      "answer": 1,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Biomolecules",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667506)",
+      "order": 36,
+      "created_at": 1792044061845,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0037_3cfd20",
+      "question": "What is an example of globular protein?\n(A) Insulin\n(B) Keratin\n(C) Albumin\n(D) Myosin\n\nChoose the correct answer from the options given below:",
+      "options": [
+        "(A), (B) and (D) only",
+        "(A) and (C) only",
+        "(A), (B), (C) and (D)",
+        "(B), (C) and (D) only"
+      ],
+      "answer": 1,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Biomolecules",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667507)",
+      "order": 37,
+      "created_at": 1792044061846,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0038_ac3713",
+      "question": "Which types of bonds or interactions are found in the β-helix of protein?",
+      "options": [
+        "Ionic bond",
+        "Covalent interaction",
+        "H-bond",
+        "Banana bond"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Biomolecules",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667508)",
+      "order": 38,
+      "created_at": 1792044061847,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0039_c6c071",
+      "question": "Match the amino acid given in List-I with their one letter code given in List-II:\n\nList-I (Name of amino acid):\n(A) Lysine\n(B) Tryptophan\n(C) Tyrosine\n(D) Glutamine\n\nList-II (One letter code):\n(I) W\n(II) Q\n(III) K\n(IV) Y\n\nChoose the correct answer from the options given below:",
+      "options": [
+        "(A)-(II), (B)-(I), (C)-(III), (D)-(IV)",
+        "(A)-(III), (B)-(I), (C)-(IV), (D)-(II)",
+        "(A)-(I), (B)-(II), (C)-(IV), (D)-(III)",
+        "(A)-(III), (B)-(IV), (C)-(I), (D)-(II)"
+      ],
+      "answer": 1,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Biomolecules",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667509)",
+      "order": 39,
+      "created_at": 1792044061848,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0040_7c4e56",
+      "question": "Arrange the following compounds in increasing order of their acidic strength:\n(A) 3-nitrophenol\n(B) 3,5-Dinitrophenol\n(C) 2,4,6-Trinitrophenol\n(D) Phenol\n\nChoose the correct answer from the options given below:",
+      "options": [
+        "(D), (C), (B), (A)",
+        "(C), (A), (B), (D)",
+        "(D), (A), (B), (C)",
+        "(A), (B), (C), (D)"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Alcohols, Phenols and Ethers",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667510)",
+      "order": 40,
+      "created_at": 1792044061849,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0041_2c62a9",
+      "question": "Read the passage carefully and answer the question:\n\"The speed at which a chemical reaction takes place is called the rate of reaction. The rate of reaction depends on various factors like concentration of the reactants, temperature, etc. The relation between the rate of reaction and the concentration of reacting species is represented by the equation r = k[A]ˣ[B]ʸ, where x and y are the order of the reaction with respect to the reactants A and B, respectively. The overall order of the reaction is x + y. The rate of reaction can also be increased by the use of a catalyst which provides an alternate pathway of lower activation energy. It increases the rate of forward and backward reaction to an equal extent. It does not alter the Gibbs energy of the reaction.\"\n\nThe rate of a gaseous reaction is given by r = k[A][B]. If the volume of the reaction vessel is suddenly reduced to (1/4)th of its initial value, the reaction rate relating to the initial rate will become:",
+      "options": [
+        "2 times",
+        "1/4 times",
+        "16 times",
+        "1/16 times"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Chemical Kinetics",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667512)",
+      "order": 41,
+      "created_at": 1792044061850,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0042_87a379",
+      "question": "Calculate the order of a reaction whose Rate = k [A]^(1/2) [B]^(3/2):",
+      "options": [
+        "second order",
+        "half order",
+        "first order",
+        "zero order"
+      ],
+      "answer": 0,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Chemical Kinetics",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667513)",
+      "order": 42,
+      "created_at": 1792044061851,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0043_96ca7f",
+      "question": "The rate law of a reaction is given by r = k[CH3OCH3]^(3/2). If the pressure is measured in bar and time in minutes, then the unit of rate constant will be:",
+      "options": [
+        "bar^(1/2) min⁻¹",
+        "bar^(-3/2) min⁻¹",
+        "bar^(-1/2) min⁻¹",
+        "bar^(3/2) min⁻¹"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Chemical Kinetics",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667514)",
+      "order": 43,
+      "created_at": 1792044061852,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0044_663135",
+      "question": "If the rate of reaction becomes twenty-seven times upon increasing the concentration of reactant by three times, the order of this reaction is:",
+      "options": [
+        "0",
+        "1",
+        "3",
+        "2"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Chemical Kinetics",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667515)",
+      "order": 44,
+      "created_at": 1792044061853,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0045_44795c",
+      "question": "The role of a catalyst is to change:",
+      "options": [
+        "Gibbs energy of the reaction.",
+        "Enthalpy of a reaction.",
+        "Activation energy of a reaction.",
+        "Equilibrium constant."
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Chemical Kinetics",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667516)",
+      "order": 45,
+      "created_at": 1792044061854,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0046_f1dcd4",
+      "question": "Read the passage carefully and answer the question:\n\"Replacement of a hydrogen atom in a hydrocarbon by an alkoxy or aryloxy group yields a class of compounds known as ethers. Ethers are classified as symmetrical or unsymmetrical on the basis of groups attached to the oxygen atoms. Diethyl ether, a symmetrical ether, has been widely used as an inhalation anesthetic. Ethers can be prepared by acid catalyzed intermolecular dehydration of alcohols and Williamson's synthesis. Acid catalyzed dehydration of alcohols is not generally preferred as it gives a mixture of elimination and substitution products. In Williamson's synthesis, an alkyl halide is allowed to react with sodium alkoxide. Ethers containing substituted Alkyl groups may also be prepared by this method. The C-O bond in ether is weakly polar and is cleaved under drastic conditions with excess of hydrogen halides. In electrophilic substitution, the alkoxy group deactivates the aromatic ring and directs the incoming group to ortho and para positions.\"\n\nWhen ethanol is dehydrated in the presence of H2SO4 at 443 K and 413 K respectively the products formed are:",
+      "options": [
+        "Ethane and ethoxythane",
+        "Ethylmethyl ether and butene",
+        "Ethylmethyl ether and propene",
+        "Ethene and ethoxyethane"
+      ],
+      "answer": 3,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Alcohols, Phenols and Ethers",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667518)",
+      "order": 46,
+      "created_at": 1792044061855,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0047_84379d",
+      "question": "The major product in the reaction of anisole with bromine in ethanoic acid, is:",
+      "options": [
+        "o-bromoanisole",
+        "p-bromoanisole",
+        "m-bromoanisole",
+        "o-bromoanisole and p-bromoanisole"
+      ],
+      "answer": 1,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Alcohols, Phenols and Ethers",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667519)",
+      "order": 47,
+      "created_at": 1792044061856,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0048_78a583",
+      "question": "In Williamson synthesis, the alkoxide ion attacks the alkyl halide via which pathway?",
+      "options": [
+        "S_N2",
+        "S_N1",
+        "Depends on nature of alkoxide ion",
+        "Depends on the nature of Alkyl halide"
+      ],
+      "answer": 0,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Alcohols, Phenols and Ethers",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667520)",
+      "order": 48,
+      "created_at": 1792044061857,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0049_eadb2a",
+      "question": "Which is most reactive hydrogen halide for cleavage of ethers?",
+      "options": [
+        "HF",
+        "HCl",
+        "HBr",
+        "HI"
+      ],
+      "answer": 3,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Alcohols, Phenols and Ethers",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667521)",
+      "order": 49,
+      "created_at": 1792044061858,
+      "updated_at": 1792044069016
+    },
+    {
+      "id": "mv94rjoy_0050_8b688a",
+      "question": "Which type of ether is anisole?",
+      "options": [
+        "Dialkyl ether",
+        "Diaryl ether",
+        "Phenyl Alkyl ether",
+        "Alkoxy Alkyl ether"
+      ],
+      "answer": 2,
+      "tolerance": 0,
+      "type": "MCQ",
+      "subject": "Chemistry",
+      "chapter": "Alcohols, Phenols and Ethers",
+      "source": "CUET UG 2025 Chemistry (Question ID: 226895667522)",
+      "order": 50,
+      "created_at": 1792044061859,
+      "updated_at": 1792044069016
+    }
+  ],
+  "tests": [
+    {
+      "id": "486c55d5-da0f-49df-b32b-74e9d8e42f70",
+      "created_at": 1791971516345,
+      "date": "2026-10-13",
+      "name": "CUET Maths 2025 pyq (50 ques)",
+      "source": "NTA official",
+      "type": "external",
+      "duration_min": 60,
+      "score": 49,
+      "max_score": 250,
+      "subject_scores": {
+        "Mathematics": 49
+      },
+      "external_meta": {
+        "attempts": 16,
+        "wrong": 6
+      },
+      "updated_at": 1792049186641,
+      "marks_correct": 5,
+      "marks_wrong": -1
+    },
+    {
+      "id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "date": "2026-10-15",
+      "created_at": 1792048244004,
+      "name": "CUET UG 2025 Chemistry",
+      "source": "in-app",
+      "type": "chapter",
+      "duration_min": 47,
+      "score": 61,
+      "max_score": 250,
+      "subject_scores": {
+        "Physics": 0,
+        "Chemistry": 61,
+        "Mathematics": 0
+      },
+      "question_ids": [
+        "mv94rjoy_0001_f243b9",
+        "mv94rjoy_0002_78822b",
+        "mv94rjoy_0003_8f62e2",
+        "mv94rjoy_0004_88d352",
+        "mv94rjoy_0005_0e5326",
+        "mv94rjoy_0006_18815a",
+        "mv94rjoy_0007_128cee",
+        "mv94rjoy_0008_7e3e3e",
+        "mv94rjoy_0009_dc2826",
+        "mv94rjoy_0010_9a7eac",
+        "mv94rjoy_0011_352bb3",
+        "mv94rjoy_0012_d4b935",
+        "mv94rjoy_0013_d3f215",
+        "mv94rjoy_0014_c8b373",
+        "mv94rjoy_0015_808e98",
+        "mv94rjoy_0016_91280d",
+        "mv94rjoy_0017_5fd5ad",
+        "mv94rjoy_0018_ba347a",
+        "mv94rjoy_0019_cdd712",
+        "mv94rjoy_0020_251bd2",
+        "mv94rjoy_0021_c69c61",
+        "mv94rjoy_0022_9cecb6",
+        "mv94rjoy_0023_e87da9",
+        "mv94rjoy_0024_8add60",
+        "mv94rjoy_0025_09002a",
+        "mv94rjoy_0026_fc8045",
+        "mv94rjoy_0027_d0d8f4",
+        "mv94rjoy_0028_ecc785",
+        "mv94rjoy_0029_cd6f01",
+        "mv94rjoy_0030_5bd985",
+        "mv94rjoy_0031_6ba5d5",
+        "mv94rjoy_0032_645b3d",
+        "mv94rjoy_0033_6d02a9",
+        "mv94rjoy_0034_29bfa9",
+        "mv94rjoy_0035_201c29",
+        "mv94rjoy_0036_5e1a99",
+        "mv94rjoy_0037_3cfd20",
+        "mv94rjoy_0038_ac3713",
+        "mv94rjoy_0039_c6c071",
+        "mv94rjoy_0040_7c4e56",
+        "mv94rjoy_0041_2c62a9",
+        "mv94rjoy_0042_87a379",
+        "mv94rjoy_0043_96ca7f",
+        "mv94rjoy_0044_663135",
+        "mv94rjoy_0045_44795c",
+        "mv94rjoy_0046_f1dcd4",
+        "mv94rjoy_0047_84379d",
+        "mv94rjoy_0048_78a583",
+        "mv94rjoy_0049_eadb2a",
+        "mv94rjoy_0050_8b688a"
+      ],
+      "marks_correct": 5,
+      "marks_wrong": -1,
+      "updated_at": 1792048244019
+    },
+    {
+      "id": "7813c306-a9f2-475a-9519-f43cf502fe02",
+      "created_at": 1791983683818,
+      "date": "2026-10-14",
+      "name": "CUET Physics 2025 pyq (50 q)",
+      "source": "NTA official",
+      "type": "external",
+      "duration_min": 60,
+      "score": 41,
+      "max_score": 250,
+      "subject_scores": {
+        "Physics": 41
+      },
+      "external_meta": {
+        "attempts": 25,
+        "wrong": 14
+      },
+      "updated_at": 1792049176737,
+      "marks_correct": 5,
+      "marks_wrong": -1
+    }
+  ],
+  "responses": [
+    {
+      "id": "007cfd14-f7e1-4f91-a681-ea48db03bfb8",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0002_78822b",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 2,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Solutions",
+      "question_snippet": "The following solutions were prepared by dissolving 1 g of solute in 1 L of the solution. Arrange the following solutions in decreasing order of their molarity:\n(A) Glucose (molar mass = 180 g mol⁻¹)\n(B) NaOH (molar mass = 40 g mol⁻¹)\n(C) N",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "(A), (D), (C), (B)",
+        "(A), (B), (D), (C)",
+        "(B), (C), (D), (A)",
+        "(D), (C), (A), (B)"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "046ae436-12a2-4eaa-99aa-3c79ba63b043",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0009_dc2826",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 9,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Electrochemistry",
+      "question_snippet": "Which cell is used in automobiles and inverters?",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "Mercury cell",
+        "Dry cell",
+        "Lead storage cell",
+        "Fuel cell"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "08e64df8-88de-4840-b404-689bd1e9364a",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0042_87a379",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 42,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Chemical Kinetics",
+      "question_snippet": "Calculate the order of a reaction whose Rate = k [A]^(1/2) [B]^(3/2):",
+      "correct_answer": 0,
+      "type": "MCQ",
+      "options": [
+        "second order",
+        "half order",
+        "first order",
+        "zero order"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "09709bb4-2320-4c90-9ca0-b1da9bddc212",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0030_5bd985",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 30,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Aldehydes, Ketones and Carboxylic Acids",
+      "question_snippet": "Which reagent will distinguish Benzophenone from acetone?",
+      "correct_answer": 3,
+      "type": "MCQ",
+      "options": [
+        "Fehling's reagent",
+        "Tollen's reagent",
+        "2,4-DNP reagent",
+        "I2/NaOH"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "099f8b9f-cf2a-4f50-a89b-7eddfb885ccd",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0040_7c4e56",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 40,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Alcohols, Phenols and Ethers",
+      "question_snippet": "Arrange the following compounds in increasing order of their acidic strength:\n(A) 3-nitrophenol\n(B) 3,5-Dinitrophenol\n(C) 2,4,6-Trinitrophenol\n(D) Phenol\n\nChoose the correct answer from the options given below:",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "(D), (C), (B), (A)",
+        "(C), (A), (B), (D)",
+        "(D), (A), (B), (C)",
+        "(A), (B), (C), (D)"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "0d00c8ba-6ea6-4d96-8d6a-73837341cdda",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0018_ba347a",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 18,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Coordination Compounds",
+      "question_snippet": "What is the decreasing order of field strength of given ligands?\n(A) S²⁻\n(B) Ethylenediamine\n(C) NCS⁻\n(D) CN⁻\n\nChoose the correct answer from the options given below:",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "(A), (C), (B), (D)",
+        "(A), (B), (C), (D)",
+        "(D), (B), (C), (A)",
+        "(D), (C), (B), (A)"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "0f733c43-aa71-4d2d-b71c-99196f230d43",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0024_8add60",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 24,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Haloalkanes and Haloarenes",
+      "question_snippet": "C6H5-Cl + 2Na + CH3-Cl --(Heat, Dry ether)--> C6H5-CH3 + 2NaCl\n\nThe above reaction is an example of:",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "Sandmeyer's reaction",
+        "Wurtz reaction",
+        "Wurtz Fittig reaction",
+        "Kolbe reaction"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "16cd23cb-24ae-491e-9ec4-4d7b80fae52e",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0023_e87da9",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 23,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Amines",
+      "question_snippet": "Gabriel phthalimide synthesis is used for the preparation of:",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "tertiary amine",
+        "acid synthesis",
+        "primary amine",
+        "secondary amine"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "2a532476-5a63-46f3-b42e-1792a683893d",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0041_2c62a9",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 41,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Chemical Kinetics",
+      "question_snippet": "Read the passage carefully and answer the question:\n\"The speed at which a chemical reaction takes place is called the rate of reaction. The rate of reaction depends on various factors like concentration of the reactants, temperature, etc. T",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "2 times",
+        "1/4 times",
+        "16 times",
+        "1/16 times"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "2f270061-3040-41ef-9450-039fe251949b",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0031_6ba5d5",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 31,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Aldehydes, Ketones and Carboxylic Acids",
+      "question_snippet": "The structural feature in carbonyl compound for Aldol condensation:",
+      "correct_answer": 1,
+      "type": "MCQ",
+      "options": [
+        "presence of at least one β-hydrogen",
+        "presence of at least one α-hydrogen",
+        "Concentrated base",
+        "lack of α hydrogen"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "32468694-31bd-4d12-8c8b-a67c09ba53cc",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0027_d0d8f4",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 27,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Aldehydes, Ketones and Carboxylic Acids",
+      "question_snippet": "Hell-Volhard Zelinsky reaction is used for the formation of:",
+      "correct_answer": 3,
+      "type": "MCQ",
+      "options": [
+        "alcohols",
+        "aldehydes",
+        "ketones",
+        "α-halocarboxylic acids"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "39f9a75d-094f-4743-a043-9bb6fb174d83",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0005_0e5326",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 5,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Solutions",
+      "question_snippet": "Calculate the molality of KI if the density of 20% (mass/mass) aqueous solution of KI is 1.202 g mL⁻¹. (Molar mass of KI is 166 g mol⁻¹)",
+      "correct_answer": 0,
+      "type": "MCQ",
+      "options": [
+        "1.5 mol kg⁻¹",
+        "1.2 mol kg⁻¹",
+        "15 mol kg⁻¹",
+        "0.12 mol kg⁻¹"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "4190f14d-353f-4bb7-8baa-2f56b562d321",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0004_88d352",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 4,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Solutions",
+      "question_snippet": "Give the reason for low concentration of oxygen in the blood and tissues of people living at high altitude:",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "Both low temperature and high atmospheric pressure",
+        "Low temperature",
+        "Low atmospheric pressure",
+        "High atmospheric pressure"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "462a85e8-7021-4f9e-8791-b52d63761afe",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0028_ecc785",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 28,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Aldehydes, Ketones and Carboxylic Acids",
+      "question_snippet": "What is the correct sequence of increasing reactivity of the following compounds towards nucleophilic addition reaction?\n(A) Ethanal\n(B) Propanone\n(C) Propanal\n(D) Butanone\n\nChoose the correct answer from the options given below:",
+      "correct_answer": 1,
+      "type": "MCQ",
+      "options": [
+        "(A), (B), (C), (D)",
+        "(D), (B), (C), (A)",
+        "(A), (C), (B), (D)",
+        "(C), (B), (D), (A)"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "4bd0ba95-680e-4779-be61-0fa4fb3bf09c",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0017_5fd5ad",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 17,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "d- and f-Block Elements",
+      "question_snippet": "Acidified potassium dichromate oxidizes sulphides (S²⁻) to:",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "SO4²⁻",
+        "SO3²⁻",
+        "sulphur (S)",
+        "SO2"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "4c725be8-8991-4afd-9543-90695a695d26",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0006_18815a",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 6,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Electrochemistry",
+      "question_snippet": "The unit of E_cell is:",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "V m⁻¹",
+        "S cm⁻¹",
+        "V",
+        "S cm² mol⁻¹"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "512b64ed-0680-4454-adf9-77f2384afc5c",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0026_fc8045",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 26,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Biomolecules",
+      "question_snippet": "The carbohydrate used as storage molecule in plants is:",
+      "correct_answer": 0,
+      "type": "MCQ",
+      "options": [
+        "Starch",
+        "Glycogen",
+        "Cellulose",
+        "Glucose"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "5afc4da8-7064-4906-9931-df22d922cced",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0020_251bd2",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 20,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Coordination Compounds",
+      "question_snippet": "Select the correct statements for [Fe(CN)6]³⁻ complex:\n(A) Paramagnetic\n(B) sp³d² hybridization\n(C) Magnetic moment = 5.92 BM\n(D) d²sp³ hybridization\n\nChoose the correct answer from the options given below:",
+      "correct_answer": 0,
+      "type": "MCQ",
+      "options": [
+        "(A) and (D) only",
+        "(A), (B) and (C) only",
+        "(B) and (C) only",
+        "(B), (C) and (D) only"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "60cf386d-f4bc-4f8f-8d60-625178ef6d28",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0044_663135",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 44,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Chemical Kinetics",
+      "question_snippet": "If the rate of reaction becomes twenty-seven times upon increasing the concentration of reactant by three times, the order of this reaction is:",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "0",
+        "1",
+        "3",
+        "2"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "62af5bd4-3cc1-4855-a1d9-f6dfc8b3bd9f",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0037_3cfd20",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 37,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Biomolecules",
+      "question_snippet": "What is an example of globular protein?\n(A) Insulin\n(B) Keratin\n(C) Albumin\n(D) Myosin\n\nChoose the correct answer from the options given below:",
+      "correct_answer": 1,
+      "type": "MCQ",
+      "options": [
+        "(A), (B) and (D) only",
+        "(A) and (C) only",
+        "(A), (B), (C) and (D)",
+        "(B), (C) and (D) only"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "760474b4-cc10-44b0-a469-3463cd1889e8",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0048_78a583",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 48,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Alcohols, Phenols and Ethers",
+      "question_snippet": "In Williamson synthesis, the alkoxide ion attacks the alkyl halide via which pathway?",
+      "correct_answer": 0,
+      "type": "MCQ",
+      "options": [
+        "S_N2",
+        "S_N1",
+        "Depends on nature of alkoxide ion",
+        "Depends on the nature of Alkyl halide"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "81de339c-b7d9-4059-9369-b3b9a0c170d5",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0007_128cee",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 7,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Electrochemistry",
+      "question_snippet": "Match List-I with List-II:\n\nList-I (Property):\n(A) Cell constant\n(B) Molar conductance\n(C) Specific conductance\n(D) Conductance\n\nList-II (Unit):\n(I) cm⁻¹\n(II) ohm⁻¹ cm² mol⁻¹\n(III) ohm⁻¹ cm⁻¹\n(IV) ohm⁻¹\n\nChoose the correct answer from the o",
+      "correct_answer": 0,
+      "type": "MCQ",
+      "options": [
+        "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)",
+        "(A)-(I), (B)-(III), (C)-(II), (D)-(IV)",
+        "(A)-(I), (B)-(II), (C)-(IV), (D)-(III)",
+        "(A)-(III), (B)-(IV), (C)-(I), (D)-(II)"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "826a2829-a23a-49b5-b5bb-aceee4110a2a",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0035_201c29",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 35,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Amines",
+      "question_snippet": "Which of the following compounds will not give azo coupling reaction with benzene diazonium chloride?",
+      "correct_answer": 0,
+      "type": "MCQ",
+      "options": [
+        "Nitrobenzene",
+        "Aniline",
+        "o-Toluidine",
+        "Phenol"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "84ffb488-4371-48ec-94b4-606b52bd741c",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0034_29bfa9",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 34,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Haloalkanes and Haloarenes",
+      "question_snippet": "In the nitration of benzene using a mixture of conc. H2SO4 and conc. HNO3, the nitrating species is:",
+      "correct_answer": 1,
+      "type": "MCQ",
+      "options": [
+        "NO2⁻",
+        "NO2⁺",
+        "NO⁺",
+        "NO2 and NO2⁺"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "88513d61-87b5-42a4-ac55-b3d29e160c31",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0036_5e1a99",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 36,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Biomolecules",
+      "question_snippet": "Amylose is a water-soluble part of starch. What is the percentage solubility of it?",
+      "correct_answer": 1,
+      "type": "MCQ",
+      "options": [
+        "20 to 30%",
+        "15 to 20%",
+        "30 to 60%",
+        "50 to 70%"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "8c4e56a5-b999-4608-a1d8-033fc1d5d004",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0045_44795c",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 45,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Chemical Kinetics",
+      "question_snippet": "The role of a catalyst is to change:",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "Gibbs energy of the reaction.",
+        "Enthalpy of a reaction.",
+        "Activation energy of a reaction.",
+        "Equilibrium constant."
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "90200339-f881-4d43-8cc5-6a3eae6937cf",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0012_d4b935",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 12,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "d- and f-Block Elements",
+      "question_snippet": "Arrange the following ions in increasing order of number of 3d-electrons:\n(A) Cr²⁺\n(B) Cu⁺\n(C) Ti³⁺\n(D) Mn⁺\n\nChoose the correct answer from the options given below:",
+      "correct_answer": 1,
+      "type": "MCQ",
+      "options": [
+        "(B), (A), (C), (D)",
+        "(C), (A), (D), (B)",
+        "(C), (D), (A), (B)",
+        "(D), (B), (C), (A)"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "917d61d0-c92e-4435-9caf-604bbd26398a",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0001_f243b9",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 1,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Solutions",
+      "question_snippet": "The value of van't Hoff factor, i, for CH3COOH solution in water will be:",
+      "correct_answer": 0,
+      "type": "MCQ",
+      "options": [
+        "Between 1 and 2",
+        "Less than 1",
+        "2",
+        "1"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "951de9f6-c75d-4470-a63a-b17c78b46657",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0043_96ca7f",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 43,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Chemical Kinetics",
+      "question_snippet": "The rate law of a reaction is given by r = k[CH3OCH3]^(3/2). If the pressure is measured in bar and time in minutes, then the unit of rate constant will be:",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "bar^(1/2) min⁻¹",
+        "bar^(-3/2) min⁻¹",
+        "bar^(-1/2) min⁻¹",
+        "bar^(3/2) min⁻¹"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "96ad62c0-1c0c-4513-8f4a-29f6df8d7c2e",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0029_cd6f01",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 29,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Aldehydes, Ketones and Carboxylic Acids",
+      "question_snippet": "Which of the following reagent(s) is required for the conversion of Benzene to methyl benzoate?\n(A) Br2/FeBr3\n(B) Mg, dry Ether\n(C) CO2, H3O⁺\n(D) Methanol, Conc. H2SO4\n\nChoose the correct answer from the options given below:",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "(A), (B) and (C) only",
+        "(A), (B) and (D) only",
+        "(A), (B), (C) and (D)",
+        "(B), (C) and (D) only"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "9b0b8aad-6efb-40c0-8d0d-68b6a46c4983",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0015_808e98",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 15,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "d- and f-Block Elements",
+      "question_snippet": "What is the color of Fe³⁺(aq) ion?",
+      "correct_answer": 0,
+      "type": "MCQ",
+      "options": [
+        "Yellow",
+        "Violet",
+        "Colourless",
+        "Bluepink"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "9d277492-f28a-4ce9-8b1f-a538ebb160cc",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0050_8b688a",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 50,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Alcohols, Phenols and Ethers",
+      "question_snippet": "Which type of ether is anisole?",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "Dialkyl ether",
+        "Diaryl ether",
+        "Phenyl Alkyl ether",
+        "Alkoxy Alkyl ether"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "a107c5cc-9d06-4647-a15e-c7e14dc6973f",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0047_84379d",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 47,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Alcohols, Phenols and Ethers",
+      "question_snippet": "The major product in the reaction of anisole with bromine in ethanoic acid, is:",
+      "correct_answer": 1,
+      "type": "MCQ",
+      "options": [
+        "o-bromoanisole",
+        "p-bromoanisole",
+        "m-bromoanisole",
+        "o-bromoanisole and p-bromoanisole"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "a4fa42ad-fc39-4af6-91e1-8db33deae726",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0021_c69c61",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 21,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Haloalkanes and Haloarenes",
+      "question_snippet": "Match List-I with List-II:\n\nList-I:\n(A) Ambident nucleophiles\n(B) Plane polarized light\n(C) Superimposable mirror image\n(D) β-elimination reaction\n\nList-II:\n(I) Symmetrical object\n(II) Saytzeff rule\n(III) Cyanides and nitrites\n(IV) Nicol Pr",
+      "correct_answer": 0,
+      "type": "MCQ",
+      "options": [
+        "(A)-(III), (B)-(IV), (C)-(I), (D)-(II)",
+        "(A)-(I), (B)-(III), (C)-(II), (D)-(IV)",
+        "(A)-(I), (B)-(II), (C)-(IV), (D)-(III)",
+        "(A)-(III), (B)-(IV), (C)-(II), (D)-(I)"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "b33b50f4-fdad-49d8-8c88-eb890f533603",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0038_ac3713",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 38,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Biomolecules",
+      "question_snippet": "Which types of bonds or interactions are found in the β-helix of protein?",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "Ionic bond",
+        "Covalent interaction",
+        "H-bond",
+        "Banana bond"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "b87211d1-01b5-49a2-810c-3ca265464835",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0016_91280d",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 16,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "d- and f-Block Elements",
+      "question_snippet": "Why is HCl not used to make the medium acidic in oxidation reactions of KMnO4 in acidic medium?",
+      "correct_answer": 1,
+      "type": "MCQ",
+      "options": [
+        "KMnO4 is weaker oxidizing agent than HCl",
+        "KMnO4 oxidises HCl into Cl2 which is also an oxidizing agent",
+        "Both HCl and KMnO4 act as oxidizing agent",
+        "KMnO4 act as a reducing agent in the presence of HCl"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "c2579a39-4676-415c-98bc-1b6a65405cc2",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0019_cdd712",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 19,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Coordination Compounds",
+      "question_snippet": "What is the IUPAC name of [Pt(NH3)2Cl2] ?",
+      "correct_answer": 1,
+      "type": "MCQ",
+      "options": [
+        "Diamminedichloridoplatinum (IV)",
+        "Diamminedichloridoplatinum (II)",
+        "Diamminedichloridoplatinum (0)",
+        "Dichloridodiammineplatinum (IV)"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "ca3cdcc5-218c-4bbd-9ce3-ecabd00327ff",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0010_9a7eac",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 10,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Electrochemistry",
+      "question_snippet": "A galvanic cell behaves as electrolytic cell when:",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "E_cell = E_ext",
+        "E_cell = 0",
+        "E_ext > E_cell",
+        "E_cell > E_ext"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "cc1e3ad3-5886-4397-bfbd-cdf59f2d0b47",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0033_6d02a9",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 33,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Alcohols, Phenols and Ethers",
+      "question_snippet": "What happens when C6H5-O-R is treated with HX?",
+      "correct_answer": 0,
+      "type": "MCQ",
+      "options": [
+        "RX and C6H5OH are formed",
+        "ROH and C6H5X are formed",
+        "C6H4X2 and ROH are formed",
+        "RX and C6H5X are formed"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "cf3870f8-0065-46bc-94f0-03302fea9daf",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0049_eadb2a",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 49,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Alcohols, Phenols and Ethers",
+      "question_snippet": "Which is most reactive hydrogen halide for cleavage of ethers?",
+      "correct_answer": 3,
+      "type": "MCQ",
+      "options": [
+        "HF",
+        "HCl",
+        "HBr",
+        "HI"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "cfa62f79-f471-4346-adc6-069feeefd187",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0032_645b3d",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 32,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Amines",
+      "question_snippet": "The nitrogen atom in amines is trivalent and possess an unshared pair of electrons. The geometry of trimethyl amine is:",
+      "correct_answer": 1,
+      "type": "MCQ",
+      "options": [
+        "Tetrahedral",
+        "Pyramidal",
+        "Square planar",
+        "Triangular"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "dddd8dfe-56fc-4c67-995b-334680f849d3",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0022_9cecb6",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 22,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Haloalkanes and Haloarenes",
+      "question_snippet": "Optically active alkyl halide undergoing S_N2 substitution involves:",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "retention of configuration",
+        "racemic mixture",
+        "inversion of configuration",
+        "formation of carbocation"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "e0c7d2c1-71c4-47f9-ae43-fb854e66fa22",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0039_c6c071",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 39,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Biomolecules",
+      "question_snippet": "Match the amino acid given in List-I with their one letter code given in List-II:\n\nList-I (Name of amino acid):\n(A) Lysine\n(B) Tryptophan\n(C) Tyrosine\n(D) Glutamine\n\nList-II (One letter code):\n(I) W\n(II) Q\n(III) K\n(IV) Y\n\nChoose the correct",
+      "correct_answer": 1,
+      "type": "MCQ",
+      "options": [
+        "(A)-(II), (B)-(I), (C)-(III), (D)-(IV)",
+        "(A)-(III), (B)-(I), (C)-(IV), (D)-(II)",
+        "(A)-(I), (B)-(II), (C)-(IV), (D)-(III)",
+        "(A)-(III), (B)-(IV), (C)-(I), (D)-(II)"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "e6374037-d3fc-4873-ad79-8eedfd4416fc",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0013_d3f215",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 13,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "d- and f-Block Elements",
+      "question_snippet": "The atomic number of Lanthanum is 57. Its electronic configuration will be:",
+      "correct_answer": 0,
+      "type": "MCQ",
+      "options": [
+        "[Xe] 5d¹ 6s²",
+        "[Xe] 4f¹ 5d²",
+        "[Xe] 4f³",
+        "[Xe] 4f¹ 5d¹ 6s¹"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "e7e7fcc7-fb20-42c3-86b4-372d2d1eb32c",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0025_09002a",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 25,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Alcohols, Phenols and Ethers",
+      "question_snippet": "The reagent(s) used in hydroboration oxidation of propene are:\n(A) B2H6\n(B) H2O\n(C) H2O2\n(D) OH⁻\n\nChoose the correct answer from the options given below:",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "(A), (B) and (D) only",
+        "(A), (B) and (C) only",
+        "(A), (B), (C) and (D)",
+        "(B), (C) and (D) only"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "e8c99d23-9ec6-4e96-9a1f-e2642ee06f30",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0008_7e3e3e",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 8,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Electrochemistry",
+      "question_snippet": "The following statements describe various properties of a Mercury cell:\n(A) It converts energy of combustion into electrical energy\n(B) It is rechargeable\n(C) The cell reaction involved is Zn(Hg) + HgO(s) → ZnO(s) + Hg(l)\n(D) It is a low cu",
+      "correct_answer": 3,
+      "type": "MCQ",
+      "options": [
+        "(A), (B) and (D) only",
+        "(A) and (C) only",
+        "(A), (B), (C) and (D)",
+        "(C) and (D) only"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "ebc18b94-59ff-41a3-81b1-9f2aaacbcf5f",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0011_352bb3",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 11,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Coordination Compounds",
+      "question_snippet": "Which of the following does not represent a correct application of the coordination compound?",
+      "correct_answer": 2,
+      "type": "MCQ",
+      "options": [
+        "cis-platin effectively inhibit the growth of tumours.",
+        "chlorophyll help in photosynthesis",
+        "desferrioxime B is used in treatment of lead poisoning",
+        "cyanocobalamine, antipernicious anemia factor is a coordination compound of Co"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "f58c8c7c-dc72-4ba7-b3ef-9fc28dad3b81",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0046_f1dcd4",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 46,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Alcohols, Phenols and Ethers",
+      "question_snippet": "Read the passage carefully and answer the question:\n\"Replacement of a hydrogen atom in a hydrocarbon by an alkoxy or aryloxy group yields a class of compounds known as ethers. Ethers are classified as symmetrical or unsymmetrical on the bas",
+      "correct_answer": 3,
+      "type": "MCQ",
+      "options": [
+        "Ethane and ethoxythane",
+        "Ethylmethyl ether and butene",
+        "Ethylmethyl ether and propene",
+        "Ethene and ethoxyethane"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "f7b25a67-59ec-40d5-8a37-4e31945d2987",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0003_8f62e2",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 3,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "Solutions",
+      "question_snippet": "Match List-I with List-II:\n\nList-I (Solutions):\n(A) Saturated solution\n(B) Isotonic solutions\n(C) Binary solution\n(D) Hypertonic solution\n\nList-II (Explanation):\n(I) Solution having two components.\n(II) A solution whose osmotic pressure is ",
+      "correct_answer": 3,
+      "type": "MCQ",
+      "options": [
+        "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)",
+        "(A)-(I), (B)-(III), (C)-(II), (D)-(IV)",
+        "(A)-(I), (B)-(II), (C)-(IV), (D)-(III)",
+        "(A)-(III), (B)-(IV), (C)-(I), (D)-(II)"
+      ],
+      "updated_at": 1792049780474
+    },
+    {
+      "id": "fe932a90-149b-45f0-8ad8-fdba14ca7030",
+      "test_id": "703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "question_id": "mv94rjoy_0014_c8b373",
+      "selected": null,
+      "correct": null,
+      "attempted": false,
+      "q_no": 14,
+      "time_spent": 56,
+      "error_tag": null,
+      "subject": "Chemistry",
+      "chapter": "d- and f-Block Elements",
+      "question_snippet": "Match compound/elements of List-I with their uses given in List-II:\n\nList-I (Compound/Elements):\n(A) Magnesium based alloy is constituent of\n(B) Lanthanoid oxide\n(C) Mixed oxides of Lanthanoids are employed in\n(D) Misch metal\n\nList-II (Uses",
+      "correct_answer": 1,
+      "type": "MCQ",
+      "options": [
+        "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)",
+        "(A)-(I), (B)-(III), (C)-(II), (D)-(IV)",
+        "(A)-(I), (B)-(II), (C)-(IV), (D)-(III)",
+        "(A)-(III), (B)-(IV), (C)-(I), (D)-(II)"
+      ],
+      "updated_at": 1792049780474
+    }
+  ],
+  "syllabus": [
+    {
+      "id": "Chemistry:Alcohols, Phenols & Ethers",
+      "chapter": "Alcohols, Phenols & Ethers",
+      "subject": "Chemistry",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Chemistry:Aldehydes, Ketones & Carboxylic Acids",
+      "chapter": "Aldehydes, Ketones & Carboxylic Acids",
+      "subject": "Chemistry",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": "2026-10-02",
+      "revision_stage": 1,
+      "next_revision": "2026-10-02",
+      "updated_at": 1790920276633
+    },
+    {
+      "id": "Chemistry:Amines (Nitrogen-containing Compounds)",
+      "chapter": "Amines (Nitrogen-containing Compounds)",
+      "subject": "Chemistry",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Chemistry:Atomic Structure",
+      "chapter": "Atomic Structure",
+      "subject": "Chemistry",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Chemistry:Biomolecules",
+      "chapter": "Biomolecules",
+      "subject": "Chemistry",
+      "tier": 3,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Chemistry:Chemical Bonding & Molecular Structure",
+      "chapter": "Chemical Bonding & Molecular Structure",
+      "subject": "Chemistry",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Chemistry:Chemical Kinetics",
+      "chapter": "Chemical Kinetics",
+      "subject": "Chemistry",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Chemistry:Chemical Thermodynamics",
+      "chapter": "Chemical Thermodynamics",
+      "subject": "Chemistry",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Chemistry:Classification of Elements & Periodicity",
+      "chapter": "Classification of Elements & Periodicity",
+      "subject": "Chemistry",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Chemistry:Coordination Compounds",
+      "chapter": "Coordination Compounds",
+      "subject": "Chemistry",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Chemistry:Equilibrium (Chemical + Ionic)",
+      "chapter": "Equilibrium (Chemical + Ionic)",
+      "subject": "Chemistry",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Chemistry:General Principles of Organic Chemistry (GOC)",
+      "chapter": "General Principles of Organic Chemistry (GOC)",
+      "subject": "Chemistry",
+      "tier": 1,
+      "status": "Learning",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": "2026-10-09",
+      "updated_at": 1791529514746
+    },
+    {
+      "id": "Chemistry:Haloalkanes & Haloarenes",
+      "chapter": "Haloalkanes & Haloarenes",
+      "subject": "Chemistry",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Chemistry:Hydrocarbons",
+      "chapter": "Hydrocarbons",
+      "subject": "Chemistry",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Chemistry:Purification & Characterisation of Organic Compounds",
+      "chapter": "Purification & Characterisation of Organic Compounds",
+      "subject": "Chemistry",
+      "tier": 3,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Chemistry:Redox Reactions & Electrochemistry",
+      "chapter": "Redox Reactions & Electrochemistry",
+      "subject": "Chemistry",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Chemistry:Solutions",
+      "chapter": "Solutions",
+      "subject": "Chemistry",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Chemistry:Some Basic Concepts of Chemistry (Mole Concept)",
+      "chapter": "Some Basic Concepts of Chemistry (Mole Concept)",
+      "subject": "Chemistry",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Chemistry:d & f Block Elements",
+      "chapter": "d & f Block Elements",
+      "subject": "Chemistry",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Chemistry:p-Block Elements",
+      "chapter": "p-Block Elements",
+      "subject": "Chemistry",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Application of Derivatives (AOD)",
+      "chapter": "Application of Derivatives (AOD)",
+      "subject": "Mathematics",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Binomial Theorem",
+      "chapter": "Binomial Theorem",
+      "subject": "Mathematics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Circles",
+      "chapter": "Circles",
+      "subject": "Mathematics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Complex Numbers & Quadratic Equations",
+      "chapter": "Complex Numbers & Quadratic Equations",
+      "subject": "Mathematics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Conic Sections (Parabola / Ellipse / Hyperbola)",
+      "chapter": "Conic Sections (Parabola / Ellipse / Hyperbola)",
+      "subject": "Mathematics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Definite Integration & Area",
+      "chapter": "Definite Integration & Area",
+      "subject": "Mathematics",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Differential Equations",
+      "chapter": "Differential Equations",
+      "subject": "Mathematics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Height & Distance",
+      "chapter": "Height & Distance",
+      "subject": "Mathematics",
+      "tier": 3,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Indefinite Integration",
+      "chapter": "Indefinite Integration",
+      "subject": "Mathematics",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Inverse Trigonometric Functions",
+      "chapter": "Inverse Trigonometric Functions",
+      "subject": "Mathematics",
+      "tier": 3,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Limits, Continuity & Differentiability",
+      "chapter": "Limits, Continuity & Differentiability",
+      "subject": "Mathematics",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Matrices & Determinants",
+      "chapter": "Matrices & Determinants",
+      "subject": "Mathematics",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Permutations & Combinations",
+      "chapter": "Permutations & Combinations",
+      "subject": "Mathematics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Probability",
+      "chapter": "Probability",
+      "subject": "Mathematics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Sequences & Series",
+      "chapter": "Sequences & Series",
+      "subject": "Mathematics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1791991822895,
+      "chapter_type": "procedures"
+    },
+    {
+      "id": "Mathematics:Sets, Relations & Functions",
+      "chapter": "Sets, Relations & Functions",
+      "subject": "Mathematics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Statistics",
+      "chapter": "Statistics",
+      "subject": "Mathematics",
+      "tier": 3,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Straight Lines",
+      "chapter": "Straight Lines",
+      "subject": "Mathematics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Three Dimensional Geometry (3D)",
+      "chapter": "Three Dimensional Geometry (3D)",
+      "subject": "Mathematics",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Trigonometry (Ratios, Equations, Identities)",
+      "chapter": "Trigonometry (Ratios, Equations, Identities)",
+      "subject": "Mathematics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Mathematics:Vector Algebra",
+      "chapter": "Vector Algebra",
+      "subject": "Mathematics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Atoms & Nuclei",
+      "chapter": "Atoms & Nuclei",
+      "subject": "Physics",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Capacitance",
+      "chapter": "Capacitance",
+      "subject": "Physics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Current Electricity",
+      "chapter": "Current Electricity",
+      "subject": "Physics",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Dual Nature of Matter & Radiation",
+      "chapter": "Dual Nature of Matter & Radiation",
+      "subject": "Physics",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Electromagnetic Induction & AC",
+      "chapter": "Electromagnetic Induction & AC",
+      "subject": "Physics",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Electromagnetic Waves",
+      "chapter": "Electromagnetic Waves",
+      "subject": "Physics",
+      "tier": 3,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Electrostatics",
+      "chapter": "Electrostatics",
+      "subject": "Physics",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Experimental Skills",
+      "chapter": "Experimental Skills",
+      "subject": "Physics",
+      "tier": 3,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Gravitation",
+      "chapter": "Gravitation",
+      "subject": "Physics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Kinematics",
+      "chapter": "Kinematics",
+      "subject": "Physics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Kinetic Theory of Gases",
+      "chapter": "Kinetic Theory of Gases",
+      "subject": "Physics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Laws of Motion",
+      "chapter": "Laws of Motion",
+      "subject": "Physics",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Magnetic Effects of Current & Magnetism",
+      "chapter": "Magnetic Effects of Current & Magnetism",
+      "subject": "Physics",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Mechanical Properties of Solids & Fluids",
+      "chapter": "Mechanical Properties of Solids & Fluids",
+      "subject": "Physics",
+      "tier": 3,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Oscillations (SHM)",
+      "chapter": "Oscillations (SHM)",
+      "subject": "Physics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Ray Optics",
+      "chapter": "Ray Optics",
+      "subject": "Physics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Rotational Motion",
+      "chapter": "Rotational Motion",
+      "subject": "Physics",
+      "tier": 1,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Semiconductors & Electronic Devices",
+      "chapter": "Semiconductors & Electronic Devices",
+      "subject": "Physics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Thermal Properties of Matter",
+      "chapter": "Thermal Properties of Matter",
+      "subject": "Physics",
+      "tier": 3,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Thermodynamics",
+      "chapter": "Thermodynamics",
+      "subject": "Physics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Units, Dimensions & Measurement",
+      "chapter": "Units, Dimensions & Measurement",
+      "subject": "Physics",
+      "tier": 3,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Wave Optics",
+      "chapter": "Wave Optics",
+      "subject": "Physics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Waves & Sound",
+      "chapter": "Waves & Sound",
+      "subject": "Physics",
+      "tier": 3,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    },
+    {
+      "id": "Physics:Work, Energy & Power",
+      "chapter": "Work, Energy & Power",
+      "subject": "Physics",
+      "tier": 2,
+      "status": "Not Started",
+      "notes": "",
+      "last_revised": null,
+      "revision_stage": 0,
+      "next_revision": null,
+      "updated_at": 1790651039825
+    }
+  ],
+  "formula": [],
+  "daily_log": [],
+  "kv": [
+    {
+      "key": "anki-limits",
+      "value": {
+        "newCardsPerDay": 15,
+        "reviewCapMinutes": 20,
+        "reminderTime": "18:00"
+      }
+    },
+    {
+      "key": "onboarded",
+      "value": "1"
+    },
+    {
+      "key": "syllabus_seeded_v1",
+      "value": "true"
+    },
+    {
+      "key": "sync-updated-at-migrated",
+      "value": true
+    },
+    {
+      "key": "target-exam-date",
+      "value": "2027-01-22"
+    },
+    {
+      "key": "target-exams",
+      "value": [
+        {
+          "id": "jee-main-1",
+          "name": "JEE Main Session 1",
+          "date": "2027-01-22"
+        },
+        {
+          "id": "jee-main-2",
+          "name": "JEE Main Session 2",
+          "date": "2027-04-06"
+        },
+        {
+          "id": "jee-adv",
+          "name": "JEE Advanced",
+          "date": "2027-05-23"
+        }
+      ]
+    },
+    {
+      "key": "time-targets",
+      "value": {
+        "jeeDailyMinutes": 360,
+        "moneyDailyMinutes": 120,
+        "brandingDailyMinutes": 60,
+        "polymathyWeeklyMinutes": 210
+      }
+    },
+    {
+      "key": "tutorial-seen-v1",
+      "value": "1"
+    },
+    {
+      "key": "view",
+      "value": "dashboard"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "1163e3fc-d4ee-4913-97c0-f117ac621670",
+      "text": "Do and analyze Chemistry Pyq Cuet",
+      "done": false,
+      "created_at": 1792033376508,
+      "due_date": "2026-10-15",
+      "updated_at": 1792033376508
+    },
+    {
+      "id": "75d86299-c235-4384-ac9a-85ccc725c08d",
+      "text": "Make the Anki Cards of the important failed Questions from the Pyq",
+      "done": false,
+      "created_at": 1792033429516,
+      "updated_at": 1792033429516
+    },
+    {
+      "id": "f0726a76-2593-4979-9211-6ce08e73f1b5",
+      "text": "Make the full workout Schdule for each day",
+      "done": false,
+      "created_at": 1792033487782,
+      "due_date": "2026-10-15",
+      "updated_at": 1792033487782
+    }
+  ],
+  "cal_events": [],
+  "ai_cache": [],
+  "ai_usage": [
+    {
+      "id": "0b5cfd19-2d1c-495e-981b-eb6d6c8e0068",
+      "feature": "test",
+      "model": "gemini-2.0-flash",
+      "prompt_tokens": 7,
+      "completion_tokens": 2,
+      "cost_inr": 0,
+      "created_at": 1790920478443
+    },
+    {
+      "id": "1922471e-c9bd-4681-847d-22c24216e628",
+      "feature": "test",
+      "model": "google/gemma-4-26b-a4b-it",
+      "prompt_tokens": 25,
+      "completion_tokens": 2,
+      "cost_inr": 0.001,
+      "created_at": 1790920586286
+    }
+  ],
+  "sync_tombstones": [
+    {
+      "key": "questions:008120f0-6e7c-4e0f-861f-020594e2f824",
+      "store": "questions",
+      "id": "008120f0-6e7c-4e0f-861f-020594e2f824",
+      "deleted_at": 1792044040216
+    },
+    {
+      "key": "questions:07fbcb78-68ef-4ff8-8655-2598539485d6",
+      "store": "questions",
+      "id": "07fbcb78-68ef-4ff8-8655-2598539485d6",
+      "deleted_at": 1792043949734
+    },
+    {
+      "key": "responses:0a15d464-38a2-4707-b336-7758a5e8dd00",
+      "store": "responses",
+      "id": "0a15d464-38a2-4707-b336-7758a5e8dd00",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:0a1ed594-5448-48f4-abb7-1ef7d9f668d5",
+      "store": "responses",
+      "id": "0a1ed594-5448-48f4-abb7-1ef7d9f668d5",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:0b1812ee-d6bd-45cb-82e5-a910904a2f46",
+      "store": "questions",
+      "id": "0b1812ee-d6bd-45cb-82e5-a910904a2f46",
+      "deleted_at": 1792043952023
+    },
+    {
+      "key": "questions:0ecf8e58-20a8-4688-b5ad-746cd69c42d3",
+      "store": "questions",
+      "id": "0ecf8e58-20a8-4688-b5ad-746cd69c42d3",
+      "deleted_at": 1792043953947
+    },
+    {
+      "key": "responses:0f02604e-34a0-441a-aca8-c5272531e473",
+      "store": "responses",
+      "id": "0f02604e-34a0-441a-aca8-c5272531e473",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:14a7a931-7a9f-43bf-a798-01a867de303f",
+      "store": "questions",
+      "id": "14a7a931-7a9f-43bf-a798-01a867de303f",
+      "deleted_at": 1792043955695
+    },
+    {
+      "key": "responses:16415538-e86a-4961-9f0c-36874cf27b99",
+      "store": "responses",
+      "id": "16415538-e86a-4961-9f0c-36874cf27b99",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:17950a32-c1d7-4479-94ff-71258d25b274",
+      "store": "responses",
+      "id": "17950a32-c1d7-4479-94ff-71258d25b274",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:17ec191f-8bbc-487b-b075-d23152398274",
+      "store": "responses",
+      "id": "17ec191f-8bbc-487b-b075-d23152398274",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:1c69fd44-f6a9-4512-809e-d077828e77da",
+      "store": "responses",
+      "id": "1c69fd44-f6a9-4512-809e-d077828e77da",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:1d4a2635-c8fa-4722-ac4b-487f9efd621c",
+      "store": "questions",
+      "id": "1d4a2635-c8fa-4722-ac4b-487f9efd621c",
+      "deleted_at": 1792043958241
+    },
+    {
+      "key": "questions:1d92fb75-3d05-4c16-8955-8807ae35bcfc",
+      "store": "questions",
+      "id": "1d92fb75-3d05-4c16-8955-8807ae35bcfc",
+      "deleted_at": 1792043960369
+    },
+    {
+      "key": "questions:1fd95a1f-ab3f-4ddf-8f0b-a57fd517792b",
+      "store": "questions",
+      "id": "1fd95a1f-ab3f-4ddf-8f0b-a57fd517792b",
+      "deleted_at": 1792043962185
+    },
+    {
+      "key": "questions:25de5469-f7ed-4f38-8297-be6f6a21552a",
+      "store": "questions",
+      "id": "25de5469-f7ed-4f38-8297-be6f6a21552a",
+      "deleted_at": 1792043965959
+    },
+    {
+      "key": "responses:25e5ed74-bf81-4dfc-b04c-cca905d0bbc5",
+      "store": "responses",
+      "id": "25e5ed74-bf81-4dfc-b04c-cca905d0bbc5",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:29ff4348-7b91-4880-91f4-ed89ab03fc0c",
+      "store": "questions",
+      "id": "29ff4348-7b91-4880-91f4-ed89ab03fc0c",
+      "deleted_at": 1792043967744
+    },
+    {
+      "key": "questions:2e0c3a01-a97e-4d27-9532-42c06df10832",
+      "store": "questions",
+      "id": "2e0c3a01-a97e-4d27-9532-42c06df10832",
+      "deleted_at": 1792043969560
+    },
+    {
+      "key": "responses:2f96eb7e-315a-4a69-9892-0128bd0e6ebd",
+      "store": "responses",
+      "id": "2f96eb7e-315a-4a69-9892-0128bd0e6ebd",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:332ab429-d463-47f7-b70d-35af3b25dce2",
+      "store": "questions",
+      "id": "332ab429-d463-47f7-b70d-35af3b25dce2",
+      "deleted_at": 1792043971431
+    },
+    {
+      "key": "responses:365c8b9e-8259-4b3c-936d-64b2c4400203",
+      "store": "responses",
+      "id": "365c8b9e-8259-4b3c-936d-64b2c4400203",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:379bd4ee-af47-495b-9b0d-eee93ea7cde3",
+      "store": "questions",
+      "id": "379bd4ee-af47-495b-9b0d-eee93ea7cde3",
+      "deleted_at": 1792043973407
+    },
+    {
+      "key": "responses:3ac99ecb-f991-4bff-99de-1d3aeb1ad4ff",
+      "store": "responses",
+      "id": "3ac99ecb-f991-4bff-99de-1d3aeb1ad4ff",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:3bc55b13-3a63-421f-927c-0ddadaef6d30",
+      "store": "responses",
+      "id": "3bc55b13-3a63-421f-927c-0ddadaef6d30",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:3f882595-b6f5-41bc-9d63-e7c4d1555cbf",
+      "store": "questions",
+      "id": "3f882595-b6f5-41bc-9d63-e7c4d1555cbf",
+      "deleted_at": 1792043975310
+    },
+    {
+      "key": "questions:403d4056-6ef0-4f43-a8a9-a31b9fecfe6d",
+      "store": "questions",
+      "id": "403d4056-6ef0-4f43-a8a9-a31b9fecfe6d",
+      "deleted_at": 1792043977222
+    },
+    {
+      "key": "questions:44dd238c-3525-46dd-a981-0c8088cb9946",
+      "store": "questions",
+      "id": "44dd238c-3525-46dd-a981-0c8088cb9946",
+      "deleted_at": 1792043979051
+    },
+    {
+      "key": "responses:45a695c0-af39-4dfc-bdbd-d1a828851030",
+      "store": "responses",
+      "id": "45a695c0-af39-4dfc-bdbd-d1a828851030",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:476c5878-fe5d-4a93-9e73-920014eb307e",
+      "store": "questions",
+      "id": "476c5878-fe5d-4a93-9e73-920014eb307e",
+      "deleted_at": 1792043980964
+    },
+    {
+      "key": "questions:48af0d9d-0f24-4a39-babe-015593c5bcca",
+      "store": "questions",
+      "id": "48af0d9d-0f24-4a39-babe-015593c5bcca",
+      "deleted_at": 1792043982674
+    },
+    {
+      "key": "questions:4d304d98-f54f-46b9-adcf-75744ffe2548",
+      "store": "questions",
+      "id": "4d304d98-f54f-46b9-adcf-75744ffe2548",
+      "deleted_at": 1792043984278
+    },
+    {
+      "key": "responses:4e355a8a-45c0-4eeb-8460-83cdf2e1a888",
+      "store": "responses",
+      "id": "4e355a8a-45c0-4eeb-8460-83cdf2e1a888",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:54806fd6-3454-4f67-bb80-953641517666",
+      "store": "responses",
+      "id": "54806fd6-3454-4f67-bb80-953641517666",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:5b78ccc6-1a18-4cc4-a950-2a95cde10b65",
+      "store": "responses",
+      "id": "5b78ccc6-1a18-4cc4-a950-2a95cde10b65",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:5c3166de-c94a-4ac6-8804-1f696d8b33bd",
+      "store": "questions",
+      "id": "5c3166de-c94a-4ac6-8804-1f696d8b33bd",
+      "deleted_at": 1792043986632
+    },
+    {
+      "key": "responses:5c75c436-e919-43ff-86a1-3ee4764fbb2c",
+      "store": "responses",
+      "id": "5c75c436-e919-43ff-86a1-3ee4764fbb2c",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:5ffaeae3-d092-4f24-b2d7-1929b3d8a45d",
+      "store": "questions",
+      "id": "5ffaeae3-d092-4f24-b2d7-1929b3d8a45d",
+      "deleted_at": 1792043988152
+    },
+    {
+      "key": "questions:62c7aec8-c74b-4ef9-bc7e-85ed805faedf",
+      "store": "questions",
+      "id": "62c7aec8-c74b-4ef9-bc7e-85ed805faedf",
+      "deleted_at": 1792043990218
+    },
+    {
+      "key": "questions:640a0594-831c-4ce2-8dc4-8f4e0b21b19d",
+      "store": "questions",
+      "id": "640a0594-831c-4ce2-8dc4-8f4e0b21b19d",
+      "deleted_at": 1792043992382
+    },
+    {
+      "key": "responses:65469183-6d53-43dd-b85a-603a046728ae",
+      "store": "responses",
+      "id": "65469183-6d53-43dd-b85a-603a046728ae",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:6876ec41-2f71-4ee8-8eb5-091af9e200fe",
+      "store": "responses",
+      "id": "6876ec41-2f71-4ee8-8eb5-091af9e200fe",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:6d08957f-c14a-4032-9bf5-276a22dcb9bf",
+      "store": "responses",
+      "id": "6d08957f-c14a-4032-9bf5-276a22dcb9bf",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:6dc7bc47-befb-4942-8817-0733d5e3cb46",
+      "store": "responses",
+      "id": "6dc7bc47-befb-4942-8817-0733d5e3cb46",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:6e732411-8751-4b8c-86cf-e7ab67782c97",
+      "store": "questions",
+      "id": "6e732411-8751-4b8c-86cf-e7ab67782c97",
+      "deleted_at": 1792043994142
+    },
+    {
+      "key": "questions:71f71a64-66d1-47d6-b288-b6499048232b",
+      "store": "questions",
+      "id": "71f71a64-66d1-47d6-b288-b6499048232b",
+      "deleted_at": 1792043996403
+    },
+    {
+      "key": "questions:749b9504-925f-4bd3-b530-71c2e546bccf",
+      "store": "questions",
+      "id": "749b9504-925f-4bd3-b530-71c2e546bccf",
+      "deleted_at": 1792043998410
+    },
+    {
+      "key": "responses:7a834833-a9e0-4194-bdcd-a1e605dab27d",
+      "store": "responses",
+      "id": "7a834833-a9e0-4194-bdcd-a1e605dab27d",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:7b78a8ec-08fc-495d-b3b9-f3f384e16883",
+      "store": "responses",
+      "id": "7b78a8ec-08fc-495d-b3b9-f3f384e16883",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:7b80f5e1-6bd8-4ae8-9348-7c5c5ecb8d6f",
+      "store": "questions",
+      "id": "7b80f5e1-6bd8-4ae8-9348-7c5c5ecb8d6f",
+      "deleted_at": 1792044000220
+    },
+    {
+      "key": "responses:80471e4e-a9d2-434a-bef7-d3a4b05a7613",
+      "store": "responses",
+      "id": "80471e4e-a9d2-434a-bef7-d3a4b05a7613",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:846fca1c-67ec-4aa2-821c-2dfe2b9f7c7d",
+      "store": "responses",
+      "id": "846fca1c-67ec-4aa2-821c-2dfe2b9f7c7d",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:8d51c844-27d6-4414-a829-eabfbb8cd354",
+      "store": "responses",
+      "id": "8d51c844-27d6-4414-a829-eabfbb8cd354",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:909b3783-3b40-4d83-85c2-0c22efe66a79",
+      "store": "questions",
+      "id": "909b3783-3b40-4d83-85c2-0c22efe66a79",
+      "deleted_at": 1792044002026
+    },
+    {
+      "key": "questions:96424c6a-05d1-4585-a8b4-acaf390e8dea",
+      "store": "questions",
+      "id": "96424c6a-05d1-4585-a8b4-acaf390e8dea",
+      "deleted_at": 1792044003776
+    },
+    {
+      "key": "responses:9fb37400-ae34-4d2c-808c-08253dfffbf9",
+      "store": "responses",
+      "id": "9fb37400-ae34-4d2c-808c-08253dfffbf9",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:a5c36824-96e1-4a65-bade-789136b4e571",
+      "store": "responses",
+      "id": "a5c36824-96e1-4a65-bade-789136b4e571",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:a7e5f7b2-d10f-4f64-83b9-cf9532eade3a",
+      "store": "responses",
+      "id": "a7e5f7b2-d10f-4f64-83b9-cf9532eade3a",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:a8146920-0a19-4768-aeb7-6cd85137f4ad",
+      "store": "questions",
+      "id": "a8146920-0a19-4768-aeb7-6cd85137f4ad",
+      "deleted_at": 1792044005552
+    },
+    {
+      "key": "questions:a8ff7d34-3458-4242-9a0f-de6f167c2cef",
+      "store": "questions",
+      "id": "a8ff7d34-3458-4242-9a0f-de6f167c2cef",
+      "deleted_at": 1792044007282
+    },
+    {
+      "key": "questions:a96292c7-5bda-43c0-a0d6-0cf8e479f158",
+      "store": "questions",
+      "id": "a96292c7-5bda-43c0-a0d6-0cf8e479f158",
+      "deleted_at": 1792044008628
+    },
+    {
+      "key": "questions:a9ae389b-210a-4b56-bd46-243fe4093ebc",
+      "store": "questions",
+      "id": "a9ae389b-210a-4b56-bd46-243fe4093ebc",
+      "deleted_at": 1792044010600
+    },
+    {
+      "key": "responses:ab87b1b4-5c74-46b5-a8ac-a5b71d94f730",
+      "store": "responses",
+      "id": "ab87b1b4-5c74-46b5-a8ac-a5b71d94f730",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "timelog:anki-2026-10-14",
+      "store": "timelog",
+      "id": "anki-2026-10-14",
+      "deleted_at": 1791971875770
+    },
+    {
+      "key": "responses:b00b6e06-dd88-4fad-b518-97f29b7260e9",
+      "store": "responses",
+      "id": "b00b6e06-dd88-4fad-b518-97f29b7260e9",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:b01e75b2-3c44-4c46-b018-02ed91180369",
+      "store": "responses",
+      "id": "b01e75b2-3c44-4c46-b018-02ed91180369",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:b134e023-86a5-4611-99e3-680467b3ea95",
+      "store": "responses",
+      "id": "b134e023-86a5-4611-99e3-680467b3ea95",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:b362950b-0492-4228-995d-8800091407d4",
+      "store": "questions",
+      "id": "b362950b-0492-4228-995d-8800091407d4",
+      "deleted_at": 1792044012108
+    },
+    {
+      "key": "responses:b525b358-323d-4cc1-9423-acf142e8c157",
+      "store": "responses",
+      "id": "b525b358-323d-4cc1-9423-acf142e8c157",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:bad88397-6040-420b-8346-2506dac1b63d",
+      "store": "questions",
+      "id": "bad88397-6040-420b-8346-2506dac1b63d",
+      "deleted_at": 1792044038588
+    },
+    {
+      "key": "responses:bd40fc99-7f2d-4ae7-9c29-e16e797f8afc",
+      "store": "responses",
+      "id": "bd40fc99-7f2d-4ae7-9c29-e16e797f8afc",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:bd8be301-c8a7-4f28-aa89-3bad55885609",
+      "store": "questions",
+      "id": "bd8be301-c8a7-4f28-aa89-3bad55885609",
+      "deleted_at": 1792044013990
+    },
+    {
+      "key": "questions:c3b6c3d7-84d8-4aaf-9f32-4f56a38be2f6",
+      "store": "questions",
+      "id": "c3b6c3d7-84d8-4aaf-9f32-4f56a38be2f6",
+      "deleted_at": 1792044015628
+    },
+    {
+      "key": "questions:c3bdf789-4cee-4c97-9e4a-d227a9ca4d9b",
+      "store": "questions",
+      "id": "c3bdf789-4cee-4c97-9e4a-d227a9ca4d9b",
+      "deleted_at": 1792044017400
+    },
+    {
+      "key": "questions:c5fcedcc-7832-44b8-8973-07d6e933890c",
+      "store": "questions",
+      "id": "c5fcedcc-7832-44b8-8973-07d6e933890c",
+      "deleted_at": 1792044019104
+    },
+    {
+      "key": "questions:c7617a3f-3f54-44b0-9c51-28c2d44deb69",
+      "store": "questions",
+      "id": "c7617a3f-3f54-44b0-9c51-28c2d44deb69",
+      "deleted_at": 1792044020744
+    },
+    {
+      "key": "questions:c7b6ab17-aa6d-417b-99a4-64866e5b93e8",
+      "store": "questions",
+      "id": "c7b6ab17-aa6d-417b-99a4-64866e5b93e8",
+      "deleted_at": 1792044022614
+    },
+    {
+      "key": "questions:ca767ea7-7855-4a7a-ac31-cd82c7870b15",
+      "store": "questions",
+      "id": "ca767ea7-7855-4a7a-ac31-cd82c7870b15",
+      "deleted_at": 1792044024526
+    },
+    {
+      "key": "responses:cdb50769-f436-40f7-a0f3-2aebd7c4f4f8",
+      "store": "responses",
+      "id": "cdb50769-f436-40f7-a0f3-2aebd7c4f4f8",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:d0bfe158-ec5c-490f-8025-50292c9a72a2",
+      "store": "responses",
+      "id": "d0bfe158-ec5c-490f-8025-50292c9a72a2",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:d1e77c75-12fc-4bf6-b119-d9fe47a94db0",
+      "store": "responses",
+      "id": "d1e77c75-12fc-4bf6-b119-d9fe47a94db0",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:d2deba0e-73ef-4984-bd1a-951e6e49a428",
+      "store": "questions",
+      "id": "d2deba0e-73ef-4984-bd1a-951e6e49a428",
+      "deleted_at": 1792044026604
+    },
+    {
+      "key": "questions:d368fce2-d0b1-42e8-8bbc-7e1c7f8ef6b0",
+      "store": "questions",
+      "id": "d368fce2-d0b1-42e8-8bbc-7e1c7f8ef6b0",
+      "deleted_at": 1792044029030
+    },
+    {
+      "key": "responses:d9f14933-af31-4655-941f-85af831b24a2",
+      "store": "responses",
+      "id": "d9f14933-af31-4655-941f-85af831b24a2",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:da61e975-4a78-4f42-b3b2-05d50caa2dfa",
+      "store": "responses",
+      "id": "da61e975-4a78-4f42-b3b2-05d50caa2dfa",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:dae0933d-ca38-4948-8e9a-d1b7cb4603c4",
+      "store": "responses",
+      "id": "dae0933d-ca38-4948-8e9a-d1b7cb4603c4",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:df4f74c2-f9fe-407b-85d4-f2da3f32824a",
+      "store": "responses",
+      "id": "df4f74c2-f9fe-407b-85d4-f2da3f32824a",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:dfe2fb86-29c0-415b-8c5c-975d0735d276",
+      "store": "responses",
+      "id": "dfe2fb86-29c0-415b-8c5c-975d0735d276",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:e2efcf59-b399-4191-9dae-6f03b490090d",
+      "store": "questions",
+      "id": "e2efcf59-b399-4191-9dae-6f03b490090d",
+      "deleted_at": 1792044031154
+    },
+    {
+      "key": "responses:e59b85d6-06f2-4f45-bc36-826342ed63ad",
+      "store": "responses",
+      "id": "e59b85d6-06f2-4f45-bc36-826342ed63ad",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:e5a9d69a-8215-4755-a3b6-6b5ea7416cc1",
+      "store": "responses",
+      "id": "e5a9d69a-8215-4755-a3b6-6b5ea7416cc1",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:e6b59d2a-2c68-4c58-b51d-df4317235493",
+      "store": "responses",
+      "id": "e6b59d2a-2c68-4c58-b51d-df4317235493",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:e820164e-d2be-4c8d-a04c-c1b43599430e",
+      "store": "questions",
+      "id": "e820164e-d2be-4c8d-a04c-c1b43599430e",
+      "deleted_at": 1792044033014
+    },
+    {
+      "key": "questions:ee4cffc7-0ce4-4753-b166-e821966fbd61",
+      "store": "questions",
+      "id": "ee4cffc7-0ce4-4753-b166-e821966fbd61",
+      "deleted_at": 1792044034940
+    },
+    {
+      "key": "responses:efffa913-32a4-4915-a12f-896c0aafc069",
+      "store": "responses",
+      "id": "efffa913-32a4-4915-a12f-896c0aafc069",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:f36d52b9-71fe-4308-90a2-77fd381c813f",
+      "store": "responses",
+      "id": "f36d52b9-71fe-4308-90a2-77fd381c813f",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:f3dfdc8b-58ed-4b86-bf8f-ad0f9b0fd64e",
+      "store": "questions",
+      "id": "f3dfdc8b-58ed-4b86-bf8f-ad0f9b0fd64e",
+      "deleted_at": 1792044036959
+    },
+    {
+      "key": "responses:f74388a9-fd78-4ddf-839e-7d5f5d6223b8",
+      "store": "responses",
+      "id": "f74388a9-fd78-4ddf-839e-7d5f5d6223b8",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "responses:fbefc9c7-7d0e-4ef3-a30e-907349f9d7c1",
+      "store": "responses",
+      "id": "fbefc9c7-7d0e-4ef3-a30e-907349f9d7c1",
+      "deleted_at": 1792048244030
+    },
+    {
+      "key": "questions:fc289b6f-06e7-4dc7-aaf0-71c0a783a2bd",
+      "store": "questions",
+      "id": "fc289b6f-06e7-4dc7-aaf0-71c0a783a2bd",
+      "deleted_at": 1792044042002
+    },
+    {
+      "key": "questions:fde6b6e2-53e9-4469-8dd8-dc0ec6669693",
+      "store": "questions",
+      "id": "fde6b6e2-53e9-4469-8dd8-dc0ec6669693",
+      "deleted_at": 1792044045280
+    }
+  ],
+  "timelog": [
+    {
+      "id": "1fe4d052-1abf-4d11-aefa-31b007470fde",
+      "category": "JEE",
+      "activity": "mock",
+      "date": "2026-10-14",
+      "minutes": 50,
+      "subject": "Physics",
+      "note": "50-minute focus session",
+      "created_at": 1791982347173,
+      "updated_at": 1791982347173
+    },
+    {
+      "id": "89748874-bcfd-48b2-bcb5-6b0e365e6c35",
+      "category": "JEE",
+      "activity": "recall",
+      "date": "2026-10-14",
+      "minutes": 50,
+      "subject": "Physics",
+      "note": "50-minute focus session",
+      "created_at": 1791990880346,
+      "updated_at": 1791990880346
+    },
+    {
+      "id": "b0294f76-6c65-4fd7-b7bb-3fac4e6f8e3c",
+      "category": "JEE",
+      "activity": "problems",
+      "date": "2026-10-14",
+      "minutes": 2,
+      "subject": "Physics",
+      "note": "50-minute focus session",
+      "created_at": 1791987843094,
+      "updated_at": 1791987843094
+    },
+    {
+      "id": "e233eb98-4449-40ff-a12f-1101766f35e4",
+      "category": "JEE",
+      "activity": "mock",
+      "date": "2026-10-14",
+      "minutes": 19,
+      "subject": "Physics",
+      "note": "50-minute focus session",
+      "created_at": 1791983542986,
+      "updated_at": 1791983542986
+    },
+    {
+      "id": "test-486c55d5-da0f-49df-b32b-74e9d8e42f70",
+      "category": "JEE",
+      "activity": "full_mock",
+      "date": "2026-10-13",
+      "minutes": 60,
+      "note": "Test: CUET Maths 2025 pyq (50 ques)",
+      "created_at": 1791971516345,
+      "updated_at": 1792049754767
+    },
+    {
+      "id": "test-703ff8d7-a0b2-4608-9505-99d600e57bd3",
+      "category": "JEE",
+      "activity": "problems",
+      "date": "2026-10-15",
+      "minutes": 47,
+      "note": "Test: CUET UG 2025 Chemistry",
+      "created_at": 1792048244004,
+      "updated_at": 1792049754770
+    },
+    {
+      "id": "test-7813c306-a9f2-475a-9519-f43cf502fe02",
+      "category": "JEE",
+      "activity": "full_mock",
+      "date": "2026-10-14",
+      "minutes": 60,
+      "note": "Test: CUET Physics 2025 pyq (50 q)",
+      "created_at": 1791983683818,
+      "updated_at": 1792049754799
+    }
+  ],
+  "anki_log": [
+    {
+      "id": "2026-10-14",
+      "date": "2026-10-14",
+      "done": false,
+      "updated_at": 1791971875757
+    }
+  ],
+  "retry_queue": [],
+  "trials": [],
+  "notes": [],
+  "papers": []
+}
