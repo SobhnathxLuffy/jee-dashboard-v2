@@ -83,3 +83,25 @@ Stage Summary:
 - Every Results row now shows an Embibe-style attempt-quality classification next to its time, with the ideal-time thresholds shared via one pure helper (classifyAttempt/IDEAL_TIME) that future retry heuristics can reuse
 - One-click "tag all mistakes as C/F/A" bulk fix + an ATTEMPT QUALITY P/O/W StatCard make error-tagging and time-quality visible at a glance
 - Auto-tag at submit is now user-controllable (on/off + default tag) from Settings, persisted via the existing AutoTagConfig kv store
+
+---
+Task ID: fix-final
+Agent: Super Z (main agent)
+Task: Verify subagent fixes, add submit-time retry enrollment + recovered flag, final validation
+
+Work Log:
+- Verified 4-a and 4-b changes: tsc 0 errors, 52/52 vitest, next build green
+- Found + fixed two integration gaps during browser re-test:
+  - Player.submit now calls syncAllMistakesToRetryQueue (auto-tags existed but
+    never enrolled; queue went 4→7→11 across tests with zero manual tagging)
+  - ResponseRecord.recovered flag: MARK IT self-mark UI no longer shows on
+    ordinary skipped rows (correct:null), only key-later/recovered rows
+- Browser re-tests: 2-tab race now leaves 0 new tombstones + data intact;
+  fresh-profile import of user backup renders correctly; classification
+  badges, ATTEMPT QUALITY card, bulk tag, settings card, retry queued-line,
+  Full Mocks bucket all verified live
+- Updated QA_REPORT.md fix-status table
+
+Stage Summary:
+- 3 commits pushed: a4bacbb (QA report), 2737e4e (core data-integrity),
+  b6c7dfb (retry automation + classification + scorecard)

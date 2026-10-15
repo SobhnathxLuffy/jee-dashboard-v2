@@ -4,6 +4,33 @@
 
 ---
 
+## 0. FIX STATUS (updated after the fix pass — all pushed to main)
+
+| Bug | Status | Commit |
+|---|---|---|
+| 1. Double-submit destroys responses | ✅ **FIXED** — idempotency guard (re-submit of a saved test is a no-op) + atomic single-transaction submit; live 2-tab race re-test: **0 tombstones, data intact** | 2737e4e |
+| 2. Auto-recovery fabricates rows over real data | ✅ **FIXED** — authoritative DB re-check before fabricating + `recovered` flag + warning toast | 2737e4e |
+| 3. Non-atomic submit | ✅ **FIXED** — `submitTestRecord()` (delete+insert+record in one IDB tx) | 2737e4e |
+| 4. No auto-tagging → empty retry queue | ✅ **FIXED** — submit-time auto-tag (C default, configurable in Settings) + automatic retry-queue enrollment + bulk "Tag all N wrong" in review; re-test: queue 4→7→11 without any manual tagging | 2737e4e, b6c7dfb |
+| 5. Session cleared too late (resumable window) | ✅ **FIXED** — session cleared before confetti | 2737e4e |
+| 6. Full Mocks mis-bucketed | ✅ **FIXED** — `full_mock` mapped to mock bucket (1.1h/24% → 4.3h/72%) | b6c7dfb |
+| 7. Retries Cleared always 0 | ✅ **FIXED** — mastered items retained (stage 3 + mastered_at), counted weekly | b6c7dfb |
+| 8. Ghost timelog on test delete | ✅ **FIXED** — `test-*` entry deleted with the test | b6c7dfb |
+| 9. is_practice not persisted | ✅ **FIXED** — persisted on TestRecord | 2737e4e |
+| 10. Submit button hidden behind header | ✅ **FIXED** — floating Submit FAB with live answered count | 2737e4e |
+| 11. "Broad syllabus syllabus" dup text | ✅ **FIXED** (in TargetExamsCard where it lives) | b6c7dfb |
+| 12. Toast off-by-one | ✅ **FIXED** — toast matches card numbering | b6c7dfb |
+| 13. No feedback for queued items | ✅ **FIXED** — "N queued · next due DATE" line | b6c7dfb |
+| 14. Unattempted rows `correct:false` | ✅ **FIXED** — tri-state `correct:null`; MARK IT self-mark now limited to key-later/recovered rows | 2737e4e, b6c7dfb |
+
+**Also added:** per-question attempt classification (Perfect / Overtime / Wasted / Rushed / Skipped) with an ATTEMPT QUALITY summary card — the top-ranked missing feature from the competitor analysis. Cross-tab live sync via BroadcastChannel (useLive no longer tab-local — a second tab updating timelog/retry now refreshes the first instantly).
+
+**Quality gates at final push:** `tsc --noEmit` 0 errors · 52/52 vitest tests (11 new) · `next build` green · all flows re-verified live in the browser (normal CBT, 2-tab race, fresh-profile backup import, PDF, external, timer, settings).
+
+**Note on your lost Chemistry data:** the 50 real responses are unrecoverable — the backup's tombstones store only IDs, not payloads. The app now makes this class of loss impossible. Your score (61/250) survives on the test record; per-question answers for that one test cannot be reconstructed.
+
+---
+
 ## 1. Verdict
 
 The app **works in the happy path** — a clean, uninterrupted CBT taken in a single tab produces correct scores, full per-question review, working error tags and a functioning spaced-retry queue. **But the submit pipeline can silently destroy a completed test's data**, and the Results page then fabricates fake "unattempted" rows that masquerade as your real attempt. This is exactly what happened to the CUET Chemistry paper in the shipped backup, and it is reproduced and confirmed below.
