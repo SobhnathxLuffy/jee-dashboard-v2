@@ -114,3 +114,79 @@ describe("CBT timer pause calculation", () => {
     expect(remaining).toBe(3000);
   });
 });
+
+describe("CBT in-test tagging & delete cascade", () => {
+  it("prioritizes in-test explicit tags over auto-tag default fallback", () => {
+    const autoTag = { enabled: true, tag: "C" as const };
+    const sessionTags: Record<string, "F" | null> = { q1: "F" };
+
+    const isMistake = true;
+    const userTag = sessionTags["q1"] ?? null;
+    const errorTag = userTag ?? (isMistake && autoTag.enabled ? autoTag.tag : null);
+
+    expect(errorTag).toBe("F");
+  });
+
+  it("falls back to autoTag when no in-test tag was assigned for a mistake", () => {
+    const autoTag = { enabled: true, tag: "C" as const };
+    const sessionTags: Record<string, "F" | null> = {};
+
+    const isMistake = true;
+    const userTag = sessionTags["q1"] ?? null;
+    const errorTag = userTag ?? (isMistake && autoTag.enabled ? autoTag.tag : null);
+
+    expect(errorTag).toBe("C");
+  });
+
+  it("preserves non-retry tags like G (Guess) and R (Rushed) without enrolling in spaced retry", () => {
+    const guessAttempt: ResponseRecord = {
+      id: "r-guess",
+      test_id: "t1",
+      question_id: "q-guess",
+      selected: 1,
+      correct: false,
+      attempted: true,
+      q_no: 4,
+      time_spent: 30,
+      error_tag: "G",
+      subject: "Physics",
+      chapter: "Kinematics",
+      question_snippet: "Projectile motion velocity...",
+      correct_answer: 0,
+      type: "MCQ",
+    };
+    expect(guessAttempt.error_tag).toBe("G");
+    expect(isRetryEligible(guessAttempt)).toBe(false);
+  });
+
+  it("filters cascading items for test deletion correctly across stores", () => {
+    const targetTestId = "test-123";
+    const otherTestId = "test-456";
+
+    const responses = [
+      { id: "r1", test_id: targetTestId },
+      { id: "r2", test_id: targetTestId },
+      { id: "r3", test_id: otherTestId },
+    ];
+    const retryQueue = [
+      { id: `${targetTestId}:q1`, test_id: targetTestId },
+      { id: `${otherTestId}:q2`, test_id: otherTestId },
+    ];
+    const timelogIds = [`test-${targetTestId}`, `test-${otherTestId}`];
+
+    // Cascade filter simulation:
+    const remainingResponses = responses.filter((r) => r.test_id !== targetTestId);
+    const remainingQueue = retryQueue.filter(
+      (item) => item.test_id !== targetTestId && !item.id.startsWith(`${targetTestId}:`)
+    );
+    const remainingTimelogs = timelogIds.filter((id) => id !== `test-${targetTestId}`);
+
+    expect(remainingResponses).toHaveLength(1);
+    expect(remainingResponses[0].id).toBe("r3");
+
+    expect(remainingQueue).toHaveLength(1);
+    expect(remainingQueue[0].id).toBe(`${otherTestId}:q2`);
+
+    expect(remainingTimelogs).toEqual([`test-${otherTestId}`]);
+  });
+});

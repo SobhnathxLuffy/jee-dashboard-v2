@@ -535,6 +535,39 @@ export async function clearSession(): Promise<void> {
   await kvDel(ACTIVE_SESSION_KEY);
 }
 
+/**
+ * Cascading deletion of a test and all its derived artifacts:
+ * 1. The TestRecord from "tests"
+ * 2. All ResponseRecords from "responses"
+ * 3. Associated study focus entry from "timelog" (test-${testId})
+ * 4. All scheduled retry items from "retry_queue"
+ * 5. Clears active session if it belonged to this test
+ */
+export async function deleteTestCascade(testId: string): Promise<void> {
+  await del("tests", testId);
+  await delResponsesByTest(testId);
+  await del("timelog", `test-${testId}`);
+
+  const queue = await getAll("retry_queue");
+  for (const item of queue) {
+    if (item.test_id === testId || item.id.startsWith(`${testId}:`)) {
+      await del("retry_queue", item.id);
+    }
+  }
+
+  const active = await loadSession();
+  if (active && active.test_id === testId) {
+    await clearSession();
+  }
+
+  notify("tests");
+  broadcast("tests");
+  notify("timelog");
+  broadcast("timelog");
+  notify("retry_queue");
+  broadcast("retry_queue");
+}
+
 // ─── React hooks for live updates ───────────────────────────────────────────
 /**
  * Hook that returns live store data and auto-re-renders whenever any write/delete/clear

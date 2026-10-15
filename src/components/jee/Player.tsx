@@ -33,16 +33,27 @@ import {
   keyDisplay,
 } from "@/lib/pdf-key";
 import {
+  ERROR_TAGS,
   SUBJECT_SHORT,
   todayStr,
   uid,
   type ActiveSession,
+  type ErrorTag,
   type PdfSection,
   type Question,
   type ResponseRecord,
   type Subject,
   type TestRecord,
 } from "@/lib/types";
+
+const TAG_CLS: Record<ErrorTag, string> = {
+  C: "bg-red-50 dark:bg-red-500/15 text-red-700 dark:text-red-300 border-red-200 dark:border-red-500/30",
+  F: "bg-amber-50 dark:bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-500/30",
+  A: "bg-orange-50 dark:bg-orange-500/15 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-500/30",
+  R: "bg-purple-50 dark:bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-500/30",
+  T: "bg-blue-50 dark:bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-500/30",
+  G: "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700",
+};
 
 const LETTERS = ["A", "B", "C", "D"];
 const ZOOM_STEPS = [1.0, 1.4, 1.8, 2.2]; // − / + cycle through these (default 1.6)
@@ -222,6 +233,19 @@ export function PlayerView({
       void saveSession(s);
     },
     [onPersist]
+  );
+
+  const toggleTag = useCallback(
+    (slot: string, tag: ErrorTag) => {
+      const s = sessionRef.current;
+      const currentTag = s.tags?.[slot];
+      const newTag = currentTag === tag ? null : tag;
+      persist({
+        ...s,
+        tags: { ...(s.tags ?? {}), [slot]: newTag },
+      });
+    },
+    [persist]
   );
 
   const togglePause = useCallback(() => {
@@ -441,7 +465,8 @@ export function PlayerView({
         // Auto-tag: every wrong or skipped question gets the default error tag
         // (C by default) so the retry queue is populated without manual work.
         const isMistake = !attempted || correct === false;
-        const errorTag = isMistake && autoTag.enabled && !s.is_practice ? autoTag.tag : null;
+        const userTag = s.tags?.[id] ?? null;
+        const errorTag = userTag ?? (isMistake && autoTag.enabled && !s.is_practice ? autoTag.tag : null);
         responses.push({
           id: uid(),
           test_id: s.test_id,
@@ -551,7 +576,7 @@ export function PlayerView({
         attempted,
         q_no: sl.paperNo,
         time_spent: Math.round(qTimes[sl.key] ?? 0),
-        error_tag: null,
+        error_tag: s.tags?.[sl.key] ?? null,
         subject: sl.subject,
         chapter: sl.chapter,
         question_snippet: `PDF Q${sl.paperNo} (page ${pageForQuestion(s, sl.paperNo)})`,
@@ -1220,6 +1245,52 @@ export function PlayerView({
             </div>
           )}
 
+          {/* In-test mistake / status tagging (applies to both CBT and PDF questions) */}
+          {currentSlot && (
+            <div className="flex items-center justify-between gap-2 pt-3 pb-1 border-t border-border/60 flex-wrap text-xs">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[11px] font-semibold text-muted-foreground/80 uppercase tracking-wider">
+                  Tag this Q:
+                </span>
+                <div className="flex items-center gap-1 flex-wrap">
+                  {ERROR_TAGS.map((t) => {
+                    const isSelected = session.tags?.[currentSlot.slot] === t.code;
+                    return (
+                      <button
+                        key={t.code}
+                        type="button"
+                        onClick={() => toggleTag(currentSlot.slot, t.code)}
+                        title={`${t.label}: ${t.hint}`}
+                        className={cn(
+                          "px-2 py-0.5 rounded text-[11px] font-semibold border transition-all cursor-pointer",
+                          isSelected
+                            ? TAG_CLS[t.code] + " ring-1 ring-offset-1 font-bold shadow-sm"
+                            : "border-border text-muted-foreground hover:bg-muted"
+                        )}
+                      >
+                        {t.code} · {t.label}
+                      </button>
+                    );
+                  })}
+                  {session.tags?.[currentSlot.slot] ? (
+                    <button
+                      type="button"
+                      onClick={() => toggleTag(currentSlot.slot, session.tags![currentSlot.slot]!)}
+                      className="text-[10px] text-muted-foreground/60 hover:text-muted-foreground underline ml-1"
+                    >
+                      clear
+                    </button>
+                  ) : null}
+                </div>
+              </div>
+              {session.tags?.[currentSlot.slot] && (
+                <span className="text-[11px] text-muted-foreground">
+                  Tagged as <strong className="text-foreground">{session.tags[currentSlot.slot]} ({ERROR_TAGS.find((x) => x.code === session.tags![currentSlot.slot])?.label})</strong>
+                </span>
+              )}
+            </div>
+          )}
+
           {/* action bar */}
           <div className="flex flex-wrap gap-2 pt-4 mt-4 border-t border-border/60">
             <Button
@@ -1309,6 +1380,7 @@ export function PlayerView({
               const answered = ans !== null && ans !== undefined && ans !== "";
               const marked = session.marked.includes(s.slot);
               const isCurrent = i === session.current;
+              const tag = session.tags?.[s.slot];
               return (
                 <button
                   key={s.slot}
@@ -1324,9 +1396,19 @@ export function PlayerView({
                           : "bg-white dark:bg-transparent text-stone-600 dark:text-muted-foreground border-stone-300 dark:border-border",
                     isCurrent && "ring-2 ring-amber-400 ring-offset-1 ring-offset-background"
                   )}
-                  aria-label={`Question ${s.no}${answered ? ", answered" : ""}${marked ? ", marked" : ""}`}
+                  aria-label={`Question ${s.no}${answered ? ", answered" : ""}${marked ? ", marked" : ""}${tag ? `, tagged ${tag}` : ""}`}
                 >
                   {s.no}
+                  {tag ? (
+                    <span
+                      className={cn(
+                        "absolute -top-1.5 -right-1 text-[8px] font-extrabold px-1 rounded shadow-sm border leading-none py-0.5",
+                        TAG_CLS[tag]
+                      )}
+                    >
+                      {tag}
+                    </span>
+                  ) : null}
                 </button>
               );
             })}

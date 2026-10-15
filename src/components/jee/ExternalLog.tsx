@@ -31,7 +31,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { NavController } from "./App";
 import { EmptyNote, PageTitle, SectionCard, StatCard } from "./shared";
-import { useLive, put, del, bulkPut, getAll } from "@/lib/idb";
+import { useLive, put, del, bulkPut, getAll, deleteTestCascade } from "@/lib/idb";
 import {
   todayStr,
   uid,
@@ -921,10 +921,8 @@ export function ExternalLogView({ nav }: { nav: NavController }) {
                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
                                     <AlertDialogAction
                                       className="bg-red-600 hover:bg-red-700 text-white"
-                                      onClick={() => {
-                                        void del("tests", t.id);
-                                        // remove the auto-created timelog entry so Today's Focus doesn't count a deleted test
-                                        void del("timelog", `test-${t.id}`);
+                                      onClick={async () => {
+                                        await deleteTestCascade(t.id);
                                         if (editingId === t.id) cancelEdit();
                                         toast.success("Entry deleted");
                                       }}

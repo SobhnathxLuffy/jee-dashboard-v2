@@ -19,6 +19,18 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 import type { NavController } from "./App";
 import { ChartNote, ChartTip, CH, EmptyNote, GRID, PageTitle, SectionCard, StatCard, TICK, TICK_MONO } from "./shared";
@@ -30,7 +42,7 @@ import { SpacedRetryCard } from "./SpacedRetryCard";
 import { ExperimentsCard } from "./ExperimentsCard";
 import { RecallCheckModal } from "./RecallCheckModal";
 import type { SyllabusRow } from "@/lib/types";
-import { kvGet, kvSet, useLive } from "@/lib/idb";
+import { deleteTestCascade, kvGet, kvSet, useLive } from "@/lib/idb";
 import {
   amberQueue,
   computeChapterHealth,
@@ -682,11 +694,46 @@ export function DashboardView({ nav }: { nav: NavController }) {
                       {t.subject_scores.Mathematics ?? "—"}
                     </td>
                     <td className="py-2 text-right">
-                      {t.type !== "external" ? (
-                        <Button size="sm" variant="ghost" onClick={() => nav.openResults(t.id)}>
-                          Review
-                        </Button>
-                      ) : null}
+                      <div className="flex items-center justify-end gap-1">
+                        {t.type !== "external" ? (
+                          <Button size="sm" variant="ghost" onClick={() => nav.openResults(t.id)}>
+                            Review
+                          </Button>
+                        ) : null}
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 w-8 p-0 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10"
+                              title={`Delete ${t.name}`}
+                              aria-label={`Delete test ${t.name}`}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete test &ldquo;{t.name}&rdquo;?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                This will permanently delete this test, all its question responses, retry items, and logged test time from your dashboard.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                className="bg-red-600 hover:bg-red-700 text-white"
+                                onClick={async () => {
+                                  await deleteTestCascade(t.id);
+                                  toast.success("Test deleted");
+                                }}
+                              >
+                                Delete
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </td>
                   </tr>
                 ))}

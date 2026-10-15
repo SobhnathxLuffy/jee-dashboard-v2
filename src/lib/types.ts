@@ -356,6 +356,7 @@ export interface ActiveSession {
   duration_min: number;
   started_at: number; // epoch ms
   answers: Record<string, number | string | null>; // by question slot id
+  tags?: Record<string, ErrorTag | null>; // by question slot id
   marked: string[];
   current: number; // global question index
   q_times: Record<string, number>; // accumulated seconds per question

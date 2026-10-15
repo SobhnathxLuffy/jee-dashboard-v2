@@ -26,9 +26,20 @@ import { cn } from "@/lib/utils";
 import type { NavController } from "./App";
 import { AnswerBits, EmptyNote, PageTitle, SectionCard, StatCard } from "./shared";
 import { CountUp, ScoreRing, Stagger, StaggerItem } from "./motion";
-import { useLive, put, get, getAll } from "@/lib/idb";
+import { useLive, put, get, getAll, deleteTestCascade } from "@/lib/idb";
 import { classifyAttempt, IDEAL_TIME, marksFor, type AttemptClass } from "@/lib/scoring";
-import { Timer } from "lucide-react";
+import { Timer, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { fileToDataUrl } from "@/lib/image";
 import {
   applyLateKey,
@@ -590,9 +601,45 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
         title={test.name}
         subtitle={`${test.date} · ${test.source} · ${test.duration_min} min · ${test.type} test · +${test.marks_correct ?? 4}/${test.marks_wrong ?? -1}`}
         right={
-          <Button variant="outline" size="sm" onClick={() => nav.go("dashboard")}>
-            ← Dashboard
-          </Button>
+          <div className="flex items-center gap-2">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5 text-muted-foreground hover:text-red-600 hover:border-red-300 dark:hover:border-red-500/40"
+                  aria-label="Delete test"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Delete</span>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete this test?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    &ldquo;{test.name}&rdquo; and all of its question responses, retry items, and logged test time will be permanently removed.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                    onClick={async () => {
+                      await deleteTestCascade(test.id);
+                      toast.success("Test deleted");
+                      nav.go("dashboard");
+                    }}
+                  >
+                    Delete test
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+            <Button variant="outline" size="sm" onClick={() => nav.go("dashboard")}>
+              ← Dashboard
+            </Button>
+          </div>
         }
       />
 
