@@ -192,6 +192,7 @@ export async function applyLateKey(
   const tol = Math.max(0, Number(tolerance) || 0);
   const keyByNo = new Map(key.map((k) => [k.no, k] as const));
 
+  const scheme = { correct: test.marks_correct ?? 4, wrong: test.marks_wrong ?? -1 };
   const rows = (await getAll("responses")).filter((r) => r.test_id === testId);
   const subjectScores: Record<Subject, number> = {
     Physics: 0,
@@ -213,7 +214,7 @@ export async function applyLateKey(
     } else {
       correct = null; // unattempted, or attempted with no key entry → 0, never −1
     }
-    const marks = marksFor(r.attempted || isBonus, correct, isBonus);
+    const marks = marksFor(r.attempted || isBonus, correct, isBonus, scheme);
     score += marks;
     subjectScores[r.subject] += marks;
     return {

@@ -446,7 +446,8 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
       Chemistry: 0,
       Mathematics: 0,
     };
-    for (const x of all) subjectScores[x.subject] += marksFor(x.attempted, x.correct);
+    const scheme = { correct: test.marks_correct ?? 4, wrong: test.marks_wrong ?? -1 };
+    for (const x of all) subjectScores[x.subject] += marksFor(x.attempted, x.correct, false, scheme);
     const score = SUBJECTS.reduce((a, s) => a + subjectScores[s], 0);
     const attemptedRows = all.filter((x) => x.attempted);
     const allMarked =
@@ -480,7 +481,7 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
     <div data-tutorial="results-tags" className="space-y-6">
       <PageTitle
         title={test.name}
-        subtitle={`${test.date} · ${test.source} · ${test.duration_min} min · ${test.type} test`}
+        subtitle={`${test.date} · ${test.source} · ${test.duration_min} min · ${test.type} test · +${test.marks_correct ?? 4}/${test.marks_wrong ?? -1}`}
         right={
           <Button variant="outline" size="sm" onClick={() => nav.go("dashboard")}>
             ← Dashboard

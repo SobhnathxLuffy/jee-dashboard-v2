@@ -12,6 +12,7 @@ import type {
   Question,
   ResponseRecord,
   RetryQueueItem,
+  NoteRecord,
   TrialRecord,
   SyllabusRow,
   Task,
@@ -25,7 +26,8 @@ const DB_NAME_BASE = "jee-study-app";
 // v7: adds "timelog" (category time tracking) and "anki_log" (daily Anki review check-in)
 // v8: adds "retry_queue" (spaced retry queue for C/F/A tagged mistakes)
 // v9: adds "trials" (active study & skill experiments)
-const DB_VERSION = 9;
+// v10: adds "notes" (personal notebook, formulas, traps, reactions)
+const DB_VERSION = 10;
 
 const DB_DEVICE = (() => {
   if (typeof window === "undefined") return null;
@@ -60,6 +62,7 @@ export const STORES = [
   "anki_log",
   "retry_queue",
   "trials",
+  "notes",
 ] as const;
 
 export type StoreName = (typeof STORES)[number];
@@ -78,6 +81,7 @@ export const SYNCED_STORES = [
   "anki_log",
   "retry_queue",
   "trials",
+  "notes",
 ] as const;
 
 type SyncedStore = (typeof SYNCED_STORES)[number];
@@ -117,6 +121,7 @@ type StoreValueMap = {
   anki_log: AnkiLogEntry;
   retry_queue: RetryQueueItem;
   trials: TrialRecord;
+  notes: NoteRecord;
 };
 
 let dbPromise: Promise<IDBDatabase> | null = null;
@@ -199,6 +204,12 @@ export function getDB(): Promise<IDBDatabase> {
         // upgrade from v8 -> v9: ensure trials exists
         if (!db.objectStoreNames.contains("trials")) {
           db.createObjectStore("trials", { keyPath: "id" });
+        }
+        // upgrade from v9 -> v10: ensure notes exists
+        if (!db.objectStoreNames.contains("notes")) {
+          const os = db.createObjectStore("notes", { keyPath: "id" });
+          os.createIndex("by_subject", "subject", { unique: false });
+          os.createIndex("by_created", "created_at", { unique: false });
         }
         // upgrade from v3: add "created_at" index to tests if missing
         if (db.objectStoreNames.contains("tests") && tx) {

@@ -103,6 +103,8 @@ export interface TestRecord {
     attempts: number;
     wrong: number;
   };
+  marks_correct?: number;
+  marks_wrong?: number;
 }
 
 /** A PDF paper kept in the Papers library — import again without re-uploading. */
@@ -358,6 +360,8 @@ export interface ActiveSession {
   q_entered_at: number; // epoch ms when current question was entered
   pdf_file_bytes?: ArrayBuffer; // kept only in memory, not persisted
   is_practice?: boolean;
+  marks_correct?: number;
+  marks_wrong?: number;
 }
 
 export const SUBJECTS: Subject[] = ["Physics", "Chemistry", "Mathematics"];
@@ -427,6 +431,23 @@ export interface TrialRecord {
   resultLine?: string;
   status: "active" | "concluded" | "abandoned";
   type: "study" | "skill"; // max 1 active study test, 2 active skill trials
+  created_at: number;
+  updated_at?: number;
+}
+
+export interface MarkingScheme {
+  correct: number;
+  wrong: number;
+}
+
+export interface NoteRecord {
+  id: string;
+  title: string;
+  content: string;
+  subject?: Subject | "General";
+  chapter?: string;
+  tags: string[];
+  pinned?: boolean;
   created_at: number;
   updated_at?: number;
 }

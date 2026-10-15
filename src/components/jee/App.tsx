@@ -29,6 +29,7 @@ import {
   Monitor,
   Check,
   Settings,
+  BookMarked,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -74,6 +75,7 @@ import { PapersView } from "./Papers";
 import { PerformanceView } from "./Performance";
 import { ExternalLogView } from "./ExternalLog";
 import { SyllabusView } from "./Syllabus";
+import { NotesView } from "./NotesView";
 import { DataView } from "./DataView";
 import { FocusTimerModal } from "./FocusTimer";
 import { useFocusTimerChip, openFocusTimerModal, promptEndedFocusTimerOnMount } from "./useFocusTimer";
@@ -87,6 +89,7 @@ export type ViewName =
   | "bank"
   | "performance"
   | "syllabus"
+  | "notes"
   | "data"
   | "player"
   | "results";
@@ -100,13 +103,14 @@ const NAV: { id: ViewName; label: string; icon: LucideIcon }[] = [
   { id: "bank", label: "Question Bank", icon: Library },
   { id: "performance", label: "Performance", icon: ChartLine },
   { id: "syllabus", label: "Syllabus", icon: ListTree },
+  { id: "notes", label: "Notes", icon: BookMarked },
   { id: "data", label: "Data", icon: Database },
 ];
 
 const NAV_GROUPS: ViewName[][] = [
   ["dashboard"],
   ["test", "pdf", "papers", "external"],
-  ["bank", "performance", "syllabus"],
+  ["bank", "performance", "syllabus", "notes"],
   ["data"],
 ];
 
@@ -116,6 +120,7 @@ const ALL_VIEWS: ViewName[] = [...NAV.map((n) => n.id), "player", "results"];
 export interface NavController {
   go: (v: ViewName) => void;
   openResults: (testId: string) => void;
+  toResults: (testId: string) => void;
   startSession: (s: ActiveSession, pdfBlob?: Blob | null) => void;
   /** open TestCreate with an optional subject/chapter preselected (action-linked analytics) */
   toTestCreate: (prefill?: TestCreatePrefill) => void;
@@ -279,7 +284,7 @@ export function AppRoot() {
   );
 
   const star = northStar(tests, responses);
-  const nav: NavController = { go, openResults, startSession, toTestCreate, importPaper };
+  const nav: NavController = { go, openResults, toResults: openResults, startSession, toTestCreate, importPaper };
 
   return (
     <MotionConfig reducedMotion="user">
@@ -388,7 +393,8 @@ export function AppRoot() {
               transition={{ duration: 0.22, ease: EASE }}
             >
               {view === "dashboard" ? <DashboardView nav={nav} /> : null}
-              {view === "bank" ? <QuestionBankView /> : null}
+              {view === "bank" ? <QuestionBankView nav={nav} /> : null}
+              {view === "notes" ? <NotesView nav={nav} /> : null}
               {view === "test" ? (
                 <TestCreateView
                   key={testPrefill ? `t-${testPrefill.subject}:${testPrefill.chapter}` : "t-blank"}

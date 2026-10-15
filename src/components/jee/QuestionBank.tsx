@@ -29,6 +29,7 @@ import {
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import type { NavController } from "./App";
 import { EmptyNote, PageTitle, SectionCard, SubjectDot, TierBadge } from "./shared";
 import { useLive, put, del, bulkPut } from "@/lib/idb";
 import { fileToDataUrl } from "@/lib/image";
@@ -38,7 +39,16 @@ import { FileDrop } from "./FileDrop";
 
 const OPTION_LETTERS = ["A", "B", "C", "D"];
 
-export function QuestionBankView() {
+export function cleanSource(s?: string): string {
+  if (!s) return "Unknown";
+  return s
+    .replace(/\s*\(Question ID:.*?\)/i, "")
+    .replace(/\s*\(Q(uestion)?\s*#?\s*\d+.*?\)/i, "")
+    .trim();
+}
+
+
+export function QuestionBankView({ nav }: { nav?: NavController }) {
   const questions = useLive("questions");
   const syllabus = useLive("syllabus");
   const tests = useLive("tests");
@@ -46,6 +56,7 @@ export function QuestionBankView() {
   const [filterSubject, setFilterSubject] = useState<string>("all");
   const [filterChapter, setFilterChapter] = useState<string>("all");
   const [filterTier, setFilterTier] = useState<string>("all");
+  const [filterSource, setFilterSource] = useState<string>("all");
   const [search, setSearch] = useState("");
 
   const [subject, setSubject] = useState<Subject>("Physics");
@@ -75,6 +86,17 @@ export function QuestionBankView() {
     [syllabus, subject]
   );
 
+  const sourceOptions = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const q of questions) {
+      const src = cleanSource(q.source);
+      counts.set(src, (counts.get(src) ?? 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [questions]);
+
   const tierOf = useMemo(() => {
     const m = new Map<string, 1 | 2 | 3>();
     syllabus.forEach((s) => m.set(`${s.subject}:${s.chapter}`, s.tier));
@@ -87,6 +109,7 @@ export function QuestionBankView() {
       .filter((q) =>
         filterSubject !== "all" && filterChapter !== "all" ? q.chapter === filterChapter : true
       )
+      .filter((q) => (filterSource === "all" ? true : cleanSource(q.source) === filterSource))
       .filter((q) => {
         if (filterTier === "all") return true;
         const t = tierOf.get(`${q.subject}:${q.chapter}`);
@@ -98,7 +121,33 @@ export function QuestionBankView() {
           : q.question.toLowerCase().includes(search.trim().toLowerCase())
       )
       .sort((a, b) => b.created_at - a.created_at);
-  }, [questions, filterSubject, filterChapter, filterTier, search, tierOf]);
+  }, [questions, filterSubject, filterChapter, filterTier, filterSource, search, tierOf]);
+
+
+  function startTestWithFiltered() {
+    if (!nav) return;
+    if (filtered.length === 0) {
+      toast.error("No questions in current filter");
+      return;
+    }
+    const ids = filtered.map((q) => q.id);
+    let testName = "Question Bank Practice";
+    if (filterSource !== "all") testName = filterSource;
+    else if (filterChapter !== "all") testName = `${filterChapter} Test`;
+    else if (filterSubject !== "all") testName = `${filterSubject} Test`;
+
+    const isCuet = testName.toLowerCase().includes("cuet");
+    nav.toTestCreate({
+      questionIds: ids,
+      name: testName,
+      source: filterSource !== "all" ? filterSource : undefined,
+      subject: filterSubject !== "all" ? filterSubject : undefined,
+      chapter: filterChapter !== "all" ? filterChapter : undefined,
+      marksCorrect: isCuet ? 5 : 4,
+      marksWrong: -1,
+      durationMin: Math.max(10, Math.round(ids.length * (isCuet ? 0.9 : 1.2))),
+    });
+  }
 
   function resetForm() {
     setText("");
@@ -252,7 +301,7 @@ export function QuestionBankView() {
         }
       />
 
-      {importOpen ? <JsonImportPanel onClose={() => setImportOpen(false)} /> : null}
+      {importOpen ? <JsonImportPanel onClose={() => setImportOpen(false)} nav={nav} /> : null}
 
       <div className="grid lg:grid-cols-5 gap-6">
         {/* entry / edit form */}
@@ -478,7 +527,7 @@ export function QuestionBankView() {
           subtitle={`${filtered.length} shown`}
           className="lg:col-span-3"
         >
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-2 mb-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-2 mb-4">
             <Select
               value={filterSubject}
               onValueChange={(v) => {
@@ -512,12 +561,38 @@ export function QuestionBankView() {
                 <SelectItem value="3">Tier 3</SelectItem>
               </SelectContent>
             </Select>
+            <Select value={filterSource} onValueChange={setFilterSource}>
+              <SelectTrigger aria-label="Filter source"><SelectValue /></SelectTrigger>
+              <SelectContent className="max-h-72">
+                <SelectItem value="all">All sources ({questions.length})</SelectItem>
+                {sourceOptions.map((s) => (
+                  <SelectItem key={s.name} value={s.name}>
+                    {s.name} ({s.count})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search text…"
             />
           </div>
+
+          {filtered.length > 0 && nav ? (
+            <div className="flex items-center justify-between p-2 mb-3 bg-muted/40 rounded-lg border border-border flex-wrap gap-2">
+              <span className="text-xs text-muted-foreground">
+                Filtered: <strong className="text-foreground">{filtered.length}</strong> question{filtered.length === 1 ? "" : "s"}
+              </span>
+              <Button
+                size="sm"
+                onClick={startTestWithFiltered}
+                className="bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:text-emerald-950 text-xs h-7 gap-1.5"
+              >
+                🚀 Start CBT Test with these {filtered.length} Qs
+              </Button>
+            </div>
+          ) : null}
 
           {filtered.length === 0 ? (
             <EmptyNote>
@@ -642,10 +717,38 @@ export function QuestionBankView() {
 // Parsing/validation lives in lib/question-json.ts — one canonical validator
 // shared with the Question Bank.
 
-function JsonImportPanel({ onClose }: { onClose: () => void }) {
+function JsonImportPanel({ onClose, nav }: { onClose: () => void; nav?: NavController }) {
+  const [importing, setImporting] = useState(false);
   const [raw, setRaw] = useState("");
   const [fileName, setFileName] = useState<string | null>(null);
   const parsed = useMemo(() => (raw.trim() ? parseQuestionsJson(raw) : null), [raw]);
+
+
+  async function importAndStart() {
+    if (!parsed || parsed.ok.length === 0 || importing) return;
+    setImporting(true);
+    try {
+      await bulkPut("questions", parsed.ok);
+      toast.success(`Imported ${parsed.ok.length} questions — opening test setup...`);
+      onClose();
+      if (nav) {
+        const firstSrc = parsed.ok[0]?.source ? cleanSource(parsed.ok[0].source) : "Imported Paper";
+        const isCuet = firstSrc.toLowerCase().includes("cuet");
+        nav.toTestCreate({
+          questionIds: parsed.ok.map((q) => q.id),
+          name: firstSrc,
+          source: firstSrc,
+          marksCorrect: isCuet ? 5 : 4,
+          marksWrong: -1,
+          durationMin: Math.max(15, Math.round(parsed.ok.length * (isCuet ? 0.9 : 1.2))),
+        });
+      }
+    } catch {
+      toast.error("Failed to import questions");
+    } finally {
+      setImporting(false);
+    }
+  }
 
   async function importAll() {
     if (!parsed || parsed.ok.length === 0) return;
@@ -704,9 +807,21 @@ function JsonImportPanel({ onClose }: { onClose: () => void }) {
                   </Badge>
                 ) : null}
                 {parsed.ok.length > 0 ? (
-                  <Button size="sm" onClick={() => void importAll()}>
-                    Import {parsed.ok.length} question{parsed.ok.length === 1 ? "" : "s"}
-                  </Button>
+                  <>
+                    <Button size="sm" variant="outline" onClick={() => void importAll()} disabled={importing}>
+                      Import {parsed.ok.length} question{parsed.ok.length === 1 ? "" : "s"}
+                    </Button>
+                    {nav ? (
+                      <Button
+                        size="sm"
+                        onClick={() => void importAndStart()}
+                        disabled={importing}
+                        className="bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:text-emerald-950 font-medium"
+                      >
+                        🚀 Import &amp; Start CBT Test ({parsed.ok.length} Qs)
+                      </Button>
+                    ) : null}
+                  </>
                 ) : null}
               </div>
               {parsed.errors.length > 0 ? (

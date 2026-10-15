@@ -345,6 +345,7 @@ export function PlayerView({
     };
 
     if (s.mode === "cbt") {
+      const scheme = { correct: s.marks_correct ?? 4, wrong: s.marks_wrong ?? -1 };
       let pos = 0;
       for (const id of s.question_ids) {
         pos += 1;
@@ -363,7 +364,7 @@ export function PlayerView({
               Math.abs(u - Number(q.answer)) <= (q.tolerance || 0) + 1e-9;
           }
         }
-        const marks = marksFor(attempted, correct);
+        const marks = marksFor(attempted, correct, false, scheme);
         score += marks;
         subjectScores[q.subject] += marks;
         responses.push({
@@ -384,7 +385,7 @@ export function PlayerView({
           options: q.options,
         });
       }
-      const max = s.question_ids.length * 4;
+      const max = s.question_ids.length * scheme.correct;
       const record: TestRecord = {
         id: s.test_id,
         date: todayStr(),
@@ -397,6 +398,8 @@ export function PlayerView({
         max_score: max,
         subject_scores: subjectScores,
         question_ids: s.question_ids,
+        marks_correct: scheme.correct,
+        marks_wrong: scheme.wrong,
       };
       await (await import("@/lib/idb")).bulkPut("responses", responses);
       await (await import("@/lib/idb")).put("tests", record);
@@ -411,6 +414,7 @@ export function PlayerView({
       onFinish(s.test_id);
       return;
     }
+    const scheme = { correct: s.marks_correct ?? 4, wrong: s.marks_wrong ?? -1 };
     const tol = meta.tolerance ?? 0;
     const keyLater = meta.key_later === true; // D4: no key → no scoring, self-mark in Results
     const keyByNo = new Map(meta.key.map((k) => [k.no, k] as const));
@@ -431,7 +435,7 @@ export function PlayerView({
         // so review rows / retry candidates / analytics all agree with the score
         if (isBonus) correct = true; // bonus-fix-v2
         // bonus → +4 regardless (marksFor handles it); keyless-attempted → 0, never −1
-        const marks = marksFor(attempted || isBonus, correct, isBonus);
+        const marks = marksFor(attempted || isBonus, correct, isBonus, scheme);
         score += marks;
         subjectScores[sl.subject] += marks;
       }
@@ -462,9 +466,11 @@ export function PlayerView({
       type: "pdf",
       duration_min: s.duration_min,
       score: keyLater ? null : score,
-      max_score: meta.total_questions * 4,
+      max_score: meta.total_questions * scheme.correct,
       subject_scores: keyLater ? {} : subjectScores,
       pdf_meta: meta,
+      marks_correct: scheme.correct,
+      marks_wrong: scheme.wrong,
     };
     const idb = await import("@/lib/idb");
     await idb.bulkPut("responses", responses);
