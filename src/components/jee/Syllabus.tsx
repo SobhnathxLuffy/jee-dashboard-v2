@@ -327,7 +327,16 @@ export function SyllabusView() {
                           <div className="font-medium text-foreground">{r.chapter}</div>
                           <div className="text-[11px] text-muted-foreground/70">{r.subject}</div>
                         </td>
-                        <td className="py-2.5 px-3"><TierBadge tier={r.tier} /></td>
+                        <td className="py-2.5 px-3">
+                          <TierSelect
+                            tier={r.tier}
+                            chapterName={r.chapter}
+                            onChange={(nextTier) => {
+                              void update(r, { tier: nextTier });
+                              toast.success(`${r.chapter} moved to Tier ${nextTier}`);
+                            }}
+                          />
+                        </td>
                         <td className="py-2.5 px-3">
                           <button
                             type="button"
@@ -619,7 +628,15 @@ function ChapterCard({
           >
             <ChapterTypeBadge type={row.chapter_type ?? inferDefaultChapterType(row.subject, row.chapter)} />
           </button>
-          <TierBadge tier={row.tier} />
+          <TierSelect
+            tier={row.tier}
+            chapterName={row.chapter}
+            className="h-7 w-[72px] px-1.5"
+            onChange={(nextTier) => {
+              void onUpdate(row, { tier: nextTier });
+              toast.success(`${row.chapter} moved to Tier ${nextTier}`);
+            }}
+          />
           <HealthChip color={health?.color ?? "gray"} accuracy={health ? health.accuracy : null} />
         </div>
       </div>
@@ -664,4 +681,54 @@ function diffDays(from: string, to: string): number {
   const a = new Date(`${from}T12:00:00`).getTime();
   const b = new Date(`${to}T12:00:00`).getTime();
   return Math.max(0, Math.round((b - a) / 86400000));
+}
+
+
+export function TierSelect({
+  tier,
+  chapterName,
+  onChange,
+  className,
+}: {
+  tier: 1 | 2 | 3;
+  chapterName: string;
+  onChange: (nextTier: 1 | 2 | 3) => void;
+  className?: string;
+}) {
+  return (
+    <Select
+      value={String(tier)}
+      onValueChange={(v) => {
+        const next = Number(v) as 1 | 2 | 3;
+        onChange(next);
+      }}
+    >
+      <SelectTrigger
+        className={cn("h-8 text-xs w-[76px] px-2 gap-1 border-border/70 hover:border-border", className)}
+        aria-label={`Tier of ${chapterName}`}
+      >
+        <TierBadge tier={tier} />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem value="1">
+          <div className="flex items-center gap-2">
+            <TierBadge tier={1} />
+            <span className="text-xs">Tier 1 · High yield (~30%)</span>
+          </div>
+        </SelectItem>
+        <SelectItem value="2">
+          <div className="flex items-center gap-2">
+            <TierBadge tier={2} />
+            <span className="text-xs">Tier 2 · Core (~50%)</span>
+          </div>
+        </SelectItem>
+        <SelectItem value="3">
+          <div className="flex items-center gap-2">
+            <TierBadge tier={3} />
+            <span className="text-xs">Tier 3 · Lower yield (~20%)</span>
+          </div>
+        </SelectItem>
+      </SelectContent>
+    </Select>
+  );
 }
