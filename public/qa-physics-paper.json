@@ -1,0 +1,46 @@
+[
+  {
+    "id": "qa_phys_001",
+    "question": "A projectile is launched at 45° with speed 20 m/s. What is its maximum height? (g = 10 m/s²)",
+    "options": ["10 m", "20 m", "5 m", "40 m"],
+    "answer": 2,
+    "type": "MCQ",
+    "subject": "Physics",
+    "chapter": "Kinematics",
+    "source": "QA Test Paper 2026",
+    "order": 1
+  },
+  {
+    "id": "qa_phys_002",
+    "question": "The dimensional formula of Planck's constant is:",
+    "options": ["[ML²T⁻¹]", "[ML²T⁻²]", "[MLT⁻¹]", "[ML²T⁻³]"],
+    "answer": 0,
+    "type": "MCQ",
+    "subject": "Physics",
+    "chapter": "Kinematics",
+    "source": "QA Test Paper 2026",
+    "order": 2
+  },
+  {
+    "id": "qa_phys_003",
+    "question": "A body moves 10 m east then 10 m north. The magnitude of displacement is ______ m.",
+    "answer": 14.14,
+    "tolerance": 0.2,
+    "type": "numerical",
+    "subject": "Physics",
+    "chapter": "Kinematics",
+    "source": "QA Test Paper 2026",
+    "order": 3
+  },
+  {
+    "id": "qa_phys_004",
+    "question": "Which of the following is NOT a vector quantity?",
+    "options": ["Velocity", "Acceleration", "Speed", "Force"],
+    "answer": 2,
+    "type": "MCQ",
+    "subject": "Physics",
+    "chapter": "Kinematics",
+    "source": "QA Test Paper 2026",
+    "order": 4
+  }
+]
