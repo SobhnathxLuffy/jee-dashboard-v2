@@ -218,6 +218,47 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
     return [...own].sort((a, b) => (a.q_no ?? 0) - (b.q_no ?? 0));
   }, [responses, testId]);
 
+  // Auto-recovery for tests whose responses were wiped out or missing
+  useEffect(() => {
+    if (!test || !test.question_ids || test.question_ids.length === 0) return;
+    if (responses.some((r) => r.test_id === testId)) return;
+
+    let alive = true;
+    void (async () => {
+      const { getAll, bulkPut } = await import("@/lib/idb");
+      const allQs = await getAll("questions");
+      const qm = new Map(allQs.map((q) => [q.id, q] as const));
+      const recovered: ResponseRecord[] = [];
+      let pos = 1;
+      for (const qid of test.question_ids!) {
+        const q = qm.get(qid);
+        recovered.push({
+          id: uid(),
+          test_id: test.id,
+          question_id: qid,
+          selected: null,
+          correct: null,
+          attempted: false,
+          q_no: pos++,
+          time_spent: Math.round(((test.duration_min || 60) * 60) / test.question_ids!.length),
+          error_tag: null,
+          subject: q?.subject ?? "Chemistry",
+          chapter: q?.chapter ?? "General",
+          question_snippet: q ? q.question.slice(0, 240) : `Question ${pos - 1}`,
+          correct_answer: q?.answer ?? "",
+          type: q?.type ?? "MCQ",
+          options: q?.options ?? [],
+        });
+      }
+      if (recovered.length > 0 && alive) {
+        await bulkPut("responses", recovered);
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+  }, [test, testId, responses]);
+
   // D4: key-later tests stay in self-mark mode for their whole life (score is
   // recomputed to a number on the first toggle, so the flag is the discriminator)
   const selfMark = test?.pdf_meta?.key_later === true;
@@ -298,9 +339,10 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
   const stats = useMemo(() => {
     const attempted = rows.filter((r) => r.attempted);
     const correct = rows.filter((r) => r.correct === true);
-    const wrong = rows.filter((r) => r.attempted && r.correct === false);
+    const wrong = rows.filter((r) => r.correct === false);
     const untagged = wrong.filter((r) => !r.error_tag).length;
-    const time = rows.reduce((a, r) => a + (r.time_spent || 0), 0);
+    const totalRowTime = rows.reduce((a, r) => a + (r.time_spent || 0), 0);
+    const time = totalRowTime > 0 ? totalRowTime : (test?.duration_min ? test.duration_min * 60 : 0);
     return {
       attempted: attempted.length,
       correct: correct.length,
@@ -309,9 +351,9 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
       time,
       accuracy: attempted.length ? Math.round((correct.length / attempted.length) * 100) : 0,
       attemptRate: rows.length ? Math.round((attempted.length / rows.length) * 100) : 0,
-      pending: attempted.filter((r) => r.correct === null).length,
+      pending: rows.filter((r) => r.correct === null).length,
     };
-  }, [rows]);
+  }, [rows, test?.duration_min]);
 
   const shown = useMemo(() => {
     let out = rows;
@@ -438,7 +480,8 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
   // D4: set the mark, then recompute the whole TestRecord from ALL responses
   async function applyMark(r: ResponseRecord, correct: boolean | null) {
     if (!test) return;
-    const updated = await patchResponse(r.id, { correct });
+    const attempted = correct !== null ? true : r.attempted;
+    const updated = await patchResponse(r.id, { correct, attempted });
     if (!updated) return;
     const all = (await getAll("responses")).filter((x) => x.test_id === testId);
     const subjectScores: Record<Subject, number> = {
@@ -448,7 +491,7 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
     };
     const scheme = { correct: test.marks_correct ?? 4, wrong: test.marks_wrong ?? -1 };
     for (const x of all) subjectScores[x.subject] += marksFor(x.attempted, x.correct, false, scheme);
-    const score = SUBJECTS.reduce((a, s) => a + subjectScores[s], 0);
+    const score = SUBJECTS.reduce((a, s) => a + (subjectScores[s] || 0), 0);
     const attemptedRows = all.filter((x) => x.attempted);
     const allMarked =
       attemptedRows.length > 0 && attemptedRows.every((x) => x.correct !== null);
@@ -922,8 +965,8 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
                       )}
                     </div>
 
-                    {/* D4: self-mark toggles (key-later tests only) */}
-                    {selfMark ? (
+                    {/* D4: self-mark toggles (key-later tests, or un-scored/recovered tests) */}
+                    {selfMark || r.correct === null ? (
                       <div className="flex flex-col gap-1 items-end shrink-0">
                         <span className="text-[10px] uppercase text-muted-foreground/70 font-medium">mark it</span>
                         <div className="flex gap-1.5">
@@ -970,8 +1013,8 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
                       </div>
                     )}
 
-                    {/* tag UI: wrong-marked rows only (self-marked wrongs flow in here too) */}
-                    {r.attempted && r.correct === false ? (
+                    {/* tag UI: wrong or skipped rows */}
+                    {r.correct !== true ? (
                       <div className="flex flex-col gap-1 items-end shrink-0">
                         <span className="text-[10px] uppercase text-muted-foreground/70 font-medium">tag it</span>
                         <div className="flex gap-1">

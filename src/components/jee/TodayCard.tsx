@@ -56,25 +56,28 @@ export function TodayCard() {
   const [manualLogOpen, setManualLogOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
-  // Load targets & nearest exam
+  // Load targets & nearest exam and sync legacy tests to timelog
   useEffect(() => {
-    void Promise.all([getTimeTargets(), getAnkiLimits(), getTargetExams()]).then(
-      ([t, a, exams]) => {
-        setTargets(t);
-        setAnkiLimits(a);
+    void (async () => {
+      try {
+        const { syncTestsToTimelog } = await import("@/lib/timelog");
+        await syncTestsToTimelog();
+      } catch {}
+      const [t, a, exams] = await Promise.all([getTimeTargets(), getAnkiLimits(), getTargetExams()]);
+      setTargets(t);
+      setAnkiLimits(a);
 
-        const now = new Date(`${today}T12:00:00`).getTime();
-        let minDays: number | null = null;
-        for (const e of exams) {
-          const dt = new Date(`${e.date}T12:00:00`).getTime();
-          const d = Math.ceil((dt - now) / 86400000);
-          if (d >= 0 && (minDays === null || d < minDays)) {
-            minDays = d;
-          }
+      const now = new Date(`${today}T12:00:00`).getTime();
+      let minDays: number | null = null;
+      for (const e of exams) {
+        const dt = new Date(`${e.date}T12:00:00`).getTime();
+        const d = Math.ceil((dt - now) / 86400000);
+        if (d >= 0 && (minDays === null || d < minDays)) {
+          minDays = d;
         }
-        setDaysToNearestExam(minDays);
       }
-    );
+      setDaysToNearestExam(minDays);
+    })();
   }, [dataVersion, today]);
 
   // Compute metrics

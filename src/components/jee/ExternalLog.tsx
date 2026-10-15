@@ -340,6 +340,15 @@ export function ExternalLogView({ nav }: { nav: NavController }) {
         await put("tests", record);
       }
 
+      const { logTestTime } = await import("@/lib/timelog");
+      await logTestTime(
+        testId,
+        common.name,
+        common.duration_min,
+        common.date,
+        scope !== "full" ? (scope as Subject) : undefined
+      );
+
       // Save any logged question mistakes as ResponseRecords
       if (mistakes.length > 0) {
         const responseRecords: ResponseRecord[] = mistakes.map((m) => ({

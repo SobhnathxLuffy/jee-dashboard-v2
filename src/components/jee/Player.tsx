@@ -145,8 +145,7 @@ export function PlayerView({
       let no = 1;
       for (const id of session.question_ids) {
         const q = qMap.get(id);
-        if (!q) continue;
-        out.push({ slot: id, no: no++, subject: q.subject });
+        out.push({ slot: id, no: no++, subject: q?.subject ?? "Physics" });
       }
       return out;
     }
@@ -199,7 +198,8 @@ export function PlayerView({
   const commitTime = useCallback(
     (s: ActiveSession, nextIndex: number): ActiveSession => {
       const elapsed = (Date.now() - s.q_entered_at) / 1000;
-      const cur = s.question_ids[s.current] ?? String(s.current + 1);
+      const curSlot = slots[s.current];
+      const cur = curSlot ? curSlot.slot : (s.question_ids[s.current] ?? String(s.current + 1));
       return {
         ...s,
         q_times: { ...s.q_times, [cur]: (s.q_times[cur] ?? 0) + elapsed },
@@ -207,7 +207,7 @@ export function PlayerView({
         q_entered_at: Date.now(),
       };
     },
-    []
+    [slots]
   );
 
   const persist = useCallback(
@@ -230,7 +230,8 @@ export function PlayerView({
 
   function markAndNext() {
     const s = sessionRef.current;
-    const cur = s.question_ids[s.current] ?? String(s.current + 1);
+    const curSlot = slots[s.current];
+    const cur = curSlot ? curSlot.slot : (s.question_ids[s.current] ?? String(s.current + 1));
     const marked = s.marked.includes(cur) ? s.marked : [...s.marked, cur];
     const next = Math.min(s.current + 1, slots.length - 1);
     persist({ ...commitTime({ ...s, marked }, next), marked });
@@ -333,7 +334,8 @@ export function PlayerView({
     };
     // finalize last question's time
     const elapsed = (Date.now() - s.q_entered_at) / 1000;
-    const cur = s.question_ids[s.current] ?? String(s.current + 1);
+    const curSlot = slots[s.current];
+    const cur = curSlot ? curSlot.slot : (s.question_ids[s.current] ?? String(s.current + 1));
     const qTimes = { ...s.q_times, [cur]: (s.q_times[cur] ?? 0) + elapsed };
 
     const responses: ResponseRecord[] = [];
@@ -345,11 +347,14 @@ export function PlayerView({
     };
 
     if (s.mode === "cbt") {
+      const idb = await import("@/lib/idb");
+      const allQs = await idb.getAll("questions");
+      const fullQMap = new Map([...allQs.map((q) => [q.id, q] as const), ...qMap.entries()]);
       const scheme = { correct: s.marks_correct ?? 4, wrong: s.marks_wrong ?? -1 };
       let pos = 0;
       for (const id of s.question_ids) {
         pos += 1;
-        const q = qMap.get(id);
+        const q = fullQMap.get(id);
         if (!q) continue;
         const raw = s.answers[id];
         const selected = raw === undefined || raw === "" || raw === null ? null : raw;
@@ -401,8 +406,23 @@ export function PlayerView({
         marks_correct: scheme.correct,
         marks_wrong: scheme.wrong,
       };
-      await (await import("@/lib/idb")).bulkPut("responses", responses);
-      await (await import("@/lib/idb")).put("tests", record);
+      await idb.delResponsesByTest(s.test_id);
+      await idb.bulkPut("responses", responses);
+      await idb.put("tests", record);
+
+      const { logTestTime } = await import("@/lib/timelog");
+      const totalQSec = Object.values(qTimes).reduce((a, b) => a + (b || 0), 0);
+      const elapsedMin = totalQSec > 30
+        ? Math.max(1, Math.round(totalQSec / 60))
+        : Math.max(1, Math.min(s.duration_min, Math.round((Date.now() - s.started_at) / 60000)));
+      await logTestTime(
+        s.test_id,
+        s.name,
+        elapsedMin,
+        todayStr(),
+        s.subject_order?.length === 1 ? s.subject_order[0] : undefined
+      );
+
       celebrate();
       onFinish(s.test_id);
       return;
@@ -473,13 +493,23 @@ export function PlayerView({
       marks_wrong: scheme.wrong,
     };
     const idb = await import("@/lib/idb");
+    await idb.delResponsesByTest(s.test_id);
     await idb.bulkPut("responses", responses);
     await idb.put("tests", record);
+
+    const { logTestTime } = await import("@/lib/timelog");
+    const totalQSec = Object.values(qTimes).reduce((a, b) => a + (b || 0), 0);
+    const elapsedMin = totalQSec > 30
+      ? Math.max(1, Math.round(totalQSec / 60))
+      : Math.max(1, Math.min(s.duration_min, Math.round((Date.now() - s.started_at) / 60000)));
+    await logTestTime(s.test_id, s.name, elapsedMin, todayStr());
+
     if (keyLater) {
       toast.info("Self-mark each question to compute your score.");
     }
+    celebrate();
     onFinish(s.test_id);
-  }, [qMap, onFinish]);
+  }, [qMap, onFinish, slots]);
 
   // auto-submit when the clock hits zero
   useEffect(() => {

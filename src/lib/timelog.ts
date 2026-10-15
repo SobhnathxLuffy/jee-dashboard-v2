@@ -4,6 +4,8 @@ import {
   uid,
   type AnkiLogEntry,
   type AnkiMinutesBucket,
+  type Subject,
+  type TestRecord,
   type TimeCategory,
   type TimeLogEntry,
 } from "./types";
@@ -126,5 +128,56 @@ export async function logAnkiCheckIn(
   } else {
     // if undone or no bucket, remove the automatic timelog entry if it exists
     await del("timelog", ankiTimelogId).catch(() => {});
+  }
+}
+
+/**
+ * Log study time directly from a completed CBT, PDF, or External mock test.
+ */
+export async function logTestTime(
+  testId: string,
+  testName: string,
+  minutes: number,
+  date: string = todayStr(),
+  subject?: Subject
+): Promise<void> {
+  if (!minutes || minutes <= 0) return;
+  const timeId = `test-${testId}`;
+  const timeEntry: TimeLogEntry = {
+    id: timeId,
+    category: "JEE",
+    activity: "full_mock",
+    date,
+    minutes,
+    subject,
+    note: `Test: ${testName}`,
+  };
+  await put("timelog", timeEntry);
+}
+
+/**
+ * Ensures all completed tests in the `tests` store have corresponding timelog entries
+ * so Today's Focus & Activity and daily streaks are always accurate.
+ */
+export async function syncTestsToTimelog(): Promise<void> {
+  const tests = await getAll("tests");
+  const logs = await getAll("timelog");
+  const logIds = new Set(logs.map((l) => l.id));
+
+  for (const t of tests) {
+    const timeId = `test-${t.id}`;
+    if (!logIds.has(timeId)) {
+      const minutes = t.duration_min && t.duration_min > 0 ? t.duration_min : 45;
+      await put("timelog", {
+        id: timeId,
+        category: "JEE",
+        activity: t.type === "chapter" ? "problems" : "full_mock",
+        date: t.date || todayStr(),
+        minutes,
+        note: `Test: ${t.name}`,
+        created_at: t.created_at || Date.now(),
+      });
+      logIds.add(timeId);
+    }
   }
 }

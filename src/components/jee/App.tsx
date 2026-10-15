@@ -247,16 +247,8 @@ export function AppRoot() {
 
   const finishSession = useCallback(
     async (testId: string) => {
-      // Clean up the persisted session + cached PDF blob so the "paused test"
-      // banner can't reappear after submit. A resubmit must not duplicate responses.
-      if (testId) {
-        try {
-          const { delResponsesByTest } = await import("@/lib/idb");
-          await delResponsesByTest(testId);
-        } catch {
-          /* non-fatal — bulkPut below will still overwrite by id */
-        }
-      }
+      // Clean up the persisted active session + cached PDF blob so the "paused test"
+      // banner disappears. Responses were already cleanly saved by Player.tsx.
       await clearSession();
       await kvDel("active-test-paper-blob");
       setResumable(null);
@@ -375,7 +367,7 @@ export function AppRoot() {
                 <Button size="sm" onClick={resume} className="bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:text-emerald-950">
                   Resume
                 </Button>
-                <Button size="sm" variant="outline" onClick={() => setConfirmDiscard(true)}>
+                <Button size="sm" variant="outline" onClick={() => setConfirmDiscard(true)} className="press">
                   Discard
                 </Button>
               </div>

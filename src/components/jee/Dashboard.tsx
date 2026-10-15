@@ -164,9 +164,13 @@ export function DashboardView({ nav }: { nav: NavController }) {
       pending,
       accuracy: attempted ? Math.round((correct / attempted) * 100) : 0,
       tagCoverage: wrong ? Math.round((tagged / wrong) * 100) : 100,
-      timeTotal: responses.reduce((a, r) => a + (r.time_spent || 0), 0),
+      timeTotal: (() => {
+        const totalRowTime = responses.reduce((a, r) => a + (r.time_spent || 0), 0);
+        const testFallback = tests.reduce((a, t) => a + ((t.duration_min || 0) * 60), 0);
+        return totalRowTime > 0 ? totalRowTime : testFallback;
+      })(),
     };
-  }, [responses]);
+  }, [responses, tests]);
 
   // E3b: % of tagged-wrong alongside the raw counts (tooltip only — bars stay raw)
   const tagsWithPct = useMemo(
