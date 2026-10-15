@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { ChevronLeft, ChevronRight, Minus, Plus, Pin, CheckCircle2, AlertCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Minus, Plus, Pin, CheckCircle2, AlertCircle, Pause, Play } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { clearSession, saveSession, useLive } from "@/lib/idb";
 import { marksFor } from "@/lib/scoring";
@@ -185,9 +185,14 @@ export function PlayerView({
     return () => clearInterval(t);
   }, []);
 
+  const totalPausedMs =
+    (session.total_paused_ms ?? 0) +
+    (session.is_paused && session.paused_at ? now - session.paused_at : 0);
+  const effectiveElapsedMs = Math.max(0, now - session.started_at - totalPausedMs);
+
   const remaining = Math.max(
     0,
-    session.duration_min * 60 - (now - session.started_at) / 1000
+    session.duration_min * 60 - effectiveElapsedMs / 1000
   );
   const mins = Math.floor(remaining / 60);
   const secs = Math.floor(remaining % 60);
@@ -218,6 +223,33 @@ export function PlayerView({
     },
     [onPersist]
   );
+
+  const togglePause = useCallback(() => {
+    const s = sessionRef.current;
+    if (s.is_paused) {
+      const addedPaused = s.paused_at ? Math.max(0, Date.now() - s.paused_at) : 0;
+      persist({
+        ...s,
+        is_paused: false,
+        paused_at: undefined,
+        total_paused_ms: (s.total_paused_ms ?? 0) + addedPaused,
+        q_entered_at: Date.now(),
+      });
+      toast.info("Test timer resumed");
+    } else {
+      const curSlot = slots[s.current];
+      const cur = curSlot ? curSlot.slot : (s.question_ids[s.current] ?? String(s.current + 1));
+      const elapsed = Math.max(0, (Date.now() - s.q_entered_at) / 1000);
+      persist({
+        ...s,
+        is_paused: true,
+        paused_at: Date.now(),
+        q_times: { ...s.q_times, [cur]: (s.q_times[cur] ?? 0) + elapsed },
+        q_entered_at: Date.now(),
+      });
+      toast.info("Test timer paused");
+    }
+  }, [persist, slots]);
 
   function goTo(index: number) {
     if (index < 0 || index >= slots.length) return;
@@ -268,8 +300,21 @@ export function PlayerView({
     // any open Radix dialog (submit confirm / abandon) owns the keyboard
     if (document.querySelector('[role="dialog"], [role="alertdialog"]')) return;
     const s = sessionRef.current;
+    if (!s) return;
+    if (s.is_paused) {
+      if (e.key === "p" || e.key === "P" || e.key === " ") {
+        e.preventDefault();
+        togglePause();
+      }
+      return;
+    }
+    if (e.key === "p" || e.key === "P") {
+      e.preventDefault();
+      togglePause();
+      return;
+    }
     const slot = currentSlot;
-    if (!s || !slot) return;
+    if (!slot) return;
     const key = e.key;
     const isMcq =
       s.mode === "pdf" ? pdfKeyIsLetter(s, slot.no) : qMap.get(slot.slot)?.type === "MCQ";
@@ -350,7 +395,7 @@ export function PlayerView({
         .catch(() => {});
     };
     // finalize last question's time
-    const elapsed = (Date.now() - s.q_entered_at) / 1000;
+    const elapsed = s.is_paused ? 0 : (Date.now() - s.q_entered_at) / 1000;
     const curSlot = slots[s.current];
     const cur = curSlot ? curSlot.slot : (s.question_ids[s.current] ?? String(s.current + 1));
     const qTimes = { ...s.q_times, [cur]: (s.q_times[cur] ?? 0) + elapsed };
@@ -550,10 +595,10 @@ export function PlayerView({
 
   // auto-submit when the clock hits zero
   useEffect(() => {
-    if (remaining <= 0 && !submittingRef.current) {
+    if (remaining <= 0 && !submittingRef.current && !session.is_paused) {
       void submit();
     }
-  }, [remaining, submit]);
+  }, [remaining, submit, session.is_paused]);
 
   // warn before leaving with a live test
   useEffect(() => {
@@ -698,7 +743,7 @@ export function PlayerView({
       {/* Floating submit — the in-header Submit scrolls behind the sticky app
           header on shorter viewports, which read as "can't submit". A compact
           always-reachable action keeps the exit one tap away. */}
-      {!confirmOpen ? (
+      {!confirmOpen && !session.is_paused ? (
         <Button
           onClick={() => setConfirmOpen(true)}
           className="fixed bottom-4 right-4 z-40 shadow-lg bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:text-emerald-950"
@@ -744,18 +789,48 @@ export function PlayerView({
             <span className={cn("w-1.5 h-1.5 rounded-full", isPracticeMode ? "bg-white" : "bg-muted-foreground")} />
             Practice: {isPracticeMode ? "ON" : "OFF"}
           </Button>
-          <div
-            className={cn(
-              "text-2xl font-black tabular-nums px-4 py-1.5 rounded-lg",
-              timeStage === "red"
-                ? "bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-400"
-                : timeStage === "amber"
-                  ? "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
-                  : "bg-muted text-foreground"
-            )}
-            aria-live="polite"
-          >
-            {String(mins).padStart(2, "0")}:{String(secs).padStart(2, "0")}
+          <div className="flex items-center gap-1.5">
+            <div
+              className={cn(
+                "text-2xl font-black tabular-nums px-3.5 py-1.5 rounded-lg flex items-center gap-2",
+                session.is_paused
+                  ? "bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-300 ring-2 ring-amber-400"
+                  : timeStage === "red"
+                    ? "bg-red-50 text-red-600 dark:bg-red-500/15 dark:text-red-400"
+                    : timeStage === "amber"
+                      ? "bg-amber-50 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+                      : "bg-muted text-foreground"
+              )}
+              aria-live="polite"
+            >
+              {session.is_paused && <Pause className="w-4 h-4 animate-pulse shrink-0" />}
+              <span>{String(mins).padStart(2, "0")}:{String(secs).padStart(2, "0")}</span>
+            </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={togglePause}
+              className={cn(
+                "h-10 px-3 gap-1.5 font-medium transition-colors",
+                session.is_paused
+                  ? "border-emerald-500 text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-500/15 hover:bg-emerald-100"
+                  : "border-border text-foreground hover:bg-muted"
+              )}
+              title={session.is_paused ? "Resume test (or press P)" : "Pause test timer (or press P)"}
+            >
+              {session.is_paused ? (
+                <>
+                  <Play className="w-4 h-4 fill-current text-emerald-600 dark:text-emerald-400" />
+                  <span>Resume</span>
+                </>
+              ) : (
+                <>
+                  <Pause className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                  <span>Pause</span>
+                </>
+              )}
+            </Button>
           </div>
           <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
             <AlertDialogTrigger asChild>
@@ -1179,7 +1254,34 @@ export function PlayerView({
           </div>
         </div>
 
-        {/* palette rail */}
+        {/* Paused Overlay Modal */}
+      {session.is_paused && (
+        <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex flex-col items-center justify-center p-4">
+          <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl text-center space-y-4">
+            <div className="w-14 h-14 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto">
+              <Pause className="w-7 h-7" />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-foreground">Test Paused</h2>
+              <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">
+                Timer and questions are paused. Take your break and press Resume when you are ready.
+              </p>
+            </div>
+            <div className="text-3xl font-mono font-black tabular-nums py-2 text-foreground">
+              {String(mins).padStart(2, "0")}:{String(secs).padStart(2, "0")}
+            </div>
+            <Button
+              size="lg"
+              onClick={togglePause}
+              className="w-full gap-2 bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-500 dark:hover:bg-emerald-600 dark:text-emerald-950 font-semibold text-base h-12"
+            >
+              <Play className="w-5 h-5 fill-current" /> Resume Test
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* palette rail */}
         <div className="bg-card border border-border card-shadow rounded-xl p-4">
           <div className="flex flex-wrap gap-1.5 mb-3">
             {sections.map((s) => {

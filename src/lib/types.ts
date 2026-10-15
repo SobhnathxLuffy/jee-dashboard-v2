@@ -364,6 +364,9 @@ export interface ActiveSession {
   is_practice?: boolean;
   marks_correct?: number;
   marks_wrong?: number;
+  is_paused?: boolean;
+  paused_at?: number; // epoch ms when pause was engaged
+  total_paused_ms?: number; // cumulative ms elapsed during previous pauses
 }
 
 export const SUBJECTS: Subject[] = ["Physics", "Chemistry", "Mathematics"];
