@@ -30,6 +30,7 @@ import {
   type TestType,
 } from "@/lib/types";
 import { PRESET_MARKING_SCHEMES } from "@/lib/scoring";
+import { sortQuestionsByPaperOrder } from "@/lib/question-json";
 import { cleanSource } from "./QuestionBank";
 import { BookOpen, CheckSquare, Layers, Sparkles } from "lucide-react";
 
@@ -214,6 +215,9 @@ export function TestCreateView({
       entry.subjects.add(q.subject);
       entry.chapters.add(q.chapter);
     }
+    for (const paper of map.values()) {
+      paper.questions = sortQuestionsByPaperOrder(paper.questions);
+    }
     return Array.from(map.values()).sort((a, b) => b.questions.length - a.questions.length);
   }, [questions]);
 
@@ -264,6 +268,10 @@ export function TestCreateView({
       }
     }
 
+    if (!shuffle && (pickMode === "source" || pickMode === "manual")) {
+      return ids;
+    }
+
     // Order by subject P -> C -> M; shuffle (when on) mixes within subject
     const byIdMap = new Map(questions.map((q) => [q.id, q] as const));
     const ordered: string[] = [];
@@ -303,7 +311,7 @@ export function TestCreateView({
 
   // Filter pool for manual pick mode
   const manualPool = useMemo(() => {
-    return questions
+    const basePool = questions
       .filter((q) => (fSubject === "all" ? true : q.subject === fSubject))
       .filter((q) => (fChapter === "all" ? true : q.chapter === fChapter))
       .filter((q) => (fSource === "all" ? true : cleanSource(q.source) === fSource))
@@ -311,18 +319,21 @@ export function TestCreateView({
         fSearch.trim() === ""
           ? true
           : q.question.toLowerCase().includes(fSearch.trim().toLowerCase())
-      )
-      .sort((a, b) => b.created_at - a.created_at);
+      );
+    if (fSource !== "all") {
+      return sortQuestionsByPaperOrder(basePool);
+    }
+    return basePool.sort((a, b) => b.created_at - a.created_at);
   }, [questions, fSubject, fChapter, fSource, fSearch]);
 
   function selectAllFiltered() {
-    const idsToAdd = manualPool.map((q) => q.id);
+    const idsToAdd = manualPool.map((q: Question) => q.id);
     setSelected((prev) => Array.from(new Set([...prev, ...idsToAdd])));
     toast.success(`Selected all ${idsToAdd.length} questions`);
   }
 
   function deselectAllFiltered() {
-    const idsToRemove = new Set(manualPool.map((q) => q.id));
+    const idsToRemove = new Set(manualPool.map((q: Question) => q.id));
     setSelected((prev) => prev.filter((id) => !idsToRemove.has(id)));
     toast.info("Deselected filtered questions");
   }
@@ -330,6 +341,7 @@ export function TestCreateView({
   function pickSourcePaper(paper: (typeof sourcePapers)[0]) {
     setSelectedSource(paper.source);
     setName(paper.source.includes("Mock") ? paper.source : `${paper.source} Mock`);
+    setSelected(paper.questions.map((q: Question) => q.id));
     if (paper.source.toLowerCase().includes("cuet")) {
       handleSchemePresetChange("cuet");
       setDuration(String(Math.max(45, paper.questions.length)));
@@ -612,7 +624,7 @@ export function TestCreateView({
                   className="h-4 w-4"
                 />
                 <span className="text-xs text-muted-foreground">
-                  Shuffle within subject (order always stays P → C → M)
+                  {shuffle ? "Shuffle questions within subject" : "Strict sequential paper order (Shuffle OFF — Q1..QN as imported)"}
                 </span>
               </label>
 

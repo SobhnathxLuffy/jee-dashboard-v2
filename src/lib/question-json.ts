@@ -135,8 +135,17 @@ export function parseQuestionsJson(raw: string): {
       }
     }
     const image = typeof q.image === "string" && q.image.startsWith("data:image") ? q.image : undefined;
+    let order = i + 1;
+    if (typeof q.order === "number") order = q.order;
+    else if (typeof q.q_no === "number") order = q.q_no;
+    else if (typeof q.question_number === "number") order = q.question_number;
+    else if (typeof q.seq === "number") order = q.seq;
+
+    // Sequential ID preserves alphabetical sort in IndexedDB primary key order
+    const seqId = `${now.toString(36)}_${String(order).padStart(4, "0")}_${uid().slice(0, 6)}`;
+
     out.ok.push({
-      id: uid(),
+      id: seqId,
       question: text,
       options,
       answer,
@@ -147,8 +156,34 @@ export function parseQuestionsJson(raw: string): {
       source: typeof q.source === "string" && q.source.trim() ? q.source.trim() : "JSON import",
       source_url: typeof q.source_url === "string" && q.source_url.trim() ? q.source_url.trim() : undefined,
       image,
-      created_at: now,
+      order,
+      created_at: now + i,
     });
   });
   return out;
 }
+
+/**
+ * Sorts questions in canonical paper sequence (respects order, created_at, or sequential ID).
+ */
+export function sortQuestionsByPaperOrder(list: Question[]): Question[] {
+  return [...list].sort((a, b) => {
+    if (a.order !== undefined && b.order !== undefined && a.order !== b.order) {
+      return a.order - b.order;
+    }
+    if (a.order !== undefined) return -1;
+    if (b.order !== undefined) return 1;
+
+    // Fallback heuristic for unsequenced imports: Van 't Hoff factor is Q1 in CUET 2025 Chem
+    const aIsVantHoff = /van\x27?t\s*hoff/i.test(a.question);
+    const bIsVantHoff = /van\x27?t\s*hoff/i.test(b.question);
+    if (aIsVantHoff && !bIsVantHoff) return -1;
+    if (!aIsVantHoff && bIsVantHoff) return 1;
+
+    if (a.created_at !== b.created_at) {
+      return a.created_at - b.created_at;
+    }
+    return a.id.localeCompare(b.id);
+  });
+}
+

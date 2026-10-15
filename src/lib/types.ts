@@ -46,6 +46,7 @@ export interface Question {
   explanation?: string;
   created_at: number;
   updated_at?: number; // set when the question is edited in place (bank, Sprint D2)
+  order?: number; // 1-based sequence in source paper or import file
 }
 
 /** One answer-key entry for a PDF paper question (paper numbering). */

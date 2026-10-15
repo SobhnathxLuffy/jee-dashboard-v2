@@ -31,10 +31,10 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import type { NavController } from "./App";
 import { EmptyNote, PageTitle, SectionCard, SubjectDot, TierBadge } from "./shared";
-import { useLive, put, del, bulkPut } from "@/lib/idb";
+import { useLive, put, del, bulkPut, getAll } from "@/lib/idb";
 import { fileToDataUrl } from "@/lib/image";
 import { SUBJECTS, uid, type Question, type Subject } from "@/lib/types";
-import { IMPORT_EXAMPLE, parseQuestionsJson } from "@/lib/question-json";
+import { IMPORT_EXAMPLE, parseQuestionsJson, sortQuestionsByPaperOrder } from "@/lib/question-json";
 import { FileDrop } from "./FileDrop";
 
 const OPTION_LETTERS = ["A", "B", "C", "D"];
@@ -104,7 +104,7 @@ export function QuestionBankView({ nav }: { nav?: NavController }) {
   }, [syllabus]);
 
   const filtered = useMemo(() => {
-    return questions
+    const filteredList = questions
       .filter((q) => (filterSubject === "all" ? true : q.subject === filterSubject))
       .filter((q) =>
         filterSubject !== "all" && filterChapter !== "all" ? q.chapter === filterChapter : true
@@ -120,7 +120,11 @@ export function QuestionBankView({ nav }: { nav?: NavController }) {
           ? true
           : q.question.toLowerCase().includes(search.trim().toLowerCase())
       )
-      .sort((a, b) => b.created_at - a.created_at);
+      ;
+    if (filterSource !== "all") {
+      return sortQuestionsByPaperOrder(filteredList);
+    }
+    return filteredList.sort((a, b) => b.created_at - a.created_at);
   }, [questions, filterSubject, filterChapter, filterTier, filterSource, search, tierOf]);
 
 
@@ -130,7 +134,8 @@ export function QuestionBankView({ nav }: { nav?: NavController }) {
       toast.error("No questions in current filter");
       return;
     }
-    const ids = filtered.map((q) => q.id);
+    const sortedQuestions = filterSource !== "all" ? filtered : sortQuestionsByPaperOrder(filtered);
+    const ids = sortedQuestions.map((q: Question) => q.id);
     let testName = "Question Bank Practice";
     if (filterSource !== "all") testName = filterSource;
     else if (filterChapter !== "all") testName = `${filterChapter} Test`;
@@ -617,6 +622,11 @@ export function QuestionBankView({ nav }: { nav?: NavController }) {
                           <SubjectDot subject={q.subject} />
                           <span className="text-xs text-muted-foreground">{q.chapter}</span>
                           {tier ? <TierBadge tier={tier} /> : null}
+                          {q.order !== undefined ? (
+                            <Badge className="text-[10px] bg-emerald-600/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 font-mono">
+                              Q{q.order}
+                            </Badge>
+                          ) : null}
                           <Badge variant="outline" className="text-[10px] border-border text-muted-foreground">
                             {q.type === "MCQ" ? "MCQ" : "NUM"}
                           </Badge>
@@ -721,15 +731,26 @@ function JsonImportPanel({ onClose, nav }: { onClose: () => void; nav?: NavContr
   const [importing, setImporting] = useState(false);
   const [raw, setRaw] = useState("");
   const [fileName, setFileName] = useState<string | null>(null);
+  const [replaceExisting, setReplaceExisting] = useState(true);
   const parsed = useMemo(() => (raw.trim() ? parseQuestionsJson(raw) : null), [raw]);
 
+  async function cleanOldQuestionsIfNeeded() {
+    if (!replaceExisting || !parsed || parsed.ok.length === 0) return;
+    const targetSrc = cleanSource(parsed.ok[0].source);
+    const existing = await getAll("questions");
+    const toDelete = existing.filter((q: Question) => cleanSource(q.source) === targetSrc);
+    for (const item of toDelete) {
+      await del("questions", item.id);
+    }
+  }
 
   async function importAndStart() {
     if (!parsed || parsed.ok.length === 0 || importing) return;
     setImporting(true);
     try {
+      await cleanOldQuestionsIfNeeded();
       await bulkPut("questions", parsed.ok);
-      toast.success(`Imported ${parsed.ok.length} questions — opening test setup...`);
+      toast.success(`Imported ${parsed.ok.length} questions in sequence — opening test setup...`);
       onClose();
       if (nav) {
         const firstSrc = parsed.ok[0]?.source ? cleanSource(parsed.ok[0].source) : "Imported Paper";
@@ -751,10 +772,18 @@ function JsonImportPanel({ onClose, nav }: { onClose: () => void; nav?: NavContr
   }
 
   async function importAll() {
-    if (!parsed || parsed.ok.length === 0) return;
-    await bulkPut("questions", parsed.ok);
-    toast.success(`Imported ${parsed.ok.length} question${parsed.ok.length === 1 ? "" : "s"}`);
-    onClose();
+    if (!parsed || parsed.ok.length === 0 || importing) return;
+    setImporting(true);
+    try {
+      await cleanOldQuestionsIfNeeded();
+      await bulkPut("questions", parsed.ok);
+      toast.success(`Imported ${parsed.ok.length} question${parsed.ok.length === 1 ? "" : "s"} in sequence`);
+      onClose();
+    } catch {
+      toast.error("Failed to import questions");
+    } finally {
+      setImporting(false);
+    }
   }
 
   return (
@@ -807,6 +836,33 @@ function JsonImportPanel({ onClose, nav }: { onClose: () => void; nav?: NavContr
                   </Badge>
                 ) : null}
                 {parsed.ok.length > 0 ? (
+                <div className="p-2.5 rounded-lg border border-border/80 bg-muted/30 text-xs space-y-1.5">
+                  <div className="flex items-center justify-between text-muted-foreground">
+                    <span className="font-semibold text-foreground">File Sequence Preview:</span>
+                    <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-medium">
+                      Exact 1..${parsed.ok.length} sequence
+                    </span>
+                  </div>
+                  <div className="text-[11px] text-foreground truncate">
+                    <span className="font-medium text-muted-foreground">Q1:</span> {parsed.ok[0]?.question}
+                  </div>
+                  {parsed.ok.length > 1 ? (
+                    <div className="text-[11px] text-muted-foreground truncate">
+                      <span className="font-medium">Q{parsed.ok.length}:</span> {parsed.ok[parsed.ok.length - 1]?.question}
+                    </div>
+                  ) : null}
+                  <label className="flex items-center gap-2 pt-1 text-[11px] text-muted-foreground cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={replaceExisting}
+                      onChange={(e) => setReplaceExisting(e.target.checked)}
+                      className="rounded border-border text-emerald-600 focus:ring-emerald-500"
+                    />
+                    <span>Clean replace previous questions from this source</span>
+                  </label>
+                </div>
+              ) : null}
+              {parsed.ok.length > 0 ? (
                   <>
                     <Button size="sm" variant="outline" onClick={() => void importAll()} disabled={importing}>
                       Import {parsed.ok.length} question{parsed.ok.length === 1 ? "" : "s"}
