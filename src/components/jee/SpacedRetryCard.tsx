@@ -31,6 +31,14 @@ export function SpacedRetryCard({ nav }: { nav: NavController }) {
     return groupRetryQueueForDisplay(retryItems, 15);
   }, [retryItems]);
 
+  // Not-yet-mastered items waiting on a future due date (shown when nothing is due today)
+  const queuedUpcoming = useMemo(() => {
+    const pending = retryItems.filter((x) => x.stage < 3 && x.next_due);
+    if (pending.length === 0) return null;
+    const nextDue = pending.map((x) => x.next_due).sort()[0];
+    return { count: pending.length, nextDue: nextDue! };
+  }, [retryItems]);
+
   async function handleMarkSolved(item: RetryQueueItem, correct: boolean) {
     setActingId(item.id);
     try {
@@ -38,11 +46,11 @@ export function SpacedRetryCard({ nav }: { nav: NavController }) {
       if (correct) {
         toast.success(
           item.stage >= 2
-            ? "Mastered! Removed from retry queue."
-            : `Advanced to stage ${item.stage + 2} (${item.stage === 0 ? "due in 3d" : "due in 7d"})`
+            ? "Mastered! Cleared from the retry loop."
+            : `Advanced to Stage ${item.stage + 2}/3 (${item.stage === 0 ? "due in 3d" : "due in 7d"})`
         );
       } else {
-        toast.info("Reset to stage 1 (due tomorrow). Spaced repetition will reinforce it.");
+        toast.info("Back to Stage 1/3 — due tomorrow");
       }
     } finally {
       setActingId(null);
@@ -51,7 +59,7 @@ export function SpacedRetryCard({ nav }: { nav: NavController }) {
 
   async function startAllDueSession() {
     const dueQuestionIds = retryItems
-      .filter((x) => x.next_due <= todayStr())
+      .filter((x) => x.stage < 3 && x.next_due && x.next_due <= todayStr())
       .map((x) => x.question_id);
 
     if (dueQuestionIds.length === 0) {
@@ -162,6 +170,11 @@ export function SpacedRetryCard({ nav }: { nav: NavController }) {
           <p className="text-[11px] text-muted-foreground mt-0.5">
             Every test mistake tagged C, F, or A automatically enters the 1d-3d-7d spaced loop.
           </p>
+          {queuedUpcoming && (
+            <p className="text-[11px] text-muted-foreground mt-1.5">
+              {queuedUpcoming.count} queued · next due {queuedUpcoming.nextDue}
+            </p>
+          )}
         </div>
       ) : (
         <div className="space-y-2">

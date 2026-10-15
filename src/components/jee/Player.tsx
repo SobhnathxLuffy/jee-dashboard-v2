@@ -449,6 +449,15 @@ export function PlayerView({
         s.subject_order?.length === 1 ? s.subject_order[0] : undefined
       );
 
+      // Enroll auto-tagged mistakes into the spaced retry queue right at
+      // submit — the queue must fill even if the user never opens the review.
+      try {
+        const { syncAllMistakesToRetryQueue } = await import("@/lib/retry");
+        await syncAllMistakesToRetryQueue(responses);
+      } catch {
+        // queue enrollment must never break a submitted test
+      }
+
       // Finish FIRST (clears the persisted session + navigates to results),
       // confetti second — a reload during the celebration window can no longer
       // leave a submitted test looking "paused/resumable".

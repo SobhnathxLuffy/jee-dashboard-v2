@@ -82,3 +82,41 @@ export function marksFor(
   if (!attempted) return 0;
   return correct === true ? cMarks : correct === false ? wMarks : 0;
 }
+
+// ─── Attempt classification ─── Embibe-style per-question quality labels ──────
+// One pure classifier for the Results review rows, the quality StatCard, and
+// future retry heuristics. Classification precedence (first match wins):
+//   1. practice mode            → "ungraded"  (practice is never scored)
+//   2. !attempted               → "skipped"   (never touched it)
+//   3. correct === null         → "ungraded"  (attempted, awaiting self-mark)
+//   4. correct && time ≤ ideal  → "perfect"
+//   5. correct && time >  ideal → "overtime"  (right answer, too slow)
+//   6. wrong && time ≤ 30s      → "rushed"    (sub-30s careless subset)
+//   7. wrong (any other speed)  → "wasted"    (Embibe model: a wrong attempt
+//                                              wasted marks regardless of
+//                                              speed — even slower than ideal)
+// "skipped" is checked BEFORE "ungraded" on purpose: Player submit stores
+// `correct: null` for every skipped row (tri-state rule), so if the pending
+// bucket were checked first, "skipped" would never be observable on keyed
+// tests. "pending" therefore means *attempted* but awaiting a mark.
+export type AttemptClass = "perfect" | "overtime" | "wasted" | "rushed" | "skipped" | "ungraded";
+
+/** Ideal solve time in seconds — matches the README slow-trap thresholds (>150s MCQ, >240s numerical). */
+export const IDEAL_TIME = { MCQ: 150, numerical: 240 };
+
+export function classifyAttempt(opts: {
+  attempted: boolean;
+  correct: boolean | null;
+  timeSpent: number;
+  type: "MCQ" | "numerical" | string;
+  isPractice?: boolean;
+}): AttemptClass {
+  const { attempted, correct, timeSpent, type, isPractice } = opts;
+  if (isPractice) return "ungraded";
+  if (!attempted) return "skipped";
+  if (correct === null) return "ungraded";
+  // Unknown question types fall back to the MCQ ideal (the stricter one).
+  const ideal = type in IDEAL_TIME ? IDEAL_TIME[type as keyof typeof IDEAL_TIME] : IDEAL_TIME.MCQ;
+  if (correct) return timeSpent <= ideal ? "perfect" : "overtime";
+  return timeSpent <= 30 ? "rushed" : "wasted";
+}

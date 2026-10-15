@@ -13,19 +13,32 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { toast } from "sonner";
 import {
   DEFAULT_ANKI_LIMITS,
+  DEFAULT_AUTO_TAG,
   DEFAULT_TARGET_EXAMS,
   DEFAULT_TIME_TARGETS,
   getAnkiLimits,
+  getAutoTagConfig,
   getTargetExams,
   getTimeTargets,
   saveAnkiLimits,
+  saveAutoTagConfig,
   saveTargetExams,
   saveTimeTargets,
 } from "@/lib/settings";
 import { deriveExamPhase, todayStr, uid, type AnkiLimits, type TargetExam, type TimeTargets } from "@/lib/types";
+import type { AutoTagConfig } from "@/lib/settings";
 
 export function SettingsDialog({
   open,
@@ -44,6 +57,7 @@ export function SettingsDialog({
   const [exams, setExams] = useState<TargetExam[]>(DEFAULT_TARGET_EXAMS);
   const [targets, setTargets] = useState<TimeTargets>(DEFAULT_TIME_TARGETS);
   const [anki, setAnki] = useState<AnkiLimits>(DEFAULT_ANKI_LIMITS);
+  const [autoTag, setAutoTag] = useState<AutoTagConfig>(DEFAULT_AUTO_TAG);
   const [activeTab, setActiveTab] = useState<"exams" | "time" | "anki">("exams");
 
   useEffect(() => {
@@ -57,6 +71,27 @@ export function SettingsDialog({
       );
     }
   }, [show]);
+
+  // Auto-tag config loads on open too — kept as its own effect so the existing
+  // tab-settings loader stays untouched.
+  useEffect(() => {
+    if (show) {
+      void getAutoTagConfig().then(setAutoTag);
+    }
+  }, [show]);
+
+  /** Auto-tag saves immediately on change (unlike the tab settings that wait
+   * for "Save Changes") so the submit-time tagging behavior is never stale. */
+  async function updateAutoTag(patch: Partial<AutoTagConfig>) {
+    const next = { ...autoTag, ...patch };
+    setAutoTag(next);
+    try {
+      await saveAutoTagConfig(next);
+      toast.success("Mistake auto-tagging saved");
+    } catch (e) {
+      toast.error(`Failed to save auto-tag setting: ${String(e)}`);
+    }
+  }
 
   async function handleSave() {
     try {
@@ -372,6 +407,50 @@ export function SettingsDialog({
             </div>
           </div>
         )}
+
+        {/* Mistake auto-tagging — applied at CBT submit time; saves on change.
+            Section styling cloned from the Time Targets cards above. */}
+        <div className="p-3 border border-border rounded-lg bg-card space-y-1.5">
+          <div className="text-xs font-semibold text-foreground">Mistake auto-tagging</div>
+          <div className="text-[11px] text-muted-foreground">
+            Wrong &amp; skipped questions get this tag automatically at submit, so the retry
+            queue is populated without manual work. Re-tag any mistake later in Results.
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 pt-1">
+            <div className="flex items-center gap-2">
+              <Switch
+                id="auto-tag-enabled"
+                checked={autoTag.enabled}
+                onCheckedChange={(v) => void updateAutoTag({ enabled: v })}
+                aria-label="Auto-tag wrong and skipped questions"
+              />
+              <Label htmlFor="auto-tag-enabled" className="text-xs cursor-pointer">
+                Auto-tag wrong &amp; skipped questions
+              </Label>
+            </div>
+            <div className="flex items-center gap-2 sm:ml-auto">
+              <Label
+                htmlFor="auto-tag-default"
+                className="text-xs whitespace-nowrap text-muted-foreground"
+              >
+                Default tag
+              </Label>
+              <Select
+                value={autoTag.tag}
+                onValueChange={(v) => void updateAutoTag({ tag: v as AutoTagConfig["tag"] })}
+              >
+                <SelectTrigger id="auto-tag-default" className="h-8 w-40 text-xs">
+                  <SelectValue placeholder="Pick a tag" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="C">C - Concept gap</SelectItem>
+                  <SelectItem value="F">F - Formula recall</SelectItem>
+                  <SelectItem value="A">A - Accuracy slip</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
 
         <div className="flex flex-wrap justify-between gap-2 pt-3 border-t border-border">
           <div className="flex gap-2">

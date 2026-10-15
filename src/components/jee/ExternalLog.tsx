@@ -923,6 +923,8 @@ export function ExternalLogView({ nav }: { nav: NavController }) {
                                       className="bg-red-600 hover:bg-red-700 text-white"
                                       onClick={() => {
                                         void del("tests", t.id);
+                                        // remove the auto-created timelog entry so Today's Focus doesn't count a deleted test
+                                        void del("timelog", `test-${t.id}`);
                                         if (editingId === t.id) cancelEdit();
                                         toast.success("Entry deleted");
                                       }}

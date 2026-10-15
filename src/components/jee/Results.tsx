@@ -27,7 +27,7 @@ import type { NavController } from "./App";
 import { AnswerBits, EmptyNote, PageTitle, SectionCard, StatCard } from "./shared";
 import { CountUp, ScoreRing, Stagger, StaggerItem } from "./motion";
 import { useLive, put, get, getAll } from "@/lib/idb";
-import { marksFor } from "@/lib/scoring";
+import { classifyAttempt, IDEAL_TIME, marksFor, type AttemptClass } from "@/lib/scoring";
 import { Timer } from "lucide-react";
 import { fileToDataUrl } from "@/lib/image";
 import {
@@ -262,6 +262,7 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
         });
       }
       if (recovered.length > 0 && alive) {
+        for (const r of recovered) r.recovered = true;
         await bulkPut("responses", recovered);
         toast.warning(
           "No saved answers found for this test — showing placeholders. The original attempt data was lost (likely a submit interrupted before the atomic-submit fix)."
@@ -378,6 +379,39 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
     return out;
   }, [rows, filter, subjectFilter]);
 
+  // Attempt-quality counts (Embibe-style) over the whole test. The StatCard
+  // shows the three score-moving buckets (perfect / overtime / wasted);
+  // rushed, skipped and ungraded are still tallied for future use.
+  const quality = useMemo(() => {
+    const counts: Record<AttemptClass, number> = {
+      perfect: 0,
+      overtime: 0,
+      wasted: 0,
+      rushed: 0,
+      skipped: 0,
+      ungraded: 0,
+    };
+    for (const r of rows) {
+      counts[
+        classifyAttempt({
+          attempted: r.attempted,
+          correct: r.correct,
+          timeSpent: r.time_spent,
+          type: r.type,
+        })
+      ] += 1;
+    }
+    return counts;
+  }, [rows]);
+
+  // Bulk-tag targets: every wrong or skipped row in the whole test. Current
+  // filters are deliberately ignored — tagging is a data-fix action, not a
+  // view action.
+  const mistakeRows = useMemo(
+    () => rows.filter((r) => !r.attempted || r.correct === false),
+    [rows]
+  );
+
   // D1: retry candidates — wrong + unattempted-but-keyed (key-later: attempted only)
   const retryIds = useMemo(() => {
     if (!test?.question_ids) return [];
@@ -447,6 +481,22 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
     if (updated) {
       void syncResponseToRetryQueue(updated, test?.date ?? todayStr());
     }
+  }
+
+  /** Tag every mistake (wrong or skipped) with one tag in one go. Rows already
+   * carrying that same tag are skipped so repeat clicks never double-write. */
+  async function tagAllMistakes(tag: ErrorTag) {
+    const targets = mistakeRows.filter((r) => r.error_tag !== tag);
+    if (targets.length === 0) {
+      toast.info(`All ${mistakeRows.length} mistakes are already tagged ${tag}`);
+      return;
+    }
+    // Sequential on purpose: each tagResponse re-reads the row fresh, and
+    // hammering IndexedDB with a parallel burst is what caused past races.
+    for (const r of targets) {
+      await tagResponse(r, tag);
+    }
+    toast.success(`Tagged ${targets.length} mistake${targets.length === 1 ? "" : "s"}`);
   }
 
   // D7: one-line note, saved on blur (Enter blurs). Toast on the first save of each note only.
@@ -603,7 +653,7 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
         )}
       </div>
 
-      <Stagger className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      <Stagger className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
         <StaggerItem>
           <StatCard
             label="Score"
@@ -632,6 +682,17 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
         </StaggerItem>
         <StaggerItem>
           <StatCard label="Time used" value={fmtSecs(stats.time)} />
+        </StaggerItem>
+        <StaggerItem>
+          <StatCard
+            label="Attempt quality"
+            value={
+              <span className="text-base">
+                P{quality.perfect} / O{quality.overtime} / W{quality.wasted}
+              </span>
+            }
+            hint="perfect / overtime / wasted"
+          />
         </StaggerItem>
       </Stagger>
 
@@ -751,6 +812,30 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
         </div>
       ) : null}
 
+      {/* bulk tagging — one click classifies every wrong/skipped row with the
+          same tag (whole test, current filters ignored) */}
+      {mistakeRows.length > 0 ? (
+        <div className="flex items-center gap-2 flex-wrap text-xs text-muted-foreground">
+          <span>
+            Tag all <strong className="text-foreground">{mistakeRows.length}</strong> wrong /
+            skipped as
+          </span>
+          {(["C", "F", "A"] as const).map((t) => (
+            <Button
+              key={t}
+              size="sm"
+              variant="outline"
+              className="h-7 px-2.5 text-[11px] font-bold"
+              title={ERROR_TAGS.find((x) => x.code === t)?.hint}
+              onClick={() => void tagAllMistakes(t)}
+            >
+              {t}
+            </Button>
+          ))}
+          <span className="text-muted-foreground/70">— rows already carrying that tag are skipped</span>
+        </div>
+      ) : null}
+
       <SectionCard
         title="Per-question review"
         subtitle="your answer vs correct, time spent, and the tag that explains the mistake"
@@ -837,6 +922,51 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
                         </Badge>
                         <span className="text-[11px] text-muted-foreground/70">{r.chapter}</span>
                         <span className="text-[11px] font-mono text-muted-foreground/70">{fmtSecs(r.time_spent)}</span>
+                        {/* attempt classification (Embibe-style) — reuses the
+                            same ideal-time thresholds as the Slow flag below */}
+                        {(() => {
+                          const attemptClass = classifyAttempt({
+                            attempted: r.attempted,
+                            correct: r.correct,
+                            timeSpent: r.time_spent,
+                            type: r.type,
+                          });
+                          const ideal =
+                            r.type in IDEAL_TIME
+                              ? IDEAL_TIME[r.type as keyof typeof IDEAL_TIME]
+                              : IDEAL_TIME.MCQ;
+                          if (attemptClass === "perfect")
+                            return (
+                              <Badge variant="outline" className="text-[10px] border-emerald-300 text-emerald-700 dark:border-emerald-500/40 dark:text-emerald-300">
+                                ✅ Perfect
+                              </Badge>
+                            );
+                          if (attemptClass === "overtime")
+                            return (
+                              <Badge variant="outline" className="text-[10px] border-amber-300 text-amber-700 dark:border-amber-500/40 dark:text-amber-300">
+                                🐢 +{fmtSecs(r.time_spent - ideal)} over ideal
+                              </Badge>
+                            );
+                          if (attemptClass === "wasted")
+                            return (
+                              <Badge variant="outline" className="text-[10px] border-red-300 text-red-700 dark:border-red-500/40 dark:text-red-300">
+                                ❌ Wasted {fmtSecs(r.time_spent)}
+                              </Badge>
+                            );
+                          if (attemptClass === "rushed")
+                            return (
+                              <Badge variant="outline" className="text-[10px] border-purple-300 text-purple-700 dark:border-purple-500/40 dark:text-purple-300">
+                                ⚡ Rushed {fmtSecs(r.time_spent)}
+                              </Badge>
+                            );
+                          if (attemptClass === "skipped")
+                            return (
+                              <Badge variant="outline" className="text-[10px] border-border text-muted-foreground/70">
+                                Skipped —
+                              </Badge>
+                            );
+                          return null; // ungraded: the pending badge below already covers it
+                        })()}
                         {r.attempted && r.time_spent > (r.type === "numerical" ? 240 : 150) && (
                           <Badge variant="outline" className="text-[9px] border-amber-300 text-amber-700 dark:border-amber-500/40 dark:text-amber-300">
                             ⏱️ Slow
@@ -979,8 +1109,10 @@ export function ResultsView({ testId, nav }: { testId: string; nav: NavControlle
                       )}
                     </div>
 
-                    {/* D4: self-mark toggles (key-later tests, or un-scored/recovered tests) */}
-                    {selfMark || r.correct === null ? (
+                    {/* D4: self-mark toggles (key-later tests, or recovered placeholder rows).
+                        Ordinary skipped rows are correct:null by design — they score 0
+                        and must NOT invite self-marking. */}
+                    {selfMark || r.recovered === true ? (
                       <div className="flex flex-col gap-1 items-end shrink-0">
                         <span className="text-[10px] uppercase text-muted-foreground/70 font-medium">mark it</span>
                         <div className="flex gap-1.5">

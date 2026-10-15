@@ -55,7 +55,7 @@ export function TargetExamsCard() {
   function getPhaseGuidance(phase: ExamPhase) {
     switch (phase) {
       case "Cover":
-        return "Broad syllabus syllabus coverage & first passes. Prioritize Tier 1 chapters.";
+        return "Broad syllabus coverage & first passes. Prioritize Tier 1 chapters.";
       case "Consolidate":
         return "Deep error analysis, weak-area drills, timed mixed tests & active recall.";
       case "Mock-only":

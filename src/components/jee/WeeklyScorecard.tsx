@@ -114,6 +114,8 @@ export function WeeklyScorecard({ nav }: { nav: NavController }) {
       if (l.category === "JEE") {
         const act = l.activity?.toLowerCase() || "problems";
         if (act in map) map[act] += l.minutes || 0;
+        // logTestTime writes activity "full_mock" for completed tests
+        else if (act === "full_mock") map.mock += l.minutes || 0;
         else map.problems += l.minutes || 0;
       }
     }
@@ -145,10 +147,10 @@ export function WeeklyScorecard({ nav }: { nav: NavController }) {
     ).length;
   }, [weekLogs]);
 
-  // Retry queue items cleared/mastered this week (stage >= 3)
+  // Retry queue items mastered this week (stage-3 items are retained with mastered_at)
   const retryQueueCleared = useMemo(() => {
     return retryQueue.filter(
-      (q) => q.stage >= 3 && q.last_reviewed && q.last_reviewed >= weekStart && q.last_reviewed <= weekEnd
+      (q) => q.stage >= 3 && q.mastered_at && q.mastered_at >= weekStart && q.mastered_at <= weekEnd
     ).length;
   }, [retryQueue, weekStart, weekEnd]);
 

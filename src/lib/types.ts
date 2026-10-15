@@ -138,6 +138,7 @@ export interface ResponseRecord {
   correct_answer: number | string;
   type: QuestionType;
   options?: string[];
+  recovered?: boolean; // true on placeholder rows auto-written for tests whose real responses were lost
   updated_at?: number; // sync stamp (maintained by the idb write layer)
 }
 
@@ -418,6 +419,7 @@ export interface RetryQueueItem {
   stage: number; // 0 = 1d, 1 = 3d, 2 = 7d, 3 = mastered
   next_due: string; // YYYY-MM-DD
   last_reviewed?: string;
+  mastered_at?: string; // YYYY-MM-DD — set when stage reaches 3 (item is retained, never due)
   created_at: number;
   updated_at?: number;
 }

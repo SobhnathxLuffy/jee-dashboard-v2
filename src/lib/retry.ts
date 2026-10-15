@@ -32,10 +32,29 @@ export async function syncResponseToRetryQueue(
   response: ResponseRecord,
   testDate: string
 ): Promise<void> {
-  if (!isRetryEligible(response)) return;
   const id = `${response.test_id}:${response.question_id}`;
   const existing = await getAll("retry_queue");
-  if (existing.some((x) => x.id === id)) return;
+  const prior = existing.find((x) => x.id === id);
+
+  if (!isRetryEligible(response)) {
+    // Retag-to-fixed: an R/T/G tag or a now-correct answer retires a stale
+    // active queue item (mastered items are kept as history)
+    if (prior && prior.stage < 3) await del("retry_queue", id);
+    return;
+  }
+
+  if (prior) {
+    // Re-tagging a question that was already mastered re-enrolls it from stage 0
+    if (prior.stage >= 3) {
+      await put("retry_queue", {
+        ...prior,
+        stage: 0,
+        next_due: addDays(testDate || todayStr(), RETRY_INTERVALS_DAYS[0]),
+        mastered_at: undefined,
+      });
+    }
+    return;
+  }
 
   const item: RetryQueueItem = {
     id,
@@ -101,8 +120,15 @@ export async function recordRetryAttempt(
   if (isCorrect) {
     const nextStage = item.stage + 1;
     if (nextStage >= 3) {
-      // Completed all 3 spaced intervals (1d, 3d, 7d) -> Mastered! Remove from queue.
-      await del("retry_queue", itemId);
+      // Completed all 3 spaced intervals (1d, 3d, 7d) -> Mastered! Retained with
+      // next_due "" so it never shows due (WeeklyScorecard counts mastered_at).
+      await put("retry_queue", {
+        ...item,
+        stage: 3,
+        next_due: "",
+        last_reviewed: today,
+        mastered_at: today,
+      });
     } else {
       const nextDays = RETRY_INTERVALS_DAYS[nextStage] ?? 7;
       await put("retry_queue", {
@@ -138,7 +164,7 @@ export type RetryCardGroup =
 
 /**
  * Formats the due queue for the Dashboard:
- * 1. Filter items where next_due <= today
+ * 1. Filter items where next_due <= today (mastered items — stage 3 / next_due "" — are never due)
  * 2. Collapse chapters with >= 5 items into chapter drill groups
  * 3. Cap final list at 10-15 entries
  */
@@ -150,7 +176,9 @@ export function groupRetryQueueForDisplay(
   totalDueCount: number;
 } {
   const today = todayStr();
-  const dueItems = items.filter((x) => x.next_due <= today);
+  const dueItems = items.filter(
+    (x) => x.stage < 3 && x.next_due !== "" && x.next_due <= today
+  );
 
   // Group by chapter
   const byChapter = new Map<string, RetryQueueItem[]>();
